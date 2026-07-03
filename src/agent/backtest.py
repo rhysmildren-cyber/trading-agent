@@ -7,30 +7,12 @@ Usage: python -m agent.backtest [years]
 """
 
 import csv
-import math
 import sys
 from pathlib import Path
 
 from agent import data, ledger, signal
 from agent.config import SMA_WINDOW, STARTING_CAPITAL
-
-
-def max_drawdown(equities: list[float]) -> float:
-    peak, worst = equities[0], 0.0
-    for e in equities:
-        peak = max(peak, e)
-        worst = max(worst, (peak - e) / peak)
-    return worst
-
-
-def sharpe(equities: list[float]) -> float:
-    rets = [equities[i] / equities[i - 1] - 1 for i in range(1, len(equities))]
-    if not rets:
-        return 0.0
-    mean = sum(rets) / len(rets)
-    var = sum((r - mean) ** 2 for r in rets) / len(rets)
-    sd = math.sqrt(var)
-    return 0.0 if sd == 0 else (mean / sd) * math.sqrt(365)
+from agent.metrics import max_drawdown, sharpe
 
 
 def run(years: float = 3.0) -> None:

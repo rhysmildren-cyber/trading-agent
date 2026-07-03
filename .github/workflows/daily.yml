@@ -8,6 +8,9 @@ on:
     - cron: "5 0 * * *"   # 00:05 UTC daily, after the daily bar completes
   workflow_dispatch: {}    # manual trigger for testing
 
+permissions:
+  contents: write   # push the regenerated dashboard back to main
+
 jobs:
   run:
     runs-on: ubuntu-latest
@@ -26,3 +29,15 @@ jobs:
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
         # NOTE: signal-only mode. Add --execute after step-7 sign-off to place paper orders.
         run: python -m agent.run_daily
+      - name: Regenerate dashboard
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python -m agent.dashboard
+      - name: Publish dashboard
+        run: |
+          git config user.name "trend-agent-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add docs/index.html
+          git diff --cached --quiet || git commit -m "dashboard: daily update"
+          git push
