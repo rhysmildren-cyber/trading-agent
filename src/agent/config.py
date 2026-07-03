@@ -2,6 +2,7 @@
 
 STRATEGY_VERSION = "v1.0-sma50"
 SYMBOL = "BTC/USD"
+AGENT_NAME = "KEPLER"
 
 # Signal
 SMA_WINDOW = 50          # days

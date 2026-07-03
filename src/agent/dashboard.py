@@ -14,7 +14,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 from agent import data, db
-from agent.config import DEADBAND, SMA_WINDOW, STARTING_CAPITAL, STRATEGY_VERSION
+from agent.config import AGENT_NAME, DEADBAND, SMA_WINDOW, STARTING_CAPITAL, STRATEGY_VERSION
 from agent.metrics import max_drawdown, sharpe, total_return
 
 # --- palette ---
@@ -118,6 +118,87 @@ def chart(title: str, subtitle: str, lines: list[tuple[list[float], str, str]],
     </div>"""
 
 
+# ---------- the character ----------
+
+MOOD_STYLE = {
+    #            accent  eyes                                              mouth
+    "happy":    (GREEN,  'M38 56 Q45 47 52 56 M68 56 Q75 47 82 56',        'M45 70 Q60 82 75 70'),
+    "neutral":  (CYAN,   'M38 53 L52 53 M68 53 L82 53',                    'M48 73 L72 73'),
+    "sad":      (RED,    'M38 53 Q45 60 52 53 M68 53 Q75 60 82 53',        'M45 78 Q60 67 75 78'),
+    "worried":  (AMBER,  'M38 50 L52 55 M82 50 L68 55',                    'M46 74 Q53 70 60 74 Q67 78 74 74'),
+    "critical": (RED,    'M39 47 L51 59 M51 47 L39 59 M69 47 L81 59 M81 47 L69 59', ''),
+}
+
+
+def kepler_mood(kill: bool, halted: bool, stale: bool, position: str,
+                s_day: float | None, b_day: float | None) -> tuple[str, str, str]:
+    """Returns (mood, headline, detail) in plain English."""
+    if kill:
+        return ("critical", "Emergency stop.",
+                "My account fell more than 25% below where it started, so I have shut myself "
+                "down. I will not trade again until a human reviews what happened.")
+    if halted:
+        return ("worried", "Taking a breather.",
+                "I lost more than 10% in a single day, so the safety rules put me in a "
+                "24-hour timeout. Back tomorrow.")
+    if stale:
+        return ("worried", "I might be stuck.",
+                "I haven't logged a run in over two days. The scheduler may have missed — "
+                "worth checking the GitHub Actions page.")
+    if s_day is None:
+        return ("neutral", "First day on the job.",
+                "Not enough history to judge a good or bad day yet. Watching the trend.")
+    if position == "flat" and b_day is not None and b_day < -0.01:
+        return ("happy", f"Dodged a {b_day:.1%} drop.",
+                "Bitcoin fell today, but I'm sitting safely in cash — this is exactly why "
+                "I step aside when price is below the trend line.")
+    if s_day > 0.005:
+        return ("happy", f"Up {s_day:+.1%} today.",
+                "Riding the trend while it lasts. I'll step off if price closes below the line.")
+    if s_day < -0.005:
+        return ("sad", f"Down {s_day:+.1%} today.",
+                "Rough day, but the rule hasn't triggered — price is still on the right side "
+                "of the trend line, so I hold. Single days are noise.")
+    if position == "flat":
+        return ("neutral", "In cash, watching.",
+                "Price is below the 50-day trend line, so I'm parked in dollars. "
+                "I'll buy back in when price climbs 1% above the line.")
+    return ("neutral", "Holding steady.",
+            "Price is above the trend line, so I stay in Bitcoin. Nothing to do today.")
+
+
+def kepler_svg(mood: str) -> str:
+    accent, eyes, mouth = MOOD_STYLE[mood]
+    mouth_el = (f'<path d="{mouth}" stroke="{accent}" stroke-width="3" fill="none" '
+                f'stroke-linecap="round"/>') if mouth else \
+        f'<ellipse cx="60" cy="74" rx="7" ry="9" fill="none" stroke="{accent}" stroke-width="3"/>'
+    return f"""<svg viewBox="0 0 120 130" class="kepler" role="img" aria-label="{AGENT_NAME} is {mood}">
+      <ellipse cx="60" cy="66" rx="56" ry="21" fill="none" stroke="{PURPLE}"
+        stroke-width="1.2" stroke-dasharray="3 5" transform="rotate(-16 60 66)" opacity="0.7"/>
+      <circle cx="106" cy="47" r="3.5" fill="{PURPLE}"/>
+      <line x1="60" y1="30" x2="60" y2="16" stroke="{accent}" stroke-width="2.5"/>
+      <circle cx="60" cy="13" r="4" fill="{accent}">
+        <animate attributeName="opacity" values="1;0.25;1" dur="2.2s" repeatCount="indefinite"/>
+      </circle>
+      <rect x="24" y="30" width="72" height="62" rx="16" fill="#0e1730"
+        stroke="{accent}" stroke-width="2.5"/>
+      <path d="{eyes}" stroke="{accent}" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+      {mouth_el}
+    </svg>"""
+
+
+def kepler_panel(mood: str, headline: str, detail: str) -> str:
+    accent = MOOD_STYLE[mood][0]
+    return f"""<div class="panel kp">
+      {kepler_svg(mood)}
+      <div class="bubble" style="border-color:{accent}">
+        <div class="kname">{AGENT_NAME} <span style="color:{accent}">· {mood.upper()}</span></div>
+        <div class="khead">{escape(headline)}</div>
+        <div class="kdetail">{escape(detail)}</div>
+      </div>
+    </div>"""
+
+
 # ---------- html pieces ----------
 
 def tile(label: str, value: str, tone: str = TEXT, sub: str = "") -> str:
@@ -161,6 +242,13 @@ def build_html(d: dict) -> str:
     cur_s = s_eq[-1] if s_eq else STARTING_CAPITAL
     cur_b = b_eq[-1] if b_eq else STARTING_CAPITAL
     delta = cur_s - cur_b
+
+    # character mood: day-over-day change (first day compares against starting capital)
+    s_day = (s_eq[-1] / (s_eq[-2] if len(s_eq) >= 2 else STARTING_CAPITAL) - 1) if s_eq else None
+    b_day = (b_eq[-1] / (b_eq[-2] if len(b_eq) >= 2 else STARTING_CAPITAL) - 1) if b_eq else None
+    mood, headline, detail = kepler_mood(kill, halted, stale, st.get("position", "flat"),
+                                         s_day, b_day)
+    kepler = kepler_panel(mood, headline, detail)
     s_full = [STARTING_CAPITAL] + s_eq  # include inception so return-to-date is honest
     b_full = [STARTING_CAPITAL] + b_eq
 
@@ -180,11 +268,33 @@ def build_html(d: dict) -> str:
              f"{STRATEGY_VERSION} · paper only"),
     ])
 
+    # plain-english explainer
+    docs = f"""<details class="panel docs"><summary>WHAT AM I LOOKING AT? — how {AGENT_NAME} works, in plain English</summary>
+      <p><b>The one rule.</b> Once a day, {AGENT_NAME} checks Bitcoin's closing price against its
+      average price over the last 50 days (the "trend line"). Price more than 1% <i>above</i> the
+      line → hold Bitcoin. More than 1% <i>below</i> → sell everything and sit in cash. In between
+      (the shaded band on the chart) → do nothing, to avoid churning fees. That's the whole strategy.</p>
+      <p><b>How often it acts.</b> It wakes once a day at 10:05am Brisbane time, makes one decision,
+      and sleeps. Most days the decision is "no change" — expect roughly <b>one trade a month</b>.
+      If it ever trades daily, something is broken.</p>
+      <p><b>The race.</b> {AGENT_NAME} is racing a lazy rival called <b>baseline</b>, who bought
+      Bitcoin on day one and never touches it again. The bet: by stepping aside during downtrends,
+      {AGENT_NAME} finishes with more money <i>and</i> smaller crashes. If it can't beat the lazy
+      rival after ~3 months, the experiment failed — which is a perfectly good answer.</p>
+      <p><b>The money.</b> Both started with a pretend $100,000. Every simulated trade pays
+      realistic fees (0.35% per trade) so the results are honest. <b>No real money anywhere.</b></p>
+      <p><b>Safety rails.</b> Lose &gt;10% in one day → 24-hour timeout. Fall 25% below the starting
+      $100k → full stop until a human investigates. These are hard-coded; {AGENT_NAME} can't argue.</p>
+      <p><b>The tiles above.</b> SYSTEM = overall health · POSITION = holding Bitcoin (LONG) or
+      cash (FLAT) · VS BASELINE = how far ahead/behind the lazy rival · DRAWDOWN = worst slide from
+      the account's best-ever value · MISSION DAY = progress through the ~90-day experiment.</p>
+    </details>"""
+
     # scoreboard: the three PRD success criteria
     sh_s, sh_b = sharpe(s_full), sharpe(b_full)
     enough = day_n >= 7
     score = f"""<div class="panel"><div class="ph"><span class="pt">SUCCESS CRITERIA</span>
-      <span class="ps">strategy must beat baseline after costs · needs ≥{7} days for meaningful stats</span></div>
+      <span class="ps">the three numbers that decide if {AGENT_NAME} wins — must beat the rival with smaller crashes, not just higher returns</span></div>
       <table><tr><th></th><th>STRATEGY</th><th>BASELINE</th><th>VERDICT</th></tr>
       <tr><td>Return after costs</td><td>{fmt_pct(total_return(s_full))}</td><td>{fmt_pct(total_return(b_full))}</td>
       <td style="color:{GREEN if total_return(s_full) >= total_return(b_full) else RED}">{'AHEAD' if total_return(s_full) >= total_return(b_full) else 'BEHIND'}</td></tr>
@@ -203,13 +313,14 @@ def build_html(d: dict) -> str:
     upper = [s * (1 + DEADBAND) for s in smas]
     lower = [s * (1 - DEADBAND) for s in smas]
     price_chart = chart(
-        "BTC/USD vs SMA-50", f"last {len(smas)} daily closes · deadband ±{DEADBAND:.0%} shaded",
+        "BTC/USD vs THE TREND LINE",
+        f"blue above amber = hold BTC · blue below = hide in cash · shaded band = no-trade buffer (±{DEADBAND:.0%})",
         [(tail_p, CYAN, "price"), (smas, AMBER, "sma-50")],
         bands=[(upper, lower, "rgba(255,200,87,0.10)")],
         fmt=lambda v: f"{v / 1000:,.0f}k",
     )
     equity_chart = chart(
-        "EQUITY CURVES", "simulated ledgers · identical cost model",
+        "THE RACE", f"account value, {AGENT_NAME} vs the buy-and-hold rival · both started at $100k, both pay the same fees",
         [(s_eq or [STARTING_CAPITAL], GREEN, "strategy"), (b_eq or [STARTING_CAPITAL], DIM, "baseline")],
         fmt=lambda v: f"{v / 1000:,.1f}k",
     )
@@ -221,18 +332,19 @@ def build_html(d: dict) -> str:
             out.append(-(peak - e) / peak * 100)
         return out
     dd_chart = chart(
-        "DRAWDOWN FROM PEAK", "% below high-water mark",
+        "DRAWDOWN FROM PEAK", "how far each account has slid from its best-ever value — staying shallow is the whole point of trend following",
         [(dd_series(s_full), GREEN, "strategy"), (dd_series(b_full), RED, "baseline")],
         fmt=lambda v: f"{v:.1f}%",
         h=180,
     )
 
     # tables
-    def table(title, headers, rows, empty):
+    def table(title, subtitle, headers, rows, empty):
         body = "".join("<tr>" + "".join(f"<td>{c}</td>" for c in r) + "</tr>" for r in rows) \
             or f'<tr><td colspan="{len(headers)}" style="color:{DIM}">{escape(empty)}</td></tr>'
         head = "".join(f"<th>{h}</th>" for h in headers)
-        return (f'<div class="panel"><div class="ph"><span class="pt">{escape(title)}</span></div>'
+        return (f'<div class="panel"><div class="ph"><span class="pt">{escape(title)}</span>'
+                f'<span class="ps">{escape(subtitle)}</span></div>'
                 f'<table><tr>{head}</tr>{body}</table></div>')
 
     dec_rows = [[
@@ -258,7 +370,7 @@ def build_html(d: dict) -> str:
 
     return f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TREND AGENT · MISSION CONTROL</title>
+<title>{AGENT_NAME} · MISSION CONTROL</title>
 <style>
   * {{ box-sizing: border-box; margin: 0; }}
   body {{ background: {BG}; color: {TEXT};
@@ -292,18 +404,36 @@ def build_html(d: dict) -> str:
     border-bottom: 1px solid {BORDER}; padding: 4px 10px 6px 0; }}
   td {{ padding: 5px 10px 5px 0; border-bottom: 1px solid rgba(27,42,74,0.5); }}
   footer {{ color: {DIM}; font-size: 10px; letter-spacing: 1px; margin-top: 18px; text-align: center; }}
+  .kp {{ display: flex; gap: 16px; align-items: center; }}
+  .kepler {{ width: 110px; min-width: 110px; height: auto; }}
+  .bubble {{ border: 1px solid; border-radius: 10px; padding: 10px 14px; position: relative; flex: 1; }}
+  .bubble::before {{ content: ""; position: absolute; left: -7px; top: 42%;
+    width: 12px; height: 12px; background: {PANEL}; border-left: 1px solid;
+    border-bottom: 1px solid; border-color: inherit; transform: rotate(45deg); }}
+  .kname {{ font-size: 10px; letter-spacing: 2px; color: {DIM}; }}
+  .khead {{ font-size: 16px; margin: 3px 0; color: {TEXT}; }}
+  .kdetail {{ font-size: 12px; color: {DIM}; line-height: 1.6; }}
+  .docs summary {{ font-size: 11px; letter-spacing: 2px; color: {AMBER}; cursor: pointer; }}
+  .docs p {{ font-size: 12px; color: {TEXT}; margin: 10px 0 0; line-height: 1.7; max-width: 85ch; }}
+  .docs b {{ color: {CYAN}; }} .docs i {{ color: {AMBER}; font-style: normal; }}
 </style></head><body>
-<header><h1>⬢ TREND AGENT <b>// MISSION CONTROL</b></h1>
+<header><h1>⬢ {AGENT_NAME} <b>// MISSION CONTROL</b></h1>
 <span class="stamp">GENERATED {now.strftime('%Y-%m-%d %H:%M UTC')} · {STRATEGY_VERSION} · PAPER TRADING</span></header>
+{kepler}
 <div class="tiles">{tiles}</div>
+{docs}
 {score}
 {equity_chart}
 {price_chart}
 {dd_chart}
-{table("DECISION LOG", ["BAR DATE", "CLOSE", "SMA-50", "SIGNAL", "BAND", "ACTION"], dec_rows, "no decisions yet")}
-{table("TRADES", ["DATE", "SIDE", "QTY BTC", "PRICE", "COSTS", "EQUITY AFTER"], trade_rows, "no trades yet — waiting for a signal to clear the deadband")}
-{table("EVENTS", ["TIME", "KIND", "DETAIL"], event_rows, "no events")}
-<footer>AUTONOMOUS · RISK-GATED · COST-AWARE — RULE DECIDES, HUMANS REVIEW WEEKLY · NOT FINANCIAL ADVICE</footer>
+{table("DECISION LOG", "one row per day: what it saw, what it did — 'no-change' is normal and good",
+       ["BAR DATE", "CLOSE", "SMA-50", "SIGNAL", "BAND", "ACTION"], dec_rows, "no decisions yet")}
+{table("TRADES", "actual buys and sells — rare by design, roughly one a month",
+       ["DATE", "SIDE", "QTY BTC", "PRICE", "COSTS", "EQUITY AFTER"], trade_rows,
+       "no trades yet — waiting for price to cross the trend line")}
+{table("EVENTS", "notable moments: safety rails firing, milestones, anything unusual",
+       ["TIME", "KIND", "DETAIL"], event_rows, "no events")}
+<footer>{AGENT_NAME} IS AUTONOMOUS · RISK-GATED · COST-AWARE — THE RULE DECIDES, HUMANS REVIEW WEEKLY · PAPER MONEY ONLY · NOT FINANCIAL ADVICE</footer>
 </body></html>"""
 
 
