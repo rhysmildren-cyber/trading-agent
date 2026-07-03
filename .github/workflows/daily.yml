@@ -1,0 +1,28 @@
+name: daily-trading-loop
+
+# Security note: this workflow uses no untrusted event inputs (no issue/PR text).
+# Only repo secrets are interpolated, and only into `env:` blocks.
+
+on:
+  schedule:
+    - cron: "5 0 * * *"   # 00:05 UTC daily, after the daily bar completes
+  workflow_dispatch: {}    # manual trigger for testing
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e .
+      - name: Run daily loop
+        env:
+          APCA_API_KEY_ID: ${{ secrets.APCA_API_KEY_ID }}
+          APCA_API_SECRET_KEY: ${{ secrets.APCA_API_SECRET_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        # NOTE: signal-only mode. Add --execute after step-7 sign-off to place paper orders.
+        run: python -m agent.run_daily

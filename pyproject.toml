@@ -1,0 +1,23 @@
+[project]
+name = "trading-agent"
+version = "1.0.0"
+description = "Autonomous BTC trend-following paper-trading agent (v1.0-sma50)"
+requires-python = ">=3.11"
+dependencies = [
+    "alpaca-py>=0.30",
+    "supabase>=2.0",
+    "python-dotenv>=1.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
