@@ -17,13 +17,13 @@ from agent import data, db
 from agent.config import AGENT_NAME, DEADBAND, SMA_WINDOW, STARTING_CAPITAL, STRATEGY_VERSION
 from agent.metrics import max_drawdown, sharpe, total_return
 
-# --- palette ---
-BG = "#060913"
-PANEL = "#0b1224"
-BORDER = "#1b2a4a"
-TEXT = "#c9d6ee"
-DIM = "#5b6b8c"
-CYAN = "#38e1ff"
+# --- palette: blacks and charcoal, neon accents ---
+BG = "#08080a"
+PANEL = "#121214"
+BORDER = "#242428"
+TEXT = "#d8d8dc"
+DIM = "#6e6e78"
+CYAN = "#3ce0ff"
 GREEN = "#3ddc97"
 RED = "#ff5d73"
 AMBER = "#ffc857"
@@ -120,13 +120,13 @@ def chart(title: str, subtitle: str, lines: list[tuple[list[float], str, str]],
 
 # ---------- the character ----------
 
+# accent color, eyelid (coverage fraction, tilt deg), mood label shown in the bubble
 MOOD_STYLE = {
-    #            accent  eyes                                              mouth
-    "happy":    (GREEN,  'M38 56 Q45 47 52 56 M68 56 Q75 47 82 56',        'M45 70 Q60 82 75 70'),
-    "neutral":  (CYAN,   'M38 53 L52 53 M68 53 L82 53',                    'M48 73 L72 73'),
-    "sad":      (RED,    'M38 53 Q45 60 52 53 M68 53 Q75 60 82 53',        'M45 78 Q60 67 75 78'),
-    "worried":  (AMBER,  'M38 50 L52 55 M82 50 L68 55',                    'M46 74 Q53 70 60 74 Q67 78 74 74'),
-    "critical": (RED,    'M39 47 L51 59 M51 47 L39 59 M69 47 L81 59 M81 47 L69 59', ''),
+    "happy":    (GREEN, (0.10, 0),  "WINNING"),
+    "neutral":  (CYAN,  (0.38, -10), "SCHEMING"),
+    "sad":      (RED,   (0.58, 8),  "ENDURING"),
+    "worried":  (AMBER, (0.16, -4), "ON EDGE"),
+    "critical": (RED,   (0.0, 0),   "SHUT DOWN"),
 }
 
 
@@ -167,32 +167,87 @@ def kepler_mood(kill: bool, halted: bool, stale: bool, position: str,
             "Price is above the trend line, so I stay in Bitcoin. Nothing to do today.")
 
 
+def _kepler_mouth(mood: str) -> str:
+    ink, teeth = "#0b0b0c", "#e9e7dc"
+    if mood == "happy":  # ear-to-ear zigzag grin
+        return (f'<path d="M34 100 Q70 121 106 100 Q70 134 34 100 Z" fill="{ink}"/>'
+                f'<path d="M38 103 L46 111 L54 104 L62 112 L70 104 L78 112 L86 104 '
+                f'L94 111 L102 103" stroke="{teeth}" stroke-width="3" fill="none" '
+                f'stroke-linejoin="round"/>')
+    if mood == "neutral":  # sly smirk, teeth showing on one side
+        return (f'<path d="M52 106 Q76 118 102 101" stroke="{ink}" stroke-width="4.5" '
+                f'fill="none" stroke-linecap="round"/>'
+                f'<path d="M78 109 L84 115 L89 107 L95 112 L99 103" stroke="{teeth}" '
+                f'stroke-width="3" fill="none" stroke-linejoin="round"/>')
+    if mood == "sad":
+        return (f'<path d="M46 115 Q70 99 94 115" stroke="{ink}" stroke-width="4.5" '
+                f'fill="none" stroke-linecap="round"/>')
+    if mood == "worried":
+        return (f'<path d="M46 110 Q54 103 62 110 Q70 117 78 110 Q86 103 94 110" '
+                f'stroke="{ink}" stroke-width="4" fill="none" stroke-linecap="round"/>')
+    # critical: gritted teeth
+    return (f'<rect x="42" y="101" width="56" height="13" rx="3.5" fill="{ink}"/>'
+            f'<path d="M52 101 V114 M62 101 V114 M72 101 V114 M82 101 V114 M92 101 V114" '
+            f'stroke="{teeth}" stroke-width="2.2"/>')
+
+
+def _kepler_eye(mood: str, accent: str) -> str:
+    socket = ('<circle cx="70" cy="64" r="23" fill="#eceadf" '
+              'stroke="#0b0b0c" stroke-width="3"/>')
+    if mood == "critical":  # knocked out
+        return socket + (f'<path d="M56 50 L84 78 M84 50 L56 78" stroke="{RED}" '
+                         f'stroke-width="5" stroke-linecap="round"/>')
+    lid_frac, lid_tilt = MOOD_STYLE[mood][1]
+    lid_h = 4 + lid_frac * 46
+    pupil = ('<circle cx="72" cy="66" r="10" fill="{a}"/>'
+             '<circle cx="72" cy="66" r="4.5" fill="#0b0b0c"/>'
+             '<circle cx="68" cy="61" r="2.6" fill="#f4f2e8"/>').format(a=accent)
+    lid = (f'<g clip-path="url(#eyeclip)"><rect x="42" y="38" width="56" height="{lid_h:.0f}" '
+           f'fill="#37804a" stroke="#0b0b0c" stroke-width="2.5" '
+           f'transform="rotate({lid_tilt} 70 64)"/></g>')
+    return socket + pupil + lid
+
+
 def kepler_svg(mood: str) -> str:
-    accent, eyes, mouth = MOOD_STYLE[mood]
-    mouth_el = (f'<path d="{mouth}" stroke="{accent}" stroke-width="3" fill="none" '
-                f'stroke-linecap="round"/>') if mouth else \
-        f'<ellipse cx="60" cy="74" rx="7" ry="9" fill="none" stroke="{accent}" stroke-width="3"/>'
-    return f"""<svg viewBox="0 0 120 130" class="kepler" role="img" aria-label="{AGENT_NAME} is {mood}">
-      <ellipse cx="60" cy="66" rx="56" ry="21" fill="none" stroke="{PURPLE}"
-        stroke-width="1.2" stroke-dasharray="3 5" transform="rotate(-16 60 66)" opacity="0.7"/>
-      <circle cx="106" cy="47" r="3.5" fill="{PURPLE}"/>
-      <line x1="60" y1="30" x2="60" y2="16" stroke="{accent}" stroke-width="2.5"/>
-      <circle cx="60" cy="13" r="4" fill="{accent}">
-        <animate attributeName="opacity" values="1;0.25;1" dur="2.2s" repeatCount="indefinite"/>
-      </circle>
-      <rect x="24" y="30" width="72" height="62" rx="16" fill="#0e1730"
-        stroke="{accent}" stroke-width="2.5"/>
-      <path d="{eyes}" stroke="{accent}" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-      {mouth_el}
+    accent = MOOD_STYLE[mood][0]
+    metal, ink = "#3b3b42", "#0b0b0c"
+    return f"""<svg viewBox="0 0 140 152" class="kepler" role="img" aria-label="{AGENT_NAME} is {mood}">
+      <defs>
+        <radialGradient id="bodyg" cx="38%" cy="30%" r="80%">
+          <stop offset="0%" stop-color="#66ad64"/>
+          <stop offset="60%" stop-color="#45804a"/>
+          <stop offset="100%" stop-color="#2d5a38"/>
+        </radialGradient>
+        <clipPath id="eyeclip"><circle cx="70" cy="64" r="23"/></clipPath>
+      </defs>
+      <ellipse cx="70" cy="147" rx="35" ry="4.5" fill="rgba(0,0,0,0.5)"/>
+      <path d="M54 120 L49 139" stroke="{metal}" stroke-width="8" stroke-linecap="round"/>
+      <path d="M86 120 L91 139" stroke="{metal}" stroke-width="8" stroke-linecap="round"/>
+      <rect x="36" y="136" width="24" height="10" rx="5" fill="{metal}" stroke="{ink}" stroke-width="2"/>
+      <rect x="80" y="136" width="24" height="10" rx="5" fill="{metal}" stroke="{ink}" stroke-width="2"/>
+      <path d="M28 84 Q13 92 11 106" stroke="{metal}" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+      <circle cx="11" cy="106" r="4.5" fill="#4c4c55"/>
+      <path d="M11 106 Q9 120 17 128" stroke="{metal}" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <circle cx="19" cy="131" r="7.5" fill="{metal}" stroke="{ink}" stroke-width="2"/>
+      <path d="M112 84 Q127 92 129 106" stroke="{metal}" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+      <circle cx="129" cy="106" r="4.5" fill="#4c4c55"/>
+      <path d="M129 106 Q131 120 123 128" stroke="{metal}" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <circle cx="121" cy="131" r="7.5" fill="{metal}" stroke="{ink}" stroke-width="2"/>
+      <circle cx="70" cy="78" r="46" fill="url(#bodyg)" stroke="{ink}" stroke-width="3"/>
+      <path d="M44 40 Q39 24 33 20 Q44 23 52 34 Z" fill="{metal}" stroke="{ink}" stroke-width="2"/>
+      <path d="M96 40 Q101 24 107 20 Q96 23 88 34 Z" fill="{metal}" stroke="{ink}" stroke-width="2"/>
+      <rect x="52" y="28" width="36" height="9" rx="3.5" fill="#2c5a38" stroke="{ink}" stroke-width="2"/>
+      {_kepler_eye(mood, accent)}
+      {_kepler_mouth(mood)}
     </svg>"""
 
 
 def kepler_panel(mood: str, headline: str, detail: str) -> str:
-    accent = MOOD_STYLE[mood][0]
+    accent, _, label = MOOD_STYLE[mood]
     return f"""<div class="panel kp">
       {kepler_svg(mood)}
       <div class="bubble" style="border-color:{accent}">
-        <div class="kname">{AGENT_NAME} <span style="color:{accent}">· {mood.upper()}</span></div>
+        <div class="kname">{AGENT_NAME} <span style="color:{accent}">· {label}</span></div>
         <div class="khead">{escape(headline)}</div>
         <div class="kdetail">{escape(detail)}</div>
       </div>
@@ -375,23 +430,24 @@ def build_html(d: dict) -> str:
   * {{ box-sizing: border-box; margin: 0; }}
   body {{ background: {BG}; color: {TEXT};
     font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-variant-numeric: tabular-nums;
     padding: 18px; max-width: 1200px; margin: 0 auto;
-    background-image: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(56,225,255,0.07), transparent),
-                      radial-gradient(ellipse 60% 40% at 90% 110%, rgba(139,123,255,0.06), transparent); }}
-  header {{ display: flex; justify-content: space-between; align-items: baseline;
-    border-bottom: 1px solid {BORDER}; padding-bottom: 12px; margin-bottom: 16px; flex-wrap: wrap; gap: 6px; }}
-  h1 {{ font-size: 15px; letter-spacing: 3px; color: {CYAN};
-    text-shadow: 0 0 18px rgba(56,225,255,0.45); }}
-  h1 b {{ color: {TEXT}; font-weight: 400; }}
-  .stamp {{ color: {DIM}; font-size: 11px; letter-spacing: 1px; }}
+    background-image: radial-gradient(ellipse 70% 45% at 50% -10%, rgba(61,220,151,0.06), transparent),
+                      radial-gradient(ellipse 55% 40% at 95% 110%, rgba(139,123,255,0.05), transparent); }}
+  header {{ border-bottom: 1px solid {BORDER}; padding-bottom: 12px; margin-bottom: 16px; }}
+  h1 {{ font-size: 16px; letter-spacing: 4px; color: {GREEN};
+    text-shadow: 0 0 20px rgba(61,220,151,0.5); }}
+  h1 b {{ color: {DIM}; font-weight: 400; letter-spacing: 3px; }}
   .tiles {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
     gap: 10px; margin-bottom: 14px; }}
-  .tile {{ background: {PANEL}; border: 1px solid {BORDER}; border-radius: 8px; padding: 12px 14px; }}
+  .tile {{ background: linear-gradient(180deg, #16161a, {PANEL}); border: 1px solid {BORDER};
+    border-radius: 10px; padding: 13px 15px; box-shadow: 0 8px 22px rgba(0,0,0,0.35); }}
   .tl {{ font-size: 10px; letter-spacing: 2px; color: {DIM}; }}
-  .tv {{ font-size: 22px; margin: 4px 0 2px; letter-spacing: 0.5px; }}
+  .tv {{ font-size: 24px; margin: 5px 0 3px; letter-spacing: 0.5px; }}
   .ts {{ font-size: 11px; color: {DIM}; }}
-  .panel {{ background: {PANEL}; border: 1px solid {BORDER}; border-radius: 8px;
-    padding: 12px 14px; margin-bottom: 14px; overflow-x: auto; }}
+  .panel {{ background: {PANEL}; border: 1px solid {BORDER}; border-radius: 10px;
+    padding: 13px 15px; margin-bottom: 14px; overflow-x: auto;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.35); }}
   .ph {{ display: flex; gap: 12px; align-items: baseline; margin-bottom: 8px; flex-wrap: wrap; }}
   .pt {{ font-size: 11px; letter-spacing: 2px; color: {CYAN}; }}
   .ps {{ font-size: 11px; color: {DIM}; }}
@@ -417,8 +473,7 @@ def build_html(d: dict) -> str:
   .docs p {{ font-size: 12px; color: {TEXT}; margin: 10px 0 0; line-height: 1.7; max-width: 85ch; }}
   .docs b {{ color: {CYAN}; }} .docs i {{ color: {AMBER}; font-style: normal; }}
 </style></head><body>
-<header><h1>⬢ {AGENT_NAME} <b>// MISSION CONTROL</b></h1>
-<span class="stamp">GENERATED {now.strftime('%Y-%m-%d %H:%M UTC')} · {STRATEGY_VERSION} · PAPER TRADING</span></header>
+<header><h1>⬢ {AGENT_NAME} <b>// MISSION CONTROL</b></h1></header>
 {kepler}
 <div class="tiles">{tiles}</div>
 {docs}
