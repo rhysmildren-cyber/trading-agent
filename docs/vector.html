@@ -1,0 +1,114 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>VECTOR · THE SWARM</title><style>
+  * { box-sizing: border-box; margin: 0; }
+  body { background: #08080a; color: #d8d8dc;
+    font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-variant-numeric: tabular-nums;
+    padding: 18px; max-width: 1200px; margin: 0 auto;
+    background-image: radial-gradient(ellipse 70% 45% at 50% -10%, rgba(61,220,151,0.06), transparent),
+                      radial-gradient(ellipse 55% 40% at 95% 110%, rgba(139,123,255,0.05), transparent); }
+  header { border-bottom: 1px solid #242428; padding-bottom: 12px; margin-bottom: 16px;
+    display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px; }
+  h1 { font-size: 16px; letter-spacing: 4px; color: #3ddc97;
+    text-shadow: 0 0 20px rgba(61,220,151,0.5); }
+  h1 b { color: #6e6e78; font-weight: 400; letter-spacing: 3px; }
+  a { color: #3ce0ff; text-decoration: none; }
+  .back { font-size: 11px; letter-spacing: 2px; color: #6e6e78; }
+  .back:hover, a.card:hover { color: #3ce0ff; border-color: #3ce0ff; }
+  .panel { background: #121214; border: 1px solid #242428; border-radius: 10px;
+    padding: 13px 15px; margin-bottom: 14px; overflow-x: auto;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.35); }
+  .ph { display: flex; gap: 12px; align-items: baseline; margin-bottom: 8px; flex-wrap: wrap; }
+  .pt { font-size: 11px; letter-spacing: 2px; color: #3ce0ff; }
+  .ps { font-size: 11px; color: #6e6e78; }
+  .legend { margin-left: auto; font-size: 11px; color: #6e6e78; }
+  .lg i { display: inline-block; width: 9px; height: 9px; border-radius: 2px;
+    margin: 0 5px 0 12px; vertical-align: -1px; }
+  svg { width: 100%; height: auto; display: block; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th { text-align: left; color: #6e6e78; font-weight: 400; font-size: 10px; letter-spacing: 1.5px;
+    border-bottom: 1px solid #242428; padding: 4px 10px 6px 0; }
+  td { padding: 5px 10px 5px 0; border-bottom: 1px solid rgba(36,36,40,0.6); white-space: nowrap; }
+  .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%;
+    margin-right: 7px; vertical-align: -1px; }
+  .chip { font-size: 9px; letter-spacing: 1.5px; border: 1px solid; border-radius: 20px;
+    padding: 1.5px 8px; vertical-align: 1px; }
+  .kp { display: flex; gap: 16px; align-items: center; }
+  .kp .monster { width: 110px; min-width: 110px; }
+  .bubble { border: 1px solid; border-radius: 10px; padding: 10px 14px; position: relative; flex: 1; }
+  .bubble::before { content: ""; position: absolute; left: -7px; top: 42%;
+    width: 12px; height: 12px; background: #121214; border-left: 1px solid;
+    border-bottom: 1px solid; border-color: inherit; transform: rotate(45deg); }
+  .kname { font-size: 10px; letter-spacing: 2px; color: #6e6e78; }
+  .khead { font-size: 15px; margin: 4px 0; color: #d8d8dc; line-height: 1.5; }
+  .kdetail { font-size: 12px; color: #6e6e78; line-height: 1.6; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px; margin-bottom: 14px; }
+  a.card { display: block; background: #121214; border: 1px solid #242428; border-radius: 10px;
+    padding: 14px 16px; box-shadow: 0 8px 22px rgba(0,0,0,0.35); color: #d8d8dc; }
+  .cardtop { display: flex; gap: 12px; align-items: center; margin-bottom: 6px; }
+  .cardtop .monster { width: 78px; min-width: 78px; }
+  .belief { color: #d8d8dc; font-size: 12px; margin: 4px 0 2px; }
+  .rule { color: #6e6e78; font-size: 11px; }
+  .statrow { display: flex; gap: 14px; margin-top: 9px; padding-top: 8px;
+    border-top: 1px solid #242428; font-size: 12px; flex-wrap: wrap; }
+  .open { margin-top: 8px; font-size: 10px; letter-spacing: 2px; color: #6e6e78; }
+  ol.steps { margin: 4px 0 0 18px; }
+  ol.steps li { margin: 7px 0; line-height: 1.6; color: #d8d8dc; font-size: 12.5px; }
+  ol.steps b, .trig b { color: #ffc857; }
+  .trig { margin-top: 10px; padding: 10px 12px; border: 1px dashed #242428; border-radius: 8px;
+    font-size: 12.5px; line-height: 1.7; }
+  .docs summary { font-size: 11px; letter-spacing: 2px; color: #ffc857; cursor: pointer; }
+  .docs p { font-size: 12px; color: #d8d8dc; margin: 10px 0 0; line-height: 1.7; max-width: 85ch; }
+  .docs b { color: #3ce0ff; } .docs i { color: #ffc857; font-style: normal; }
+  footer { color: #6e6e78; font-size: 10px; letter-spacing: 1px; margin-top: 18px; text-align: center; }
+</style></head><body><header><h1 style="color:#e8923a;text-shadow:0 0 20px #e8923a55">⬢ VECTOR <b>// LONG WHILE THE LAST 30 DAYS ARE NET POSITIVE, CASH WHEN NEGATIVE</b></h1><a class="back" href="index.html">← THE SWARM</a></header><div class="panel kp">
+      <svg viewBox="0 0 140 152" class="monster" role="img" aria-label="vector is neutral">
+      <defs>
+        <radialGradient id="body-vector" cx="38%" cy="30%" r="80%">
+          <stop offset="0%" stop-color="#e8923a"/>
+          <stop offset="100%" stop-color="#8a4f1d"/>
+        </radialGradient>
+        <clipPath id="eye-vector"><circle cx="70" cy="64" r="23"/></clipPath>
+      </defs>
+      <ellipse cx="70" cy="147" rx="35" ry="4.5" fill="rgba(0,0,0,0.5)"/>
+      <path d="M54 120 L49 139" stroke="#3b3b42" stroke-width="8" stroke-linecap="round"/>
+      <path d="M86 120 L91 139" stroke="#3b3b42" stroke-width="8" stroke-linecap="round"/>
+      <rect x="36" y="136" width="24" height="10" rx="5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <rect x="80" y="136" width="24" height="10" rx="5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <path d="M28 84 Q13 92 11 106" stroke="#3b3b42" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+      <circle cx="11" cy="106" r="4.5" fill="#4c4c55"/>
+      <path d="M11 106 Q9 120 17 128" stroke="#3b3b42" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <circle cx="19" cy="131" r="7.5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <path d="M112 84 Q127 92 129 106" stroke="#3b3b42" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+      <circle cx="129" cy="106" r="4.5" fill="#4c4c55"/>
+      <path d="M129 106 Q131 120 123 128" stroke="#3b3b42" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <circle cx="121" cy="131" r="7.5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <circle cx="70" cy="78" r="46" fill="url(#body-vector)" stroke="#0b0b0c" stroke-width="3"/>
+      <line x1="70" y1="30" x2="70" y2="12" stroke="#3b3b42" stroke-width="3"/><path d="M63 14 L70 4 L77 14 Z" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <rect x="52" y="28" width="36" height="9" rx="3.5" fill="#8a4f1d" stroke="#0b0b0c" stroke-width="2"/>
+      <circle cx="70" cy="64" r="23" fill="#eceadf" stroke="#0b0b0c" stroke-width="3"/><circle cx="72" cy="66" r="10" fill="#3ce0ff"/><circle cx="72" cy="66" r="4.5" fill="#0b0b0c"/><circle cx="68" cy="61" r="2.6" fill="#f4f2e8"/><g clip-path="url(#eye-vector)"><rect x="42" y="38" width="56" height="21" fill="#8a4f1d" stroke="#0b0b0c" stroke-width="2.5" transform="rotate(-10 70 64)"/></g>
+      <path d="M52 106 Q76 118 102 101" stroke="#0b0b0c" stroke-width="4.5" fill="none" stroke-linecap="round"/><path d="M78 109 L84 115 L89 107 L95 112 L99 103" stroke="#e9e7dc" stroke-width="3" fill="none" stroke-linejoin="round"/>
+    </svg>
+      <div class="bubble" style="border-color:#3ce0ff">
+        <div class="kname">VECTOR · <span style="color:#3ce0ff">SCHEMING</span>
+          <span style="color:#6e6e78"> — "Winners keep winning"</span></div>
+        <div class="khead">In cash, watching.</div>
+        <div class="kdetail">The last 30 days are net negative, so momentum says stay in cash.</div>
+      </div></div><div class="panel"><div class="ph"><span class="pt">TODAY'S CHECK — HOW I DECIDED</span>
+      <span class="ps">I do exactly this once a day at 10:05am Brisbane time, then sleep</span></div>
+      <ol class="steps"><li>Bitcoin's latest daily close: <b>$62,515</b>.</li><li>Looked up the close 30 days ago: <b>$64,048</b>.</li><li>Today vs then: <b>-2.4%</b>. Positive means momentum is up, negative means down.</li></ol>
+      <div class="trig"><span class="kname">WHAT WOULD MAKE ME ACT NEXT</span><br><b>BUY</b> when a close beats its 30-days-ago reference (right now that means closing above <b>$64,048</b>).<br>The reference rolls forward daily, so the bar to clear changes every day.</div>
+    </div><div class="panel">
+      <div class="ph"><span class="pt">MY VIEW OF THE MARKET</span><span class="ps">the 30-day running return — above zero I want in, below zero I want out</span><span class="legend"><span class="lg"><i style="background:#e8923a"></i>30-day return</span> <span class="lg"><i style="background:#6e6e78"></i>zero line</span></span></div>
+      <svg viewBox="0 0 760 250" preserveAspectRatio="none"><line x1="34" y1="34.0" x2="726" y2="34.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="37.5" fill="#6e6e78" font-size="10">+21%</text><line x1="34" y1="79.5" x2="726" y2="79.5" stroke="#242428" stroke-width="0.6"/><text x="732" y="83.0" fill="#6e6e78" font-size="10">+9%</text><line x1="34" y1="125.0" x2="726" y2="125.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="128.5" fill="#6e6e78" font-size="10">-3%</text><line x1="34" y1="170.5" x2="726" y2="170.5" stroke="#242428" stroke-width="0.6"/><text x="732" y="174.0" fill="#6e6e78" font-size="10">-15%</text><line x1="34" y1="216.0" x2="726" y2="216.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="219.5" fill="#6e6e78" font-size="10">-28%</text><polyline points="34.0,138.2 39.8,87.0 45.6,137.3 51.4,117.7 57.3,115.1 63.1,112.9 68.9,104.1 74.7,91.9 80.5,85.4 86.3,91.9 92.2,86.3 98.0,85.7 103.8,100.6 109.6,100.0 115.4,90.7 121.2,102.6 127.0,114.2 132.9,97.5 138.7,97.4 144.5,75.3 150.3,86.2 156.1,122.3 161.9,119.8 167.7,112.9 173.6,114.7 179.4,99.6 185.2,117.3 191.0,121.2 196.8,142.6 202.6,132.1 208.5,108.5 214.3,104.7 220.1,80.1 225.9,99.2 231.7,103.7 237.5,98.7 243.3,99.9 249.2,114.2 255.0,96.6 260.8,106.4 266.6,113.6 272.4,107.3 278.2,83.0 284.1,82.5 289.9,96.0 295.7,76.0 301.5,67.1 307.3,75.0 313.1,72.7 318.9,81.3 324.8,65.5 330.6,44.7 336.4,51.7 342.2,55.2 348.0,63.4 353.8,69.6 359.6,58.4 365.5,48.2 371.3,49.2 377.1,44.3 382.9,49.6 388.7,45.7 394.5,71.7 400.4,65.9 406.2,67.7 412.0,66.7 417.8,69.6 423.6,62.6 429.4,89.3 435.2,79.0 441.1,92.5 446.9,98.8 452.7,111.9 458.5,107.5 464.3,98.6 470.1,105.7 475.9,107.5 481.8,126.6 487.6,121.1 493.4,115.7 499.2,115.3 505.0,126.8 510.8,128.0 516.7,127.0 522.5,125.0 528.3,125.6 534.1,135.4 539.9,148.2 545.7,169.6 551.5,186.7 557.4,191.7 563.2,206.3 569.0,202.1 574.8,191.4 580.6,194.2 586.4,205.8 592.3,205.3 598.1,191.3 603.9,187.0 609.7,189.5 615.5,176.0 621.3,169.5 627.1,169.9 633.0,173.6 638.8,180.4 644.6,180.2 650.4,177.0 656.2,173.3 662.0,174.8 667.8,182.4 673.7,191.5 679.5,192.2 685.3,184.7 691.1,181.7 696.9,183.6 702.7,181.8 708.6,189.2 714.4,172.3 720.2,142.0 726.0,122.3" fill="none" stroke="#e8923a" stroke-width="2.0" stroke-linejoin="round"/><polyline points="34.0,113.4 39.8,113.4 45.6,113.4 51.4,113.4 57.3,113.4 63.1,113.4 68.9,113.4 74.7,113.4 80.5,113.4 86.3,113.4 92.2,113.4 98.0,113.4 103.8,113.4 109.6,113.4 115.4,113.4 121.2,113.4 127.0,113.4 132.9,113.4 138.7,113.4 144.5,113.4 150.3,113.4 156.1,113.4 161.9,113.4 167.7,113.4 173.6,113.4 179.4,113.4 185.2,113.4 191.0,113.4 196.8,113.4 202.6,113.4 208.5,113.4 214.3,113.4 220.1,113.4 225.9,113.4 231.7,113.4 237.5,113.4 243.3,113.4 249.2,113.4 255.0,113.4 260.8,113.4 266.6,113.4 272.4,113.4 278.2,113.4 284.1,113.4 289.9,113.4 295.7,113.4 301.5,113.4 307.3,113.4 313.1,113.4 318.9,113.4 324.8,113.4 330.6,113.4 336.4,113.4 342.2,113.4 348.0,113.4 353.8,113.4 359.6,113.4 365.5,113.4 371.3,113.4 377.1,113.4 382.9,113.4 388.7,113.4 394.5,113.4 400.4,113.4 406.2,113.4 412.0,113.4 417.8,113.4 423.6,113.4 429.4,113.4 435.2,113.4 441.1,113.4 446.9,113.4 452.7,113.4 458.5,113.4 464.3,113.4 470.1,113.4 475.9,113.4 481.8,113.4 487.6,113.4 493.4,113.4 499.2,113.4 505.0,113.4 510.8,113.4 516.7,113.4 522.5,113.4 528.3,113.4 534.1,113.4 539.9,113.4 545.7,113.4 551.5,113.4 557.4,113.4 563.2,113.4 569.0,113.4 574.8,113.4 580.6,113.4 586.4,113.4 592.3,113.4 598.1,113.4 603.9,113.4 609.7,113.4 615.5,113.4 621.3,113.4 627.1,113.4 633.0,113.4 638.8,113.4 644.6,113.4 650.4,113.4 656.2,113.4 662.0,113.4 667.8,113.4 673.7,113.4 679.5,113.4 685.3,113.4 691.1,113.4 696.9,113.4 702.7,113.4 708.6,113.4 714.4,113.4 720.2,113.4 726.0,113.4" fill="none" stroke="#6e6e78" stroke-width="2.0" stroke-linejoin="round" stroke-dasharray="4 4"/></svg>
+    </div><div class="panel">
+      <div class="ph"><span class="pt">ME VS THE LAZY RIVAL</span><span class="ps">my account vs just buying and holding — same fees for both</span><span class="legend"><span class="lg"><i style="background:#e8923a"></i>vector</span> <span class="lg"><i style="background:#6e6e78"></i>baseline</span></span></div>
+      <svg viewBox="0 0 760 250" preserveAspectRatio="none"><line x1="34" y1="34.0" x2="726" y2="34.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="37.5" fill="#6e6e78" font-size="10">100.0k</text><line x1="34" y1="79.5" x2="726" y2="79.5" stroke="#242428" stroke-width="0.6"/><text x="732" y="83.0" fill="#6e6e78" font-size="10">99.9k</text><line x1="34" y1="125.0" x2="726" y2="125.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="128.5" fill="#6e6e78" font-size="10">99.8k</text><line x1="34" y1="170.5" x2="726" y2="170.5" stroke="#242428" stroke-width="0.6"/><text x="732" y="174.0" fill="#6e6e78" font-size="10">99.7k</text><line x1="34" y1="216.0" x2="726" y2="216.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="219.5" fill="#6e6e78" font-size="10">99.6k</text><circle cx="34.0" cy="44.3" r="3.5" fill="#e8923a"/><circle cx="34.0" cy="206.3" r="3.5" fill="#6e6e78"/></svg>
+    </div><div class="panel"><div class="ph"><span class="pt">LIVE VS THE PROMISE</span>
+      <span class="ps">the 3-year backtest we recorded before launch — my live numbers should rhyme with it, not match it</span></div>
+      <table><tr><th></th><th>LIVE (1 DAYS)</th><th>BACKTEST (3 YEARS)</th></tr>
+      <tr><td>Return</td><td>+0.00%</td><td>+34.70%</td></tr>
+      <tr><td>Worst slide</td><td>-0.00%</td><td>-39.90%</td></tr>
+      <tr><td>Sharpe</td><td>— (needs 7 days)</td><td>0.47</td></tr>
+      <tr><td>Trades per year</td><td>~0 so far</td><td>~35</td></tr>
+      </table></div><div class="panel"><div class="ph"><span class="pt">MY DECISION LOG</span><span class="ps">one row per day — &#x27;no-change&#x27; is normal and good</span></div><table><tr><th>DATE</th><th>CLOSE</th><th>WHAT I SAW</th><th>SIGNAL</th><th>ACTION</th></tr><tr><td>2026-07-03</td><td>62,515</td><td>roc_30 -0.0239</td><td><span style="color:#6e6e78">HOLD</span></td><td>no-change</td></tr></table></div><div class="panel"><div class="ph"><span class="pt">MY TRADES</span><span class="ps">each one costs 0.35% — I don&#x27;t do it lightly</span></div><table><tr><th>DATE</th><th>SIDE</th><th>QTY BTC</th><th>PRICE</th><th>COSTS</th><th>EQUITY AFTER</th></tr><tr><td colspan="6" style="color:#6e6e78">none yet — my rule hasn&#x27;t triggered</td></tr></table></div><footer>RULES LOCKED AT LAUNCH · HOUSTON WATCHES, HUMANS REVIEW WEEKLY · PAPER MONEY ONLY · NOT FINANCIAL ADVICE</footer></body></html>

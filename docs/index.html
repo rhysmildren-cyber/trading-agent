@@ -1,7 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>THE SWARM · MISSION CONTROL</title>
-<style>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>THE SWARM · MISSION CONTROL</title><style>
   * { box-sizing: border-box; margin: 0; }
   body { background: #08080a; color: #d8d8dc;
     font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -9,10 +6,14 @@
     padding: 18px; max-width: 1200px; margin: 0 auto;
     background-image: radial-gradient(ellipse 70% 45% at 50% -10%, rgba(61,220,151,0.06), transparent),
                       radial-gradient(ellipse 55% 40% at 95% 110%, rgba(139,123,255,0.05), transparent); }
-  header { border-bottom: 1px solid #242428; padding-bottom: 12px; margin-bottom: 16px; }
+  header { border-bottom: 1px solid #242428; padding-bottom: 12px; margin-bottom: 16px;
+    display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px; }
   h1 { font-size: 16px; letter-spacing: 4px; color: #3ddc97;
     text-shadow: 0 0 20px rgba(61,220,151,0.5); }
   h1 b { color: #6e6e78; font-weight: 400; letter-spacing: 3px; }
+  a { color: #3ce0ff; text-decoration: none; }
+  .back { font-size: 11px; letter-spacing: 2px; color: #6e6e78; }
+  .back:hover, a.card:hover { color: #3ce0ff; border-color: #3ce0ff; }
   .panel { background: #121214; border: 1px solid #242428; border-radius: 10px;
     padding: 13px 15px; margin-bottom: 14px; overflow-x: auto;
     box-shadow: 0 8px 22px rgba(0,0,0,0.35); }
@@ -40,23 +41,27 @@
   .kname { font-size: 10px; letter-spacing: 2px; color: #6e6e78; }
   .khead { font-size: 15px; margin: 4px 0; color: #d8d8dc; line-height: 1.5; }
   .kdetail { font-size: 12px; color: #6e6e78; line-height: 1.6; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 14px; margin-bottom: 14px; }
-  .card { background: #121214; border: 1px solid #242428; border-radius: 10px;
-    padding: 14px 16px; box-shadow: 0 8px 22px rgba(0,0,0,0.35); }
-  .cardtop { display: flex; gap: 12px; align-items: center; margin-bottom: 8px; }
-  .cardtop .monster { width: 84px; min-width: 84px; }
+  a.card { display: block; background: #121214; border: 1px solid #242428; border-radius: 10px;
+    padding: 14px 16px; box-shadow: 0 8px 22px rgba(0,0,0,0.35); color: #d8d8dc; }
+  .cardtop { display: flex; gap: 12px; align-items: center; margin-bottom: 6px; }
+  .cardtop .monster { width: 78px; min-width: 78px; }
   .belief { color: #d8d8dc; font-size: 12px; margin: 4px 0 2px; }
   .rule { color: #6e6e78; font-size: 11px; }
-  .statrow { display: flex; gap: 14px; margin-top: 10px; padding-top: 9px;
-    border-top: 1px solid #242428; font-size: 13px; }
+  .statrow { display: flex; gap: 14px; margin-top: 9px; padding-top: 8px;
+    border-top: 1px solid #242428; font-size: 12px; flex-wrap: wrap; }
+  .open { margin-top: 8px; font-size: 10px; letter-spacing: 2px; color: #6e6e78; }
+  ol.steps { margin: 4px 0 0 18px; }
+  ol.steps li { margin: 7px 0; line-height: 1.6; color: #d8d8dc; font-size: 12.5px; }
+  ol.steps b, .trig b { color: #ffc857; }
+  .trig { margin-top: 10px; padding: 10px 12px; border: 1px dashed #242428; border-radius: 8px;
+    font-size: 12.5px; line-height: 1.7; }
   .docs summary { font-size: 11px; letter-spacing: 2px; color: #ffc857; cursor: pointer; }
   .docs p { font-size: 12px; color: #d8d8dc; margin: 10px 0 0; line-height: 1.7; max-width: 85ch; }
   .docs b { color: #3ce0ff; } .docs i { color: #ffc857; font-style: normal; }
   footer { color: #6e6e78; font-size: 10px; letter-spacing: 1px; margin-top: 18px; text-align: center; }
-</style></head><body>
-<header><h1>⬢ THE SWARM <b>// MISSION CONTROL</b></h1></header>
-<div class="panel kp">
+</style></head><body><header><h1>⬢ THE SWARM <b>// MISSION CONTROL</b></h1></header><div class="panel kp">
       <svg viewBox="0 0 140 152" class="monster" role="img" aria-label="houston is neutral">
       <defs>
         <radialGradient id="body-houston" cx="38%" cy="30%" r="80%">
@@ -87,34 +92,29 @@
       <div class="bubble" style="border-color:#3ce0ff">
         <div class="kname">HOUSTON · MISSION OVERSEER <span style="color:#6e6e78">— watches, compares, never trades</span></div>
         <div class="khead">Day 1 of 90. KEPLER leads at $100,000 (+332 vs the lazy rival). 4 of 4 monsters are beating buy-and-hold. All rules obeyed, no flags.</div>
-        <div class="kdetail">Reminder: with four racers, the current leader is partly lucky.
-        Everyone is judged against the baseline and their own pre-registered expectation at day 90 — not against each other's hot streaks.</div>
-      </div>
-    </div>
-<div class="panel"><div class="ph"><span class="pt">LEADERBOARD</span>
+        <div class="kdetail">With four racers, the leader is partly lucky. Everyone is judged at
+        day 90 against the baseline and their own pre-registered expectation —
+        not each other's hot streaks. Click a monster for its full dossier.</div>
+      </div></div><div class="panel"><div class="ph"><span class="pt">LEADERBOARD</span>
       <span class="ps">everyone started with $100k on the same day · Sharpe appears after 7 days</span></div>
       <table><tr><th>AGENT</th><th>EQUITY</th><th>RETURN</th><th>VS RIVAL</th><th>WORST SLIDE</th><th>SHARPE</th><th>POSITION</th><th>MOOD</th></tr>
-      <tr><td><i class="dot" style="background:#66ad64"></i>KEPLER</td><td>$100,000</td><td>+0.00%</td><td><span style="color:#3ddc97">+332</span></td><td>-0.00%</td><td>—</td><td>FLAT</td><td><span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></td></tr><tr><td><i class="dot" style="background:#e8923a"></i>VECTOR</td><td>$100,000</td><td>+0.00%</td><td><span style="color:#3ddc97">+332</span></td><td>-0.00%</td><td>—</td><td>FLAT</td><td><span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></td></tr><tr><td><i class="dot" style="background:#3aaea0"></i>DONNIE</td><td>$100,000</td><td>+0.00%</td><td><span style="color:#3ddc97">+332</span></td><td>-0.00%</td><td>—</td><td>FLAT</td><td><span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></td></tr><tr><td><i class="dot" style="background:#9a7be0"></i>DIP</td><td>$100,000</td><td>+0.00%</td><td><span style="color:#3ddc97">+332</span></td><td>-0.00%</td><td>—</td><td>FLAT</td><td><span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></td></tr><tr><td><i class="dot" style="background:#6e6e78"></i>BASELINE (lazy rival)</td><td>$99,668</td><td>-0.33%</td><td>—</td><td>-0.33%</td><td>—</td><td>LONG</td><td></td></tr></table></div>
-<details class="panel docs"><summary>WHAT AM I LOOKING AT? — the swarm, in plain English</summary>
-      <p><b>The experiment.</b> Four robot monsters each trade a pretend $100,000 using one simple,
-      locked-in rule. They check the Bitcoin price once a day at 10:05am Brisbane time, make one
-      decision, and sleep. Most days: nothing. Expect a trade or two a month each. All of them race
-      the <b>lazy rival</b> — a baseline that bought Bitcoin on day one and never touches it.</p>
-      <p><b>KEPLER</b> — Long above the 50-day average (±1% buffer), cash below. Betting that <i>trends persist</i>.</p><p><b>VECTOR</b> — Long while the last 30 days are net positive, cash when negative. Betting that <i>winners keep winning</i>.</p><p><b>DONNIE</b> — Buy a 20-day-high close, exit on a 10-day low. Betting that <i>new highs beget new highs</i>.</p><p><b>DIP</b> — Buy panic (RSI below 30), sell relief (RSI above 60). Betting that <i>panic overshoots — the anti-trend control</i>.</p>
-      <p><b>HOUSTON</b> — the grey one — never trades. It keeps score, flags broken rules, and
-      reminds us of the fine print below.</p>
-      <p><b>The fine print.</b> With four racers, whoever's on top is partly just lucky — like the
-      luckiest of four coin-flippers. So nobody gets judged on the leaderboard alone: each monster
-      passes or fails against the baseline and its own backtest expectation after 90
-      days. Rules were locked before launch and never tuned mid-race. Every trade pays realistic
-      fees (0.35%). Safety rails on everyone: lose &gt;10% in a day → 24h bench;
-      fall 25% below start → shut down until a human looks. <b>No real money anywhere.</b></p>
-    </details>
-<div class="panel">
-      <div class="ph"><span class="pt">THE RACE</span><span class="ps">account value, day by day — the whole point of the experiment in one picture</span><span class="legend"><span class="lg"><i style="background:#66ad64"></i>KEPLER</span> <span class="lg"><i style="background:#e8923a"></i>VECTOR</span> <span class="lg"><i style="background:#3aaea0"></i>DONNIE</span> <span class="lg"><i style="background:#9a7be0"></i>DIP</span> <span class="lg"><i style="background:#6e6e78"></i>baseline</span></span></div>
+      <tr><td><i class="dot" style="background:#66ad64"></i><a href="kepler.html">KEPLER</a></td><td>$100,000</td><td>+0.00%</td><td><span style="color:#3ddc97">+332</span></td><td>-0.00%</td><td>—</td><td>FLAT</td><td><span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></td></tr><tr><td><i class="dot" style="background:#e8923a"></i><a href="vector.html">VECTOR</a></td><td>$100,000</td><td>+0.00%</td><td><span style="color:#3ddc97">+332</span></td><td>-0.00%</td><td>—</td><td>FLAT</td><td><span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></td></tr><tr><td><i class="dot" style="background:#3aaea0"></i><a href="donnie.html">DONNIE</a></td><td>$100,000</td><td>+0.00%</td><td><span style="color:#3ddc97">+332</span></td><td>-0.00%</td><td>—</td><td>FLAT</td><td><span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></td></tr><tr><td><i class="dot" style="background:#9a7be0"></i><a href="dip.html">DIP</a></td><td>$100,000</td><td>+0.00%</td><td><span style="color:#3ddc97">+332</span></td><td>-0.00%</td><td>—</td><td>FLAT</td><td><span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></td></tr><tr><td><i class="dot" style="background:#6e6e78"></i>BASELINE (lazy rival)</td><td>$99,668</td><td>-0.33%</td><td>—</td><td>-0.33%</td><td>—</td><td>LONG</td><td></td></tr></table></div><details class="panel docs"><summary>WHAT AM I LOOKING AT? — the experiment, in plain English</summary>
+      <p><b>The setup.</b> Four robot monsters each trade a pretend $100,000 with one simple,
+      locked-in rule. Once a day at 10:05am Brisbane time they check the Bitcoin price, make one
+      decision, and sleep. Most days: nothing. They all race the <b>lazy rival</b> — a baseline that
+      bought Bitcoin on day one and never touches it. Beating it after fees is the whole game.</p>
+      <p><b>Each monster's page</b> (click a card) walks through today's decision with the actual
+      numbers, shows the exact price that would make it buy or sell next, and tracks it against the
+      expectation we wrote down before launch.</p>
+      <p><b>The fine print.</b> Rules were locked before launch and never get tuned mid-race. Every
+      trade pays realistic fees (0.35%). Safety rails on everyone: lose &gt;10% in a day → 24-hour
+      bench; fall 25% below start → shut down until a human looks. With four racers the leader is
+      partly luck, so judgement happens at day 90, against the baseline and the
+      pre-registered expectations — not the daily leaderboard. <b>No real money anywhere.</b></p>
+    </details><div class="panel">
+      <div class="ph"><span class="pt">THE RACE</span><span class="ps">account value, day by day — the whole experiment in one picture</span><span class="legend"><span class="lg"><i style="background:#66ad64"></i>KEPLER</span> <span class="lg"><i style="background:#e8923a"></i>VECTOR</span> <span class="lg"><i style="background:#3aaea0"></i>DONNIE</span> <span class="lg"><i style="background:#9a7be0"></i>DIP</span> <span class="lg"><i style="background:#6e6e78"></i>baseline</span></span></div>
       <svg viewBox="0 0 760 250" preserveAspectRatio="none"><line x1="34" y1="34.0" x2="726" y2="34.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="37.5" fill="#6e6e78" font-size="10">100.0k</text><line x1="34" y1="79.5" x2="726" y2="79.5" stroke="#242428" stroke-width="0.6"/><text x="732" y="83.0" fill="#6e6e78" font-size="10">99.9k</text><line x1="34" y1="125.0" x2="726" y2="125.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="128.5" fill="#6e6e78" font-size="10">99.8k</text><line x1="34" y1="170.5" x2="726" y2="170.5" stroke="#242428" stroke-width="0.6"/><text x="732" y="174.0" fill="#6e6e78" font-size="10">99.7k</text><line x1="34" y1="216.0" x2="726" y2="216.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="219.5" fill="#6e6e78" font-size="10">99.6k</text><circle cx="34.0" cy="44.3" r="3.5" fill="#66ad64"/><circle cx="34.0" cy="44.3" r="3.5" fill="#e8923a"/><circle cx="34.0" cy="44.3" r="3.5" fill="#3aaea0"/><circle cx="34.0" cy="44.3" r="3.5" fill="#9a7be0"/><circle cx="34.0" cy="206.3" r="3.5" fill="#6e6e78"/></svg>
-    </div>
-<div class="grid"><div class="card">
+    </div><div class="grid"><a class="card" href="kepler.html">
           <div class="cardtop"><svg viewBox="0 0 140 152" class="monster" role="img" aria-label="kepler is neutral">
       <defs>
         <radialGradient id="body-kepler" cx="38%" cy="30%" r="80%">
@@ -145,13 +145,11 @@
             <div><div class="kname">KEPLER <span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></div>
             <div class="belief">"Trends persist"</div>
             <div class="rule">Long above the 50-day average (±1% buffer), cash below</div></div></div>
-          <div class="khead" style="font-size:14px">In cash, watching.</div>
-          <div class="kdetail">Price is below the 50-day trend line, so I&#x27;m parked in cash until it climbs back above.</div>
-          <div class="statrow">
-            <span>$100,000</span>
+          <div class="khead" style="font-size:13.5px">In cash, watching.</div>
+          <div class="statrow"><span>$100,000</span>
             <span style="color:#3ddc97">+332 vs rival</span>
-            <span>FLAT</span>
-          </div></div><div class="card">
+            <span>FLAT</span></div>
+          <div class="open">OPEN DOSSIER →</div></a><a class="card" href="vector.html">
           <div class="cardtop"><svg viewBox="0 0 140 152" class="monster" role="img" aria-label="vector is neutral">
       <defs>
         <radialGradient id="body-vector" cx="38%" cy="30%" r="80%">
@@ -182,13 +180,11 @@
             <div><div class="kname">VECTOR <span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></div>
             <div class="belief">"Winners keep winning"</div>
             <div class="rule">Long while the last 30 days are net positive, cash when negative</div></div></div>
-          <div class="khead" style="font-size:14px">In cash, watching.</div>
-          <div class="kdetail">The last 30 days are net negative, so momentum says stay in cash.</div>
-          <div class="statrow">
-            <span>$100,000</span>
+          <div class="khead" style="font-size:13.5px">In cash, watching.</div>
+          <div class="statrow"><span>$100,000</span>
             <span style="color:#3ddc97">+332 vs rival</span>
-            <span>FLAT</span>
-          </div></div><div class="card">
+            <span>FLAT</span></div>
+          <div class="open">OPEN DOSSIER →</div></a><a class="card" href="donnie.html">
           <div class="cardtop"><svg viewBox="0 0 140 152" class="monster" role="img" aria-label="donnie is neutral">
       <defs>
         <radialGradient id="body-donnie" cx="38%" cy="30%" r="80%">
@@ -219,13 +215,11 @@
             <div><div class="kname">DONNIE <span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></div>
             <div class="belief">"New highs beget new highs"</div>
             <div class="rule">Buy a 20-day-high close, exit on a 10-day low</div></div></div>
-          <div class="khead" style="font-size:14px">In cash, watching.</div>
-          <div class="kdetail">No fresh 20-day high yet. I only move on a breakout — slow is smooth.</div>
-          <div class="statrow">
-            <span>$100,000</span>
+          <div class="khead" style="font-size:13.5px">In cash, watching.</div>
+          <div class="statrow"><span>$100,000</span>
             <span style="color:#3ddc97">+332 vs rival</span>
-            <span>FLAT</span>
-          </div></div><div class="card">
+            <span>FLAT</span></div>
+          <div class="open">OPEN DOSSIER →</div></a><a class="card" href="dip.html">
           <div class="cardtop"><svg viewBox="0 0 140 152" class="monster" role="img" aria-label="dip is neutral">
       <defs>
         <radialGradient id="body-dip" cx="38%" cy="30%" r="80%">
@@ -256,23 +250,8 @@
             <div><div class="kname">DIP <span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></div>
             <div class="belief">"Panic overshoots — the anti-trend control"</div>
             <div class="rule">Buy panic (RSI below 30), sell relief (RSI above 60)</div></div></div>
-          <div class="khead" style="font-size:14px">In cash, watching.</div>
-          <div class="kdetail">Nobody&#x27;s panicking — RSI is calm, so there&#x27;s nothing cheap to buy.</div>
-          <div class="statrow">
-            <span>$100,000</span>
+          <div class="khead" style="font-size:13.5px">In cash, watching.</div>
+          <div class="statrow"><span>$100,000</span>
             <span style="color:#3ddc97">+332 vs rival</span>
-            <span>FLAT</span>
-          </div></div></div>
-<div class="panel">
-      <div class="ph"><span class="pt">THE MARKET</span><span class="ps">BTC daily closes with each monster&#x27;s key levels — amber: KEPLER&#x27;s trend line · teal: DONNIE&#x27;s breakout/exit rails</span><span class="legend"><span class="lg"><i style="background:#d8d8dc"></i>price</span> <span class="lg"><i style="background:#ffc857"></i>sma-50</span> <span class="lg"><i style="background:#3aaea0"></i>20d high</span> <span class="lg"><i style="background:#1d5f58"></i>10d low</span></span></div>
-      <svg viewBox="0 0 760 250" preserveAspectRatio="none"><line x1="34" y1="34.0" x2="726" y2="34.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="37.5" fill="#6e6e78" font-size="10">84k</text><line x1="34" y1="79.5" x2="726" y2="79.5" stroke="#242428" stroke-width="0.6"/><text x="732" y="83.0" fill="#6e6e78" font-size="10">77k</text><line x1="34" y1="125.0" x2="726" y2="125.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="128.5" fill="#6e6e78" font-size="10">70k</text><line x1="34" y1="170.5" x2="726" y2="170.5" stroke="#242428" stroke-width="0.6"/><text x="732" y="174.0" fill="#6e6e78" font-size="10">64k</text><line x1="34" y1="216.0" x2="726" y2="216.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="219.5" fill="#6e6e78" font-size="10">57k</text><polyline points="34.0,121.7 39.8,140.7 45.5,146.5 51.3,155.4 57.1,138.5 62.8,128.1 68.6,126.4 74.4,124.2 80.1,121.4 85.9,119.4 91.7,108.5 97.4,94.3 103.2,100.8 109.0,119.2 114.7,128.4 120.5,124.3 126.3,135.2 132.0,142.5 137.8,121.8 143.6,124.2 149.3,119.0 155.1,136.2 160.9,152.7 166.6,153.0 172.4,155.5 178.2,150.1 183.9,139.9 189.7,140.6 195.5,148.9 201.2,148.6 207.0,146.2 212.8,134.6 218.5,135.6 224.3,114.7 230.1,120.5 235.8,115.5 241.6,107.3 247.4,106.6 253.1,122.5 258.9,97.3 264.7,99.1 270.4,94.6 276.2,92.4 282.0,79.2 287.7,88.5 293.5,101.6 299.3,87.6 305.0,84.3 310.8,71.5 316.6,71.1 322.3,76.7 328.1,75.4 333.9,68.5 339.6,77.4 345.4,84.5 351.2,88.4 356.9,84.6 362.7,71.4 368.5,68.3 374.2,69.1 380.0,60.3 385.8,53.2 391.5,49.4 397.3,59.4 403.1,58.1 408.8,54.9 414.6,44.3 420.4,47.4 426.1,56.1 431.9,64.2 437.7,52.0 443.4,65.8 449.2,72.2 455.0,77.1 460.7,80.2 466.5,81.5 472.3,76.7 478.0,76.1 483.8,90.6 489.6,82.3 495.3,80.0 501.1,78.1 506.9,87.9 512.6,98.2 518.4,103.8 524.2,104.6 529.9,101.9 535.7,103.2 541.5,118.8 547.2,150.7 553.0,168.5 558.8,170.2 564.5,189.2 570.3,190.4 576.1,173.6 581.8,175.3 587.6,184.7 593.4,186.3 599.1,171.8 604.9,172.0 610.7,165.9 616.4,157.2 622.2,153.2 628.0,157.9 633.7,165.8 639.5,176.5 645.3,172.3 651.0,167.2 656.8,174.0 662.6,169.3 668.3,178.1 674.1,189.6 679.9,198.3 685.6,196.1 691.4,196.5 697.2,199.8 702.9,195.1 708.7,206.3 714.5,196.5 720.2,186.0 726.0,179.0" fill="none" stroke="#d8d8dc" stroke-width="2.0" stroke-linejoin="round"/><polyline points="34.0,87.8 39.8,91.6 45.5,95.4 51.3,99.4 57.1,102.9 62.8,106.0 68.6,108.4 74.4,111.0 80.1,113.6 85.9,116.1 91.7,118.3 97.4,119.9 103.2,121.9 109.0,124.3 114.7,126.9 120.5,128.9 126.3,130.9 132.0,132.4 137.8,133.2 143.6,134.4 149.3,135.0 155.1,135.5 160.9,135.0 166.6,135.6 172.4,136.1 178.2,136.6 183.9,136.8 189.7,136.9 195.5,136.9 201.2,136.8 207.0,137.0 212.8,137.1 218.5,137.1 224.3,136.7 230.1,136.2 235.8,135.5 241.6,134.7 247.4,134.0 253.1,133.6 258.9,132.6 264.7,131.3 270.4,129.9 276.2,128.9 282.0,127.6 287.7,126.2 293.5,125.3 299.3,123.9 305.0,122.9 310.8,121.5 316.6,120.7 322.3,119.8 328.1,118.5 333.9,117.0 339.6,115.4 345.4,114.3 351.2,113.5 356.9,112.7 362.7,111.7 368.5,110.6 374.2,109.6 380.0,108.6 385.8,107.8 391.5,106.8 397.3,105.6 403.1,104.2 408.8,102.8 414.6,101.0 420.4,99.1 426.1,97.7 431.9,96.5 437.7,95.2 443.4,93.8 449.2,92.2 455.0,90.7 460.7,89.2 466.5,87.8 472.3,86.5 478.0,85.2 483.8,84.1 489.6,82.7 495.3,81.4 501.1,80.3 506.9,79.3 512.6,79.0 518.4,78.7 524.2,78.5 529.9,78.3 535.7,78.3 541.5,78.2 547.2,79.3 553.0,80.7 558.8,82.2 564.5,84.1 570.3,86.3 576.1,88.0 581.8,89.5 587.6,91.4 593.4,93.5 599.1,95.5 604.9,97.5 610.7,99.3 616.4,100.9 622.2,102.6 628.0,104.2 633.7,105.9 639.5,107.6 645.3,109.4 651.0,111.3 656.8,113.4 662.6,115.4 668.3,117.8 674.1,120.5 679.9,123.5 685.6,126.2 691.4,129.0 697.2,131.9 702.9,134.9 708.7,138.1 714.5,140.9 720.2,143.3 726.0,145.9" fill="none" stroke="#ffc857" stroke-width="2.0" stroke-linejoin="round"/><polyline points="34.0,109.3 39.8,109.3 45.5,109.3 51.3,109.3 57.1,109.3 62.8,109.3 68.6,109.3 74.4,109.3 80.1,109.3 85.9,109.3 91.7,109.3 97.4,108.5 103.2,94.3 109.0,94.3 114.7,94.3 120.5,94.3 126.3,94.3 132.0,94.3 137.8,94.3 143.6,94.3 149.3,94.3 155.1,94.3 160.9,94.3 166.6,94.3 172.4,94.3 178.2,94.3 183.9,94.3 189.7,94.3 195.5,94.3 201.2,94.3 207.0,94.3 212.8,94.3 218.5,100.8 224.3,119.0 230.1,114.7 235.8,114.7 241.6,114.7 247.4,107.3 253.1,106.6 258.9,106.6 264.7,97.3 270.4,97.3 276.2,94.6 282.0,92.4 287.7,79.2 293.5,79.2 299.3,79.2 305.0,79.2 310.8,79.2 316.6,71.5 322.3,71.1 328.1,71.1 333.9,71.1 339.6,68.5 345.4,68.5 351.2,68.5 356.9,68.5 362.7,68.5 368.5,68.5 374.2,68.3 380.0,68.3 385.8,60.3 391.5,53.2 397.3,49.4 403.1,49.4 408.8,49.4 414.6,49.4 420.4,44.3 426.1,44.3 431.9,44.3 437.7,44.3 443.4,44.3 449.2,44.3 455.0,44.3 460.7,44.3 466.5,44.3 472.3,44.3 478.0,44.3 483.8,44.3 489.6,44.3 495.3,44.3 501.1,44.3 506.9,44.3 512.6,44.3 518.4,44.3 524.2,44.3 529.9,44.3 535.7,47.4 541.5,52.0 547.2,52.0 553.0,52.0 558.8,65.8 564.5,72.2 570.3,76.1 576.1,76.1 581.8,76.1 587.6,76.1 593.4,76.1 599.1,78.1 604.9,78.1 610.7,78.1 616.4,78.1 622.2,87.9 628.0,98.2 633.7,101.9 639.5,101.9 645.3,101.9 651.0,103.2 656.8,118.8 662.6,150.7 668.3,153.2 674.1,153.2 679.9,153.2 685.6,153.2 691.4,153.2 697.2,153.2 702.9,153.2 708.7,153.2 714.5,153.2 720.2,153.2 726.0,153.2" fill="none" stroke="#3aaea0" stroke-width="2.0" stroke-linejoin="round"/><polyline points="34.0,168.4 39.8,168.4 45.5,156.7 51.3,156.7 57.1,156.7 62.8,156.7 68.6,156.7 74.4,155.4 80.1,155.4 85.9,155.4 91.7,155.4 97.4,155.4 103.2,155.4 109.0,155.4 114.7,138.5 120.5,128.4 126.3,128.4 132.0,135.2 137.8,142.5 143.6,142.5 149.3,142.5 155.1,142.5 160.9,142.5 166.6,152.7 172.4,153.0 178.2,155.5 183.9,155.5 189.7,155.5 195.5,155.5 201.2,155.5 207.0,155.5 212.8,155.5 218.5,155.5 224.3,155.5 230.1,155.5 235.8,150.1 241.6,148.9 247.4,148.9 253.1,148.9 258.9,148.6 264.7,146.2 270.4,135.6 276.2,135.6 282.0,122.5 287.7,122.5 293.5,122.5 299.3,122.5 305.0,122.5 310.8,122.5 316.6,101.6 322.3,101.6 328.1,101.6 333.9,101.6 339.6,101.6 345.4,101.6 351.2,101.6 356.9,88.4 362.7,88.4 368.5,88.4 374.2,88.4 380.0,88.4 385.8,88.4 391.5,88.4 397.3,88.4 403.1,88.4 408.8,88.4 414.6,84.6 420.4,71.4 426.1,69.1 431.9,69.1 437.7,64.2 443.4,64.2 449.2,65.8 455.0,72.2 460.7,77.1 466.5,80.2 472.3,81.5 478.0,81.5 483.8,81.5 489.6,90.6 495.3,90.6 501.1,90.6 506.9,90.6 512.6,90.6 518.4,98.2 524.2,103.8 529.9,104.6 535.7,104.6 541.5,104.6 547.2,118.8 553.0,150.7 558.8,168.5 564.5,170.2 570.3,189.2 576.1,190.4 581.8,190.4 587.6,190.4 593.4,190.4 599.1,190.4 604.9,190.4 610.7,190.4 616.4,190.4 622.2,190.4 628.0,190.4 633.7,186.3 639.5,186.3 645.3,186.3 651.0,186.3 656.8,176.5 662.6,176.5 668.3,176.5 674.1,178.1 679.9,189.6 685.6,198.3 691.4,198.3 697.2,198.3 702.9,199.8 708.7,199.8 714.5,206.3 720.2,206.3 726.0,206.3" fill="none" stroke="#1d5f58" stroke-width="2.0" stroke-linejoin="round"/></svg>
-    </div>
-<div class="panel">
-      <div class="ph"><span class="pt">DIP&#x27;S FEAR GAUGE (RSI-14)</span><span class="ps">below 30 = panic, DIP buys · above 60 = relief, DIP sells</span><span class="legend"><span class="lg"><i style="background:#8b7bff"></i>rsi</span></span></div>
-      <svg viewBox="0 0 760 160" preserveAspectRatio="none"><line x1="34" y1="34.0" x2="726" y2="34.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="37.5" fill="#6e6e78" font-size="10">72</text><line x1="34" y1="57.0" x2="726" y2="57.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="60.5" fill="#6e6e78" font-size="10">57</text><line x1="34" y1="80.0" x2="726" y2="80.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="83.5" fill="#6e6e78" font-size="10">42</text><line x1="34" y1="103.0" x2="726" y2="103.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="106.5" fill="#6e6e78" font-size="10">27</text><line x1="34" y1="126.0" x2="726" y2="126.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="129.5" fill="#6e6e78" font-size="10">12</text><polygon points="34.0,53.0 39.8,53.0 45.5,53.0 51.3,53.0 57.1,53.0 62.8,53.0 68.6,53.0 74.4,53.0 80.1,53.0 85.9,53.0 91.7,53.0 97.4,53.0 103.2,53.0 109.0,53.0 114.7,53.0 120.5,53.0 126.3,53.0 132.0,53.0 137.8,53.0 143.6,53.0 149.3,53.0 155.1,53.0 160.9,53.0 166.6,53.0 172.4,53.0 178.2,53.0 183.9,53.0 189.7,53.0 195.5,53.0 201.2,53.0 207.0,53.0 212.8,53.0 218.5,53.0 224.3,53.0 230.1,53.0 235.8,53.0 241.6,53.0 247.4,53.0 253.1,53.0 258.9,53.0 264.7,53.0 270.4,53.0 276.2,53.0 282.0,53.0 287.7,53.0 293.5,53.0 299.3,53.0 305.0,53.0 310.8,53.0 316.6,53.0 322.3,53.0 328.1,53.0 333.9,53.0 339.6,53.0 345.4,53.0 351.2,53.0 356.9,53.0 362.7,53.0 368.5,53.0 374.2,53.0 380.0,53.0 385.8,53.0 391.5,53.0 397.3,53.0 403.1,53.0 408.8,53.0 414.6,53.0 420.4,53.0 426.1,53.0 431.9,53.0 437.7,53.0 443.4,53.0 449.2,53.0 455.0,53.0 460.7,53.0 466.5,53.0 472.3,53.0 478.0,53.0 483.8,53.0 489.6,53.0 495.3,53.0 501.1,53.0 506.9,53.0 512.6,53.0 518.4,53.0 524.2,53.0 529.9,53.0 535.7,53.0 541.5,53.0 547.2,53.0 553.0,53.0 558.8,53.0 564.5,53.0 570.3,53.0 576.1,53.0 581.8,53.0 587.6,53.0 593.4,53.0 599.1,53.0 604.9,53.0 610.7,53.0 616.4,53.0 622.2,53.0 628.0,53.0 633.7,53.0 639.5,53.0 645.3,53.0 651.0,53.0 656.8,53.0 662.6,53.0 668.3,53.0 674.1,53.0 679.9,53.0 685.6,53.0 691.4,53.0 697.2,53.0 702.9,53.0 708.7,53.0 714.5,53.0 720.2,53.0 726.0,53.0 726.0,98.9 720.2,98.9 714.5,98.9 708.7,98.9 702.9,98.9 697.2,98.9 691.4,98.9 685.6,98.9 679.9,98.9 674.1,98.9 668.3,98.9 662.6,98.9 656.8,98.9 651.0,98.9 645.3,98.9 639.5,98.9 633.7,98.9 628.0,98.9 622.2,98.9 616.4,98.9 610.7,98.9 604.9,98.9 599.1,98.9 593.4,98.9 587.6,98.9 581.8,98.9 576.1,98.9 570.3,98.9 564.5,98.9 558.8,98.9 553.0,98.9 547.2,98.9 541.5,98.9 535.7,98.9 529.9,98.9 524.2,98.9 518.4,98.9 512.6,98.9 506.9,98.9 501.1,98.9 495.3,98.9 489.6,98.9 483.8,98.9 478.0,98.9 472.3,98.9 466.5,98.9 460.7,98.9 455.0,98.9 449.2,98.9 443.4,98.9 437.7,98.9 431.9,98.9 426.1,98.9 420.4,98.9 414.6,98.9 408.8,98.9 403.1,98.9 397.3,98.9 391.5,98.9 385.8,98.9 380.0,98.9 374.2,98.9 368.5,98.9 362.7,98.9 356.9,98.9 351.2,98.9 345.4,98.9 339.6,98.9 333.9,98.9 328.1,98.9 322.3,98.9 316.6,98.9 310.8,98.9 305.0,98.9 299.3,98.9 293.5,98.9 287.7,98.9 282.0,98.9 276.2,98.9 270.4,98.9 264.7,98.9 258.9,98.9 253.1,98.9 247.4,98.9 241.6,98.9 235.8,98.9 230.1,98.9 224.3,98.9 218.5,98.9 212.8,98.9 207.0,98.9 201.2,98.9 195.5,98.9 189.7,98.9 183.9,98.9 178.2,98.9 172.4,98.9 166.6,98.9 160.9,98.9 155.1,98.9 149.3,98.9 143.6,98.9 137.8,98.9 132.0,98.9 126.3,98.9 120.5,98.9 114.7,98.9 109.0,98.9 103.2,98.9 97.4,98.9 91.7,98.9 85.9,98.9 80.1,98.9 74.4,98.9 68.6,98.9 62.8,98.9 57.1,98.9 51.3,98.9 45.5,98.9 39.8,98.9 34.0,98.9" fill="rgba(154,123,224,0.10)"/><polyline points="34.0,66.8 39.8,75.2 45.5,77.6 51.3,81.2 57.1,72.4 62.8,67.4 68.6,66.6 74.4,65.5 80.1,64.0 85.9,62.9 91.7,57.2 97.4,50.5 103.2,55.0 109.0,66.5 114.7,71.5 120.5,69.1 126.3,75.1 132.0,78.8 137.8,66.5 143.6,67.9 149.3,64.9 155.1,74.7 160.9,82.5 166.6,82.6 172.4,83.8 178.2,79.9 183.9,72.8 189.7,73.3 195.5,78.3 201.2,78.0 207.0,76.1 212.8,67.1 218.5,67.9 224.3,54.2 230.1,58.7 235.8,55.7 241.6,51.0 247.4,50.6 253.1,64.0 258.9,49.9 264.7,51.3 270.4,49.0 276.2,47.9 282.0,41.5 287.7,49.7 293.5,59.9 299.3,52.4 305.0,50.8 310.8,44.7 316.6,44.6 322.3,49.5 328.1,48.8 333.9,45.1 339.6,53.3 345.4,59.4 351.2,62.5 356.9,59.9 362.7,51.4 368.5,49.5 374.2,50.4 380.0,45.1 385.8,41.2 391.5,39.2 397.3,50.0 403.1,49.1 408.8,47.1 414.6,40.8 420.4,44.4 426.1,53.9 431.9,61.8 437.7,53.1 443.4,65.2 449.2,70.1 455.0,73.7 460.7,76.0 466.5,76.9 472.3,72.4 478.0,71.8 483.8,83.2 489.6,75.2 495.3,73.0 501.1,71.3 506.9,79.4 512.6,86.6 518.4,90.1 524.2,90.7 529.9,87.4 535.7,88.3 541.5,98.3 547.2,111.4 553.0,116.2 558.8,116.6 564.5,120.8 570.3,121.1 576.1,104.0 581.8,104.6 587.6,107.7 593.4,108.3 599.1,94.2 604.9,94.3 610.7,88.6 616.4,81.0 622.2,77.7 628.0,80.7 633.7,85.6 639.5,91.5 645.3,87.4 651.0,82.6 656.8,86.8 662.6,82.3 668.3,87.7 674.1,94.0 679.9,98.2 685.6,95.9 691.4,96.1 697.2,97.9 702.9,92.2 708.7,98.5 714.5,87.7 720.2,77.7 726.0,71.7" fill="none" stroke="#8b7bff" stroke-width="2.0" stroke-linejoin="round"/></svg>
-    </div>
-<div class="panel"><div class="ph"><span class="pt">DECISION LOG</span><span class="ps">one row per monster per day — &#x27;no-change&#x27; is normal and good</span></div><table><tr><th>DATE</th><th>AGENT</th><th>CLOSE</th><th>WHAT IT SAW</th><th>SIGNAL</th><th>ACTION</th></tr><tr><td>2026-07-03</td><td><i class="dot" style="background:#e8923a"></i>VECTOR</td><td>62,515</td><td>roc_30 -0.0239</td><td><span style="color:#6e6e78">HOLD</span></td><td>no-change</td></tr><tr><td>2026-07-03</td><td><i class="dot" style="background:#66ad64"></i>KEPLER</td><td>62,515</td><td>sma_50 67360.28</td><td><span style="color:#6e6e78">HOLD</span></td><td>no-change</td></tr><tr><td>2026-07-03</td><td><i class="dot" style="background:#3aaea0"></i>DONNIE</td><td>62,515</td><td>low_10 58531.14, high_20 66283.27</td><td><span style="color:#6e6e78">HOLD</span></td><td>no-change</td></tr><tr><td>2026-07-03</td><td><i class="dot" style="background:#9a7be0"></i>DIP</td><td>62,515</td><td>rsi_14 47.5</td><td><span style="color:#6e6e78">HOLD</span></td><td>no-change</td></tr></table></div>
-<div class="panel"><div class="ph"><span class="pt">TRADES</span><span class="ps">rare by design — each one costs 0.35%</span></div><table><tr><th>DATE</th><th>AGENT</th><th>SIDE</th><th>QTY BTC</th><th>PRICE</th><th>COSTS</th><th>EQUITY AFTER</th></tr><tr><td colspan="7" style="color:#6e6e78">no trades yet — everyone is waiting for their rule to trigger</td></tr></table></div>
-<div class="panel"><div class="ph"><span class="pt">EVENTS</span><span class="ps">notable moments: safety rails, launches, anything unusual</span></div><table><tr><th>TIME</th><th>KIND</th><th>DETAIL</th></tr><tr><td>2026-07-04 00:18</td><td>baseline_entry</td><td>bought 1.51432312 @ 62514.73</td></tr><tr><td>2026-07-04 00:15</td><td>swarm_launch</td><td>v2.0-swarm: KEPLER + VECTOR + DONNIE + DIP + baseline, clean slate, all clocks reset</td></tr><tr><td>2026-07-03 07:58</td><td>baseline_entry</td><td>bought 1.53950094 @ 61492.33</td></tr></table></div>
-<footer>FOUR MONSTERS · ONE LAZY RIVAL · RULES LOCKED AT LAUNCH — HOUSTON WATCHES, HUMANS REVIEW WEEKLY · PAPER MONEY ONLY · NOT FINANCIAL ADVICE</footer>
-</body></html>
+            <span>FLAT</span></div>
+          <div class="open">OPEN DOSSIER →</div></a></div><div class="panel"><div class="ph"><span class="pt">EVENTS</span><span class="ps">safety rails, launches, anything unusual</span></div><table><tr><th>TIME</th><th>KIND</th><th>DETAIL</th></tr><tr><td>2026-07-04 00:18</td><td>baseline_entry</td><td>bought 1.51432312 @ 62514.73</td></tr><tr><td>2026-07-04 00:15</td><td>swarm_launch</td><td>v2.0-swarm: KEPLER + VECTOR + DONNIE + DIP + baseline, clean slate, all clocks reset</td></tr><tr><td>2026-07-03 07:58</td><td>baseline_entry</td><td>bought 1.53950094 @ 61492.33</td></tr></table></div><footer>RULES LOCKED AT LAUNCH · HOUSTON WATCHES, HUMANS REVIEW WEEKLY · PAPER MONEY ONLY · NOT FINANCIAL ADVICE</footer></body></html>

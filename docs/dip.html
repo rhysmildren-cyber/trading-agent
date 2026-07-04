@@ -1,0 +1,114 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>DIP · THE SWARM</title><style>
+  * { box-sizing: border-box; margin: 0; }
+  body { background: #08080a; color: #d8d8dc;
+    font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-variant-numeric: tabular-nums;
+    padding: 18px; max-width: 1200px; margin: 0 auto;
+    background-image: radial-gradient(ellipse 70% 45% at 50% -10%, rgba(61,220,151,0.06), transparent),
+                      radial-gradient(ellipse 55% 40% at 95% 110%, rgba(139,123,255,0.05), transparent); }
+  header { border-bottom: 1px solid #242428; padding-bottom: 12px; margin-bottom: 16px;
+    display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px; }
+  h1 { font-size: 16px; letter-spacing: 4px; color: #3ddc97;
+    text-shadow: 0 0 20px rgba(61,220,151,0.5); }
+  h1 b { color: #6e6e78; font-weight: 400; letter-spacing: 3px; }
+  a { color: #3ce0ff; text-decoration: none; }
+  .back { font-size: 11px; letter-spacing: 2px; color: #6e6e78; }
+  .back:hover, a.card:hover { color: #3ce0ff; border-color: #3ce0ff; }
+  .panel { background: #121214; border: 1px solid #242428; border-radius: 10px;
+    padding: 13px 15px; margin-bottom: 14px; overflow-x: auto;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.35); }
+  .ph { display: flex; gap: 12px; align-items: baseline; margin-bottom: 8px; flex-wrap: wrap; }
+  .pt { font-size: 11px; letter-spacing: 2px; color: #3ce0ff; }
+  .ps { font-size: 11px; color: #6e6e78; }
+  .legend { margin-left: auto; font-size: 11px; color: #6e6e78; }
+  .lg i { display: inline-block; width: 9px; height: 9px; border-radius: 2px;
+    margin: 0 5px 0 12px; vertical-align: -1px; }
+  svg { width: 100%; height: auto; display: block; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th { text-align: left; color: #6e6e78; font-weight: 400; font-size: 10px; letter-spacing: 1.5px;
+    border-bottom: 1px solid #242428; padding: 4px 10px 6px 0; }
+  td { padding: 5px 10px 5px 0; border-bottom: 1px solid rgba(36,36,40,0.6); white-space: nowrap; }
+  .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%;
+    margin-right: 7px; vertical-align: -1px; }
+  .chip { font-size: 9px; letter-spacing: 1.5px; border: 1px solid; border-radius: 20px;
+    padding: 1.5px 8px; vertical-align: 1px; }
+  .kp { display: flex; gap: 16px; align-items: center; }
+  .kp .monster { width: 110px; min-width: 110px; }
+  .bubble { border: 1px solid; border-radius: 10px; padding: 10px 14px; position: relative; flex: 1; }
+  .bubble::before { content: ""; position: absolute; left: -7px; top: 42%;
+    width: 12px; height: 12px; background: #121214; border-left: 1px solid;
+    border-bottom: 1px solid; border-color: inherit; transform: rotate(45deg); }
+  .kname { font-size: 10px; letter-spacing: 2px; color: #6e6e78; }
+  .khead { font-size: 15px; margin: 4px 0; color: #d8d8dc; line-height: 1.5; }
+  .kdetail { font-size: 12px; color: #6e6e78; line-height: 1.6; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px; margin-bottom: 14px; }
+  a.card { display: block; background: #121214; border: 1px solid #242428; border-radius: 10px;
+    padding: 14px 16px; box-shadow: 0 8px 22px rgba(0,0,0,0.35); color: #d8d8dc; }
+  .cardtop { display: flex; gap: 12px; align-items: center; margin-bottom: 6px; }
+  .cardtop .monster { width: 78px; min-width: 78px; }
+  .belief { color: #d8d8dc; font-size: 12px; margin: 4px 0 2px; }
+  .rule { color: #6e6e78; font-size: 11px; }
+  .statrow { display: flex; gap: 14px; margin-top: 9px; padding-top: 8px;
+    border-top: 1px solid #242428; font-size: 12px; flex-wrap: wrap; }
+  .open { margin-top: 8px; font-size: 10px; letter-spacing: 2px; color: #6e6e78; }
+  ol.steps { margin: 4px 0 0 18px; }
+  ol.steps li { margin: 7px 0; line-height: 1.6; color: #d8d8dc; font-size: 12.5px; }
+  ol.steps b, .trig b { color: #ffc857; }
+  .trig { margin-top: 10px; padding: 10px 12px; border: 1px dashed #242428; border-radius: 8px;
+    font-size: 12.5px; line-height: 1.7; }
+  .docs summary { font-size: 11px; letter-spacing: 2px; color: #ffc857; cursor: pointer; }
+  .docs p { font-size: 12px; color: #d8d8dc; margin: 10px 0 0; line-height: 1.7; max-width: 85ch; }
+  .docs b { color: #3ce0ff; } .docs i { color: #ffc857; font-style: normal; }
+  footer { color: #6e6e78; font-size: 10px; letter-spacing: 1px; margin-top: 18px; text-align: center; }
+</style></head><body><header><h1 style="color:#9a7be0;text-shadow:0 0 20px #9a7be055">⬢ DIP <b>// BUY PANIC (RSI BELOW 30), SELL RELIEF (RSI ABOVE 60)</b></h1><a class="back" href="index.html">← THE SWARM</a></header><div class="panel kp">
+      <svg viewBox="0 0 140 152" class="monster" role="img" aria-label="dip is neutral">
+      <defs>
+        <radialGradient id="body-dip" cx="38%" cy="30%" r="80%">
+          <stop offset="0%" stop-color="#9a7be0"/>
+          <stop offset="100%" stop-color="#4f3a8a"/>
+        </radialGradient>
+        <clipPath id="eye-dip"><circle cx="70" cy="64" r="23"/></clipPath>
+      </defs>
+      <ellipse cx="70" cy="147" rx="35" ry="4.5" fill="rgba(0,0,0,0.5)"/>
+      <path d="M54 120 L49 139" stroke="#3b3b42" stroke-width="8" stroke-linecap="round"/>
+      <path d="M86 120 L91 139" stroke="#3b3b42" stroke-width="8" stroke-linecap="round"/>
+      <rect x="36" y="136" width="24" height="10" rx="5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <rect x="80" y="136" width="24" height="10" rx="5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <path d="M28 84 Q13 92 11 106" stroke="#3b3b42" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+      <circle cx="11" cy="106" r="4.5" fill="#4c4c55"/>
+      <path d="M11 106 Q9 120 17 128" stroke="#3b3b42" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <circle cx="19" cy="131" r="7.5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <path d="M112 84 Q127 92 129 106" stroke="#3b3b42" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+      <circle cx="129" cy="106" r="4.5" fill="#4c4c55"/>
+      <path d="M129 106 Q131 120 123 128" stroke="#3b3b42" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <circle cx="121" cy="131" r="7.5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <circle cx="70" cy="78" r="46" fill="url(#body-dip)" stroke="#0b0b0c" stroke-width="3"/>
+      <path d="M40 38 Q28 40 26 52 Q34 48 46 46 Z" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/><path d="M100 38 Q112 40 114 52 Q106 48 94 46 Z" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <rect x="52" y="28" width="36" height="9" rx="3.5" fill="#4f3a8a" stroke="#0b0b0c" stroke-width="2"/>
+      <circle cx="70" cy="64" r="23" fill="#eceadf" stroke="#0b0b0c" stroke-width="3"/><circle cx="72" cy="66" r="10" fill="#3ce0ff"/><circle cx="72" cy="66" r="4.5" fill="#0b0b0c"/><circle cx="68" cy="61" r="2.6" fill="#f4f2e8"/><g clip-path="url(#eye-dip)"><rect x="42" y="38" width="56" height="21" fill="#4f3a8a" stroke="#0b0b0c" stroke-width="2.5" transform="rotate(-10 70 64)"/></g>
+      <path d="M52 106 Q76 118 102 101" stroke="#0b0b0c" stroke-width="4.5" fill="none" stroke-linecap="round"/><path d="M78 109 L84 115 L89 107 L95 112 L99 103" stroke="#e9e7dc" stroke-width="3" fill="none" stroke-linejoin="round"/>
+    </svg>
+      <div class="bubble" style="border-color:#3ce0ff">
+        <div class="kname">DIP · <span style="color:#3ce0ff">SCHEMING</span>
+          <span style="color:#6e6e78"> — "Panic overshoots — the anti-trend control"</span></div>
+        <div class="khead">In cash, watching.</div>
+        <div class="kdetail">Nobody&#x27;s panicking — RSI is calm, so there&#x27;s nothing cheap to buy.</div>
+      </div></div><div class="panel"><div class="ph"><span class="pt">TODAY'S CHECK — HOW I DECIDED</span>
+      <span class="ps">I do exactly this once a day at 10:05am Brisbane time, then sleep</span></div>
+      <ol class="steps"><li>Bitcoin's latest daily close: <b>$62,515</b>.</li><li>Computed RSI-14, a 0–100 gauge of recent buying vs selling pressure: <b>48</b>.</li><li>Below 30 = panic selling (I buy). Above 60 = relief rally (I sell). In between = nothing to do.</li></ol>
+      <div class="trig"><span class="kname">WHAT WOULD MAKE ME ACT NEXT</span><br><b>BUY</b> when RSI drops below <b>30</b> — that usually takes a sharp multi-day sell-off. It's at 48 now, so I'm waiting.<br>There's no fixed trigger price for RSI — it depends on the shape of the recent moves, not one level.</div>
+    </div><div class="panel">
+      <div class="ph"><span class="pt">MY VIEW OF THE MARKET</span><span class="ps">the fear gauge — I buy under 30 (panic), sell over 60 (relief)</span><span class="legend"><span class="lg"><i style="background:#9a7be0"></i>RSI-14</span></span></div>
+      <svg viewBox="0 0 760 170" preserveAspectRatio="none"><line x1="34" y1="34.0" x2="726" y2="34.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="37.5" fill="#6e6e78" font-size="10">72</text><line x1="34" y1="59.5" x2="726" y2="59.5" stroke="#242428" stroke-width="0.6"/><text x="732" y="63.0" fill="#6e6e78" font-size="10">57</text><line x1="34" y1="85.0" x2="726" y2="85.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="88.5" fill="#6e6e78" font-size="10">42</text><line x1="34" y1="110.5" x2="726" y2="110.5" stroke="#242428" stroke-width="0.6"/><text x="732" y="114.0" fill="#6e6e78" font-size="10">27</text><line x1="34" y1="136.0" x2="726" y2="136.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="139.5" fill="#6e6e78" font-size="10">12</text><polygon points="34.0,55.0 39.8,55.0 45.6,55.0 51.4,55.0 57.3,55.0 63.1,55.0 68.9,55.0 74.7,55.0 80.5,55.0 86.3,55.0 92.2,55.0 98.0,55.0 103.8,55.0 109.6,55.0 115.4,55.0 121.2,55.0 127.0,55.0 132.9,55.0 138.7,55.0 144.5,55.0 150.3,55.0 156.1,55.0 161.9,55.0 167.7,55.0 173.6,55.0 179.4,55.0 185.2,55.0 191.0,55.0 196.8,55.0 202.6,55.0 208.5,55.0 214.3,55.0 220.1,55.0 225.9,55.0 231.7,55.0 237.5,55.0 243.3,55.0 249.2,55.0 255.0,55.0 260.8,55.0 266.6,55.0 272.4,55.0 278.2,55.0 284.1,55.0 289.9,55.0 295.7,55.0 301.5,55.0 307.3,55.0 313.1,55.0 318.9,55.0 324.8,55.0 330.6,55.0 336.4,55.0 342.2,55.0 348.0,55.0 353.8,55.0 359.6,55.0 365.5,55.0 371.3,55.0 377.1,55.0 382.9,55.0 388.7,55.0 394.5,55.0 400.4,55.0 406.2,55.0 412.0,55.0 417.8,55.0 423.6,55.0 429.4,55.0 435.2,55.0 441.1,55.0 446.9,55.0 452.7,55.0 458.5,55.0 464.3,55.0 470.1,55.0 475.9,55.0 481.8,55.0 487.6,55.0 493.4,55.0 499.2,55.0 505.0,55.0 510.8,55.0 516.7,55.0 522.5,55.0 528.3,55.0 534.1,55.0 539.9,55.0 545.7,55.0 551.5,55.0 557.4,55.0 563.2,55.0 569.0,55.0 574.8,55.0 580.6,55.0 586.4,55.0 592.3,55.0 598.1,55.0 603.9,55.0 609.7,55.0 615.5,55.0 621.3,55.0 627.1,55.0 633.0,55.0 638.8,55.0 644.6,55.0 650.4,55.0 656.2,55.0 662.0,55.0 667.8,55.0 673.7,55.0 679.5,55.0 685.3,55.0 691.1,55.0 696.9,55.0 702.7,55.0 708.6,55.0 714.4,55.0 720.2,55.0 726.0,55.0 726.0,106.0 720.2,106.0 714.4,106.0 708.6,106.0 702.7,106.0 696.9,106.0 691.1,106.0 685.3,106.0 679.5,106.0 673.7,106.0 667.8,106.0 662.0,106.0 656.2,106.0 650.4,106.0 644.6,106.0 638.8,106.0 633.0,106.0 627.1,106.0 621.3,106.0 615.5,106.0 609.7,106.0 603.9,106.0 598.1,106.0 592.3,106.0 586.4,106.0 580.6,106.0 574.8,106.0 569.0,106.0 563.2,106.0 557.4,106.0 551.5,106.0 545.7,106.0 539.9,106.0 534.1,106.0 528.3,106.0 522.5,106.0 516.7,106.0 510.8,106.0 505.0,106.0 499.2,106.0 493.4,106.0 487.6,106.0 481.8,106.0 475.9,106.0 470.1,106.0 464.3,106.0 458.5,106.0 452.7,106.0 446.9,106.0 441.1,106.0 435.2,106.0 429.4,106.0 423.6,106.0 417.8,106.0 412.0,106.0 406.2,106.0 400.4,106.0 394.5,106.0 388.7,106.0 382.9,106.0 377.1,106.0 371.3,106.0 365.5,106.0 359.6,106.0 353.8,106.0 348.0,106.0 342.2,106.0 336.4,106.0 330.6,106.0 324.8,106.0 318.9,106.0 313.1,106.0 307.3,106.0 301.5,106.0 295.7,106.0 289.9,106.0 284.1,106.0 278.2,106.0 272.4,106.0 266.6,106.0 260.8,106.0 255.0,106.0 249.2,106.0 243.3,106.0 237.5,106.0 231.7,106.0 225.9,106.0 220.1,106.0 214.3,106.0 208.5,106.0 202.6,106.0 196.8,106.0 191.0,106.0 185.2,106.0 179.4,106.0 173.6,106.0 167.7,106.0 161.9,106.0 156.1,106.0 150.3,106.0 144.5,106.0 138.7,106.0 132.9,106.0 127.0,106.0 121.2,106.0 115.4,106.0 109.6,106.0 103.8,106.0 98.0,106.0 92.2,106.0 86.3,106.0 80.5,106.0 74.7,106.0 68.9,106.0 63.1,106.0 57.3,106.0 51.4,106.0 45.6,106.0 39.8,106.0 34.0,106.0" fill="rgba(154,123,224,0.10)"/><polyline points="34.0,79.7 39.8,82.4 45.6,86.4 51.4,76.5 57.3,71.0 63.1,70.1 68.9,68.9 74.7,67.3 80.5,66.1 86.3,59.7 92.2,52.3 98.0,57.3 103.8,70.0 109.6,75.5 115.4,72.9 121.2,79.5 127.0,83.7 132.9,70.1 138.7,71.6 144.5,68.3 150.3,79.1 156.1,87.8 161.9,87.9 167.7,89.2 173.6,84.8 179.4,77.0 185.2,77.5 191.0,83.1 196.8,82.8 202.6,80.6 208.5,70.6 214.3,71.5 220.1,56.4 225.9,61.4 231.7,58.1 237.5,52.8 243.3,52.4 249.2,67.2 255.0,51.6 260.8,53.2 266.6,50.6 272.4,49.4 278.2,42.3 284.1,51.4 289.9,62.7 295.7,54.4 301.5,52.6 307.3,45.9 313.1,45.7 318.9,51.1 324.8,50.4 330.6,46.3 336.4,55.4 342.2,62.1 348.0,65.6 353.8,62.7 359.6,53.3 365.5,51.2 371.3,52.2 377.1,46.3 382.9,42.0 388.7,39.8 394.5,51.7 400.4,50.8 406.2,48.5 412.0,41.5 417.8,45.6 423.6,56.0 429.4,64.9 435.2,55.2 441.1,68.5 446.9,74.0 452.7,78.0 458.5,80.5 464.3,81.6 470.1,76.5 475.9,75.9 481.8,88.5 487.6,79.7 493.4,77.3 499.2,75.3 505.0,84.3 510.8,92.3 516.7,96.2 522.5,96.8 528.3,93.2 534.1,94.2 539.9,105.3 545.7,119.8 551.5,125.1 557.4,125.6 563.2,130.3 569.0,130.6 574.8,111.6 580.6,112.3 586.4,115.7 592.3,116.3 598.1,100.8 603.9,100.9 609.7,94.6 615.5,86.1 621.3,82.4 627.1,85.7 633.0,91.2 638.8,97.7 644.6,93.3 650.4,87.9 656.2,92.5 662.0,87.5 667.8,93.6 673.7,100.5 679.5,105.1 685.3,102.6 691.1,102.9 696.9,104.8 702.7,98.6 708.6,105.5 714.4,93.5 720.2,82.4 726.0,75.7" fill="none" stroke="#9a7be0" stroke-width="2.0" stroke-linejoin="round"/></svg>
+    </div><div class="panel">
+      <div class="ph"><span class="pt">ME VS THE LAZY RIVAL</span><span class="ps">my account vs just buying and holding — same fees for both</span><span class="legend"><span class="lg"><i style="background:#9a7be0"></i>dip</span> <span class="lg"><i style="background:#6e6e78"></i>baseline</span></span></div>
+      <svg viewBox="0 0 760 250" preserveAspectRatio="none"><line x1="34" y1="34.0" x2="726" y2="34.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="37.5" fill="#6e6e78" font-size="10">100.0k</text><line x1="34" y1="79.5" x2="726" y2="79.5" stroke="#242428" stroke-width="0.6"/><text x="732" y="83.0" fill="#6e6e78" font-size="10">99.9k</text><line x1="34" y1="125.0" x2="726" y2="125.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="128.5" fill="#6e6e78" font-size="10">99.8k</text><line x1="34" y1="170.5" x2="726" y2="170.5" stroke="#242428" stroke-width="0.6"/><text x="732" y="174.0" fill="#6e6e78" font-size="10">99.7k</text><line x1="34" y1="216.0" x2="726" y2="216.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="219.5" fill="#6e6e78" font-size="10">99.6k</text><circle cx="34.0" cy="44.3" r="3.5" fill="#9a7be0"/><circle cx="34.0" cy="206.3" r="3.5" fill="#6e6e78"/></svg>
+    </div><div class="panel"><div class="ph"><span class="pt">LIVE VS THE PROMISE</span>
+      <span class="ps">the 3-year backtest we recorded before launch — my live numbers should rhyme with it, not match it</span></div>
+      <table><tr><th></th><th>LIVE (1 DAYS)</th><th>BACKTEST (3 YEARS)</th></tr>
+      <tr><td>Return</td><td>+0.00%</td><td>+19.70%</td></tr>
+      <tr><td>Worst slide</td><td>-0.00%</td><td>-19.40%</td></tr>
+      <tr><td>Sharpe</td><td>— (needs 7 days)</td><td>0.36</td></tr>
+      <tr><td>Trades per year</td><td>~0 so far</td><td>~4</td></tr>
+      </table></div><div class="panel"><div class="ph"><span class="pt">MY DECISION LOG</span><span class="ps">one row per day — &#x27;no-change&#x27; is normal and good</span></div><table><tr><th>DATE</th><th>CLOSE</th><th>WHAT I SAW</th><th>SIGNAL</th><th>ACTION</th></tr><tr><td>2026-07-03</td><td>62,515</td><td>rsi_14 47.5</td><td><span style="color:#6e6e78">HOLD</span></td><td>no-change</td></tr></table></div><div class="panel"><div class="ph"><span class="pt">MY TRADES</span><span class="ps">each one costs 0.35% — I don&#x27;t do it lightly</span></div><table><tr><th>DATE</th><th>SIDE</th><th>QTY BTC</th><th>PRICE</th><th>COSTS</th><th>EQUITY AFTER</th></tr><tr><td colspan="6" style="color:#6e6e78">none yet — my rule hasn&#x27;t triggered</td></tr></table></div><footer>RULES LOCKED AT LAUNCH · HOUSTON WATCHES, HUMANS REVIEW WEEKLY · PAPER MONEY ONLY · NOT FINANCIAL ADVICE</footer></body></html>

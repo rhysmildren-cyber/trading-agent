@@ -36,6 +36,9 @@ class Strategy:
     evaluate: Callable[[list[float], str], StrategyResult]
     flat_text: str = ""         # plain-english "why I'm in cash"
     long_text: str = ""         # plain-english "why I'm holding"
+    # pre-registered 3y backtest (2023-07-05 -> 2026-07-03), recorded at launch;
+    # used by the dashboard to compare live results against expectations
+    expectation: dict = field(default_factory=dict)
 
 
 def _kepler(closes: list[float], position: str) -> StrategyResult:
@@ -91,6 +94,7 @@ AGENTS: dict[str, Strategy] = {s.key: s for s in [
         warmup=SMA_WINDOW, evaluate=_kepler,
         flat_text="Price is below the 50-day trend line, so I'm parked in cash until it climbs back above.",
         long_text="Price is above the 50-day trend line, so I stay in Bitcoin.",
+        expectation={"ret": 1.408, "dd": 0.307, "sharpe": 1.08, "trades_yr": 12},
     ),
     Strategy(
         key="vector", name="VECTOR", color="#e8923a", color_dark="#8a4f1d",
@@ -100,6 +104,7 @@ AGENTS: dict[str, Strategy] = {s.key: s for s in [
         warmup=MOM_WINDOW + 1, evaluate=_vector,
         flat_text="The last 30 days are net negative, so momentum says stay in cash.",
         long_text="The last 30 days are net positive — momentum says keep riding.",
+        expectation={"ret": 0.347, "dd": 0.399, "sharpe": 0.47, "trades_yr": 35},
     ),
     Strategy(
         key="donnie", name="DONNIE", color="#3aaea0", color_dark="#1d5f58",
@@ -109,6 +114,7 @@ AGENTS: dict[str, Strategy] = {s.key: s for s in [
         warmup=BREAKOUT_ENTRY + 1, evaluate=_donnie,
         flat_text="No fresh 20-day high yet. I only move on a breakout — slow is smooth.",
         long_text="Bought the breakout; I'll crawl back to cash if price hits a 10-day low.",
+        expectation={"ret": 1.160, "dd": 0.304, "sharpe": 1.07, "trades_yr": 14},
     ),
     Strategy(
         key="dip", name="DIP", color="#9a7be0", color_dark="#4f3a8a",
@@ -118,6 +124,7 @@ AGENTS: dict[str, Strategy] = {s.key: s for s in [
         warmup=50, evaluate=_dip,  # extra bars so Wilder smoothing stabilizes
         flat_text="Nobody's panicking — RSI is calm, so there's nothing cheap to buy.",
         long_text="Bought someone's panic. Now waiting for the relief rally to sell into.",
+        expectation={"ret": 0.197, "dd": 0.194, "sharpe": 0.36, "trades_yr": 4},
     ),
 ]}
 
