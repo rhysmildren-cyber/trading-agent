@@ -28,6 +28,8 @@ def get_state(db: Client, agent: str) -> dict:
         "starting_capital": STARTING_CAPITAL,
         "kill_switch_tripped": False,
         "halted_until": None,
+        "entry_equity": None,
+        "entry_price": None,
     }
     db.table("system_state").insert(row).execute()
     return row

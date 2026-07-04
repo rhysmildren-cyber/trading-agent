@@ -3,7 +3,7 @@
 Purpose: validate each strategy implementation and record pre-registered
 expectations. Run once, exactly as specced; parameters do not move afterward.
 
-Usage: python -m agent.backtest [years]
+Usage: python -m agent.backtest [years] [SYMBOL]
 """
 
 import csv
@@ -11,14 +11,16 @@ import sys
 from pathlib import Path
 
 from agent import data, ledger
-from agent.config import STARTING_CAPITAL
+from agent.config import STARTING_CAPITAL, SYMBOL
 from agent.metrics import max_drawdown, sharpe
-from agent.strategies import AGENTS, MAX_WARMUP
+from agent.strategies import BASE, MAX_WARMUP
+
+AGENTS = {s.key: s for s in BASE}
 
 
-def run(years: float = 3.0) -> None:
+def run(years: float = 3.0, symbol: str = SYMBOL) -> None:
     days = int(years * 365) + MAX_WARMUP
-    closes_dated = data.get_daily_closes(days)
+    closes_dated = data.get_daily_closes(days, symbol)
     if len(closes_dated) < MAX_WARMUP + 30:
         raise SystemExit(f"not enough history: {len(closes_dated)} bars")
     prices = [c for _, c in closes_dated]
@@ -59,7 +61,7 @@ def run(years: float = 3.0) -> None:
         w.writerows(rows)
 
     n = len(rows)
-    print(f"Backtest {rows[0][0]} -> {rows[-1][0]}  ({n} days)\n")
+    print(f"Backtest {symbol} {rows[0][0]} -> {rows[-1][0]}  ({n} days)\n")
     print(f"{'agent':10s} {'return':>9s} {'maxDD':>7s} {'sharpe':>7s} {'trades':>7s} {'final':>12s}")
     for k, curve in curves.items():
         ret = curve[-1] / STARTING_CAPITAL - 1
@@ -67,9 +69,10 @@ def run(years: float = 3.0) -> None:
         print(f"{k:10s} {ret:+9.1%} {max_drawdown(curve):7.1%} {sharpe(curve):7.2f} "
               f"{t:7d} ${curve[-1]:>11,.0f}")
     px_ret = rows[-1][1] / rows[0][1] - 1
-    print(f"\nraw BTC price change over period: {px_ret:+.1%} (sanity check vs baseline)")
+    print(f"\nraw {symbol} price change over period: {px_ret:+.1%} (sanity check vs baseline)")
     print("detail: backtest_output/equity.csv")
 
 
 if __name__ == "__main__":
-    run(float(sys.argv[1]) if len(sys.argv) > 1 else 3.0)
+    run(float(sys.argv[1]) if len(sys.argv) > 1 else 3.0,
+        sys.argv[2] if len(sys.argv) > 2 else SYMBOL)

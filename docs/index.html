@@ -11,6 +11,7 @@
   h1 { font-size: 16px; letter-spacing: 4px; color: #3ddc97;
     text-shadow: 0 0 20px rgba(61,220,151,0.5); }
   h1 b { color: #6e6e78; font-weight: 400; letter-spacing: 3px; }
+  h2 { font-size: 12px; letter-spacing: 3px; color: #6e6e78; margin: 22px 0 10px; }
   a { color: #3ce0ff; text-decoration: none; }
   .back { font-size: 11px; letter-spacing: 2px; color: #6e6e78; }
   .back:hover, a.card:hover { color: #3ce0ff; border-color: #3ce0ff; }
@@ -45,6 +46,8 @@
     gap: 14px; margin-bottom: 14px; }
   a.card { display: block; background: #121214; border: 1px solid #242428; border-radius: 10px;
     padding: 14px 16px; box-shadow: 0 8px 22px rgba(0,0,0,0.35); color: #d8d8dc; }
+  a.card.hazard { border-image: repeating-linear-gradient(45deg, #ffc857, #ffc857 8px,
+    #2a2a2e 8px, #2a2a2e 16px) 1; }
   .cardtop { display: flex; gap: 12px; align-items: center; margin-bottom: 6px; }
   .cardtop .monster { width: 78px; min-width: 78px; }
   .belief { color: #d8d8dc; font-size: 12px; margin: 4px 0 2px; }
@@ -57,6 +60,8 @@
   ol.steps b, .trig b { color: #ffc857; }
   .trig { margin-top: 10px; padding: 10px 12px; border: 1px dashed #242428; border-radius: 8px;
     font-size: 12.5px; line-height: 1.7; }
+  .warn { border: 1px dashed #ffc857; border-radius: 8px; padding: 10px 12px; margin-bottom: 14px;
+    font-size: 12px; color: #ffc857; line-height: 1.6; }
   .docs summary { font-size: 11px; letter-spacing: 2px; color: #ffc857; cursor: pointer; }
   .docs p { font-size: 12px; color: #d8d8dc; margin: 10px 0 0; line-height: 1.7; max-width: 85ch; }
   .docs b { color: #3ce0ff; } .docs i { color: #ffc857; font-style: normal; }
@@ -91,31 +96,37 @@
     </svg>
       <div class="bubble" style="border-color:#3ce0ff">
         <div class="kname">HOUSTON · MISSION OVERSEER <span style="color:#6e6e78">— watches, compares, never trades</span></div>
-        <div class="khead">Day 1 of 90. KEPLER leads at $100,000 (+332 vs the lazy rival). 4 of 4 monsters are beating buy-and-hold. All rules obeyed, no flags.</div>
-        <div class="kdetail">With four racers, the leader is partly lucky. Everyone is judged at
-        day 90 against the baseline and their own pre-registered expectation —
-        not each other's hot streaks. Click a monster for its full dossier.</div>
-      </div></div><div class="panel"><div class="ph"><span class="pt">LEADERBOARD</span>
-      <span class="ps">everyone started with $100k on the same day · Sharpe appears after 7 days</span></div>
-      <table><tr><th>AGENT</th><th>EQUITY</th><th>RETURN</th><th>VS RIVAL</th><th>WORST SLIDE</th><th>SHARPE</th><th>POSITION</th><th>MOOD</th></tr>
-      <tr><td><i class="dot" style="background:#66ad64"></i><a href="kepler.html">KEPLER</a></td><td>$100,000</td><td>+0.00%</td><td><span style="color:#3ddc97">+332</span></td><td>-0.00%</td><td>—</td><td>FLAT</td><td><span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></td></tr><tr><td><i class="dot" style="background:#e8923a"></i><a href="vector.html">VECTOR</a></td><td>$100,000</td><td>+0.00%</td><td><span style="color:#3ddc97">+332</span></td><td>-0.00%</td><td>—</td><td>FLAT</td><td><span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></td></tr><tr><td><i class="dot" style="background:#3aaea0"></i><a href="donnie.html">DONNIE</a></td><td>$100,000</td><td>+0.00%</td><td><span style="color:#3ddc97">+332</span></td><td>-0.00%</td><td>—</td><td>FLAT</td><td><span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></td></tr><tr><td><i class="dot" style="background:#9a7be0"></i><a href="dip.html">DIP</a></td><td>$100,000</td><td>+0.00%</td><td><span style="color:#3ddc97">+332</span></td><td>-0.00%</td><td>—</td><td>FLAT</td><td><span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></td></tr><tr><td><i class="dot" style="background:#6e6e78"></i>BASELINE (lazy rival)</td><td>$99,668</td><td>-0.33%</td><td>—</td><td>-0.33%</td><td>—</td><td>LONG</td><td></td></tr></table></div><details class="panel docs"><summary>WHAT AM I LOOKING AT? — the experiment, in plain English</summary>
-      <p><b>The setup.</b> Four robot monsters each trade a pretend $100,000 with one simple,
-      locked-in rule. Once a day at 10:05am Brisbane time they check the Bitcoin price, make one
-      decision, and sleep. Most days: nothing. They all race the <b>lazy rival</b> — a baseline that
-      bought Bitcoin on day one and never touches it. Beating it after fees is the whole game.</p>
+        <div class="khead">Day 1 of 90. KEPLER leads on return. 8 of 8 core monsters are beating their buy-and-hold rival. All rules obeyed, no flags.</div>
+        <div class="kdetail">Two divisions run the same four rules on different markets — a rule
+        that only works on one asset was probably lucky. The Degen Wing below is quarantined
+        entertainment, not evidence. Judgement happens at day 90, against each
+        agent's own baseline and pre-registered expectation. Click any monster for its dossier.</div>
+      </div></div><div class="panel"><div class="ph"><span class="pt">LEADERBOARD — CORE EXPERIMENT</span>
+      <span class="ps">every agent started with $100k · 'vs rival' compares against its own market's buy-and-hold</span></div>
+      <table><tr><th>AGENT</th><th>MARKET</th><th>EQUITY</th><th>RETURN</th><th>VS RIVAL</th><th>WORST SLIDE</th><th>SHARPE</th><th>POSITION</th><th>MOOD</th></tr>
+      <tr><td><i class="dot" style="background:#66ad64"></i><a href="kepler.html">KEPLER</a></td><td>BTC</td><td>$100,000</td><td>+0.00%</td><td><span style="color:#3ddc97">+$332</span></td><td>-0.00%</td><td>—</td><td>FLAT</td><td><span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></td></tr><tr><td><i class="dot" style="background:#e8923a"></i><a href="vector.html">VECTOR</a></td><td>BTC</td><td>$100,000</td><td>+0.00%</td><td><span style="color:#3ddc97">+$332</span></td><td>-0.00%</td><td>—</td><td>FLAT</td><td><span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></td></tr><tr><td><i class="dot" style="background:#3aaea0"></i><a href="donnie.html">DONNIE</a></td><td>BTC</td><td>$100,000</td><td>+0.00%</td><td><span style="color:#3ddc97">+$332</span></td><td>-0.00%</td><td>—</td><td>FLAT</td><td><span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></td></tr><tr><td><i class="dot" style="background:#9a7be0"></i><a href="dip.html">DIP</a></td><td>BTC</td><td>$100,000</td><td>+0.00%</td><td><span style="color:#3ddc97">+$332</span></td><td>-0.00%</td><td>—</td><td>FLAT</td><td><span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></td></tr><tr><td><i class="dot" style="background:#66ad64"></i><a href="kepler_eth.html">KEPLER·ETH</a></td><td>ETH</td><td>$100,000</td><td>+0.00%</td><td><span style="color:#3ddc97">+$332</span></td><td>-0.00%</td><td>—</td><td>FLAT</td><td><span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></td></tr><tr><td><i class="dot" style="background:#e8923a"></i><a href="vector_eth.html">VECTOR·ETH</a></td><td>ETH</td><td>$100,000</td><td>+0.00%</td><td><span style="color:#3ddc97">+$332</span></td><td>-0.00%</td><td>—</td><td>FLAT</td><td><span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></td></tr><tr><td><i class="dot" style="background:#3aaea0"></i><a href="donnie_eth.html">DONNIE·ETH</a></td><td>ETH</td><td>$100,000</td><td>+0.00%</td><td><span style="color:#3ddc97">+$332</span></td><td>-0.00%</td><td>—</td><td>FLAT</td><td><span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></td></tr><tr><td><i class="dot" style="background:#9a7be0"></i><a href="dip_eth.html">DIP·ETH</a></td><td>ETH</td><td>$100,000</td><td>+0.00%</td><td><span style="color:#3ddc97">+$332</span></td><td>-0.00%</td><td>—</td><td>FLAT</td><td><span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></td></tr><tr><td><i class="dot" style="background:#6e6e78"></i>BASELINE (BTC buy-and-hold)</td><td>BTC</td><td>$99,668</td><td>-0.33%</td><td>—</td><td>-0.33%</td><td>—</td><td>LONG</td><td></td></tr><tr><td><i class="dot" style="background:#6e6e78"></i>BASELINE (ETH buy-and-hold)</td><td>ETH</td><td>$99,668</td><td>-0.33%</td><td>—</td><td>-0.33%</td><td>—</td><td>LONG</td><td></td></tr></table></div><details class="panel docs"><summary>WHAT AM I LOOKING AT? — the experiment, in plain English</summary>
+      <p><b>The setup.</b> Robot monsters each trade a pretend $100,000 with one simple, locked-in
+      rule. Once a day at 10:05am Brisbane time they check the market, make one decision, and sleep.
+      Most days: nothing. Each monster races a <b>lazy rival</b> — a baseline that bought on day one
+      and never touches it. Beating it after fees is the whole game.</p>
+      <p><b>Two divisions, same rules.</b> The four core rules run identically on Bitcoin and
+      Ethereum. That's deliberate: a rule that wins on both markets probably found something real;
+      a rule that only wins on one probably got lucky.</p>
       <p><b>Each monster's page</b> (click a card) walks through today's decision with the actual
-      numbers, shows the exact price that would make it buy or sell next, and tracks it against the
-      expectation we wrote down before launch.</p>
-      <p><b>The fine print.</b> Rules were locked before launch and never get tuned mid-race. Every
-      trade pays realistic fees (0.35%). Safety rails on everyone: lose &gt;10% in a day → 24-hour
-      bench; fall 25% below start → shut down until a human looks. With four racers the leader is
-      partly luck, so judgement happens at day 90, against the baseline and the
-      pre-registered expectations — not the daily leaderboard. <b>No real money anywhere.</b></p>
+      numbers and shows the exact price that would make it act next.</p>
+      <p><b>The fine print.</b> Rules were locked before launch and never tuned mid-race. Every trade
+      pays realistic fees (0.35%). Safety rails on the core agents: lose &gt;10% in a day → 24-hour
+      bench; fall 25% below start → shut down until a human looks. With this many racers the daily
+      leader is partly luck, so judgement happens at day 90 against baselines and
+      pre-registered expectations — not the leaderboard. <b>No real money anywhere.</b></p>
     </details><div class="panel">
-      <div class="ph"><span class="pt">THE RACE</span><span class="ps">account value, day by day — the whole experiment in one picture</span><span class="legend"><span class="lg"><i style="background:#66ad64"></i>KEPLER</span> <span class="lg"><i style="background:#e8923a"></i>VECTOR</span> <span class="lg"><i style="background:#3aaea0"></i>DONNIE</span> <span class="lg"><i style="background:#9a7be0"></i>DIP</span> <span class="lg"><i style="background:#6e6e78"></i>baseline</span></span></div>
-      <svg viewBox="0 0 760 250" preserveAspectRatio="none"><line x1="34" y1="34.0" x2="726" y2="34.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="37.5" fill="#6e6e78" font-size="10">100.0k</text><line x1="34" y1="79.5" x2="726" y2="79.5" stroke="#242428" stroke-width="0.6"/><text x="732" y="83.0" fill="#6e6e78" font-size="10">99.9k</text><line x1="34" y1="125.0" x2="726" y2="125.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="128.5" fill="#6e6e78" font-size="10">99.8k</text><line x1="34" y1="170.5" x2="726" y2="170.5" stroke="#242428" stroke-width="0.6"/><text x="732" y="174.0" fill="#6e6e78" font-size="10">99.7k</text><line x1="34" y1="216.0" x2="726" y2="216.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="219.5" fill="#6e6e78" font-size="10">99.6k</text><circle cx="34.0" cy="44.3" r="3.5" fill="#66ad64"/><circle cx="34.0" cy="44.3" r="3.5" fill="#e8923a"/><circle cx="34.0" cy="44.3" r="3.5" fill="#3aaea0"/><circle cx="34.0" cy="44.3" r="3.5" fill="#9a7be0"/><circle cx="34.0" cy="206.3" r="3.5" fill="#6e6e78"/></svg>
-    </div><div class="grid"><a class="card" href="kepler.html">
-          <div class="cardtop"><svg viewBox="0 0 140 152" class="monster" role="img" aria-label="kepler is neutral">
+      <div class="ph"><span class="pt">THE BTC RACE</span><span class="ps">account value, day by day</span><span class="legend"><span class="lg"><i style="background:#66ad64"></i>KEPLER</span> <span class="lg"><i style="background:#e8923a"></i>VECTOR</span> <span class="lg"><i style="background:#3aaea0"></i>DONNIE</span> <span class="lg"><i style="background:#9a7be0"></i>DIP</span> <span class="lg"><i style="background:#6e6e78"></i>baseline</span></span></div>
+      <svg viewBox="0 0 760 210" preserveAspectRatio="none"><line x1="34" y1="34.0" x2="726" y2="34.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="37.5" fill="#6e6e78" font-size="10">100.0k</text><line x1="34" y1="69.5" x2="726" y2="69.5" stroke="#242428" stroke-width="0.6"/><text x="732" y="73.0" fill="#6e6e78" font-size="10">99.9k</text><line x1="34" y1="105.0" x2="726" y2="105.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="108.5" fill="#6e6e78" font-size="10">99.8k</text><line x1="34" y1="140.5" x2="726" y2="140.5" stroke="#242428" stroke-width="0.6"/><text x="732" y="144.0" fill="#6e6e78" font-size="10">99.7k</text><line x1="34" y1="176.0" x2="726" y2="176.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="179.5" fill="#6e6e78" font-size="10">99.6k</text><circle cx="34.0" cy="42.0" r="3.5" fill="#66ad64"/><circle cx="34.0" cy="42.0" r="3.5" fill="#e8923a"/><circle cx="34.0" cy="42.0" r="3.5" fill="#3aaea0"/><circle cx="34.0" cy="42.0" r="3.5" fill="#9a7be0"/><circle cx="34.0" cy="168.4" r="3.5" fill="#6e6e78"/></svg>
+    </div><div class="panel">
+      <div class="ph"><span class="pt">THE ETH RACE</span><span class="ps">account value, day by day</span><span class="legend"><span class="lg"><i style="background:#66ad64"></i>KEPLER·ETH</span> <span class="lg"><i style="background:#e8923a"></i>VECTOR·ETH</span> <span class="lg"><i style="background:#3aaea0"></i>DONNIE·ETH</span> <span class="lg"><i style="background:#9a7be0"></i>DIP·ETH</span> <span class="lg"><i style="background:#6e6e78"></i>baseline</span></span></div>
+      <svg viewBox="0 0 760 210" preserveAspectRatio="none"><line x1="34" y1="34.0" x2="726" y2="34.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="37.5" fill="#6e6e78" font-size="10">100.0k</text><line x1="34" y1="69.5" x2="726" y2="69.5" stroke="#242428" stroke-width="0.6"/><text x="732" y="73.0" fill="#6e6e78" font-size="10">99.9k</text><line x1="34" y1="105.0" x2="726" y2="105.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="108.5" fill="#6e6e78" font-size="10">99.8k</text><line x1="34" y1="140.5" x2="726" y2="140.5" stroke="#242428" stroke-width="0.6"/><text x="732" y="144.0" fill="#6e6e78" font-size="10">99.7k</text><line x1="34" y1="176.0" x2="726" y2="176.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="179.5" fill="#6e6e78" font-size="10">99.6k</text><circle cx="34.0" cy="42.0" r="3.5" fill="#66ad64"/><circle cx="34.0" cy="42.0" r="3.5" fill="#e8923a"/><circle cx="34.0" cy="42.0" r="3.5" fill="#3aaea0"/><circle cx="34.0" cy="42.0" r="3.5" fill="#9a7be0"/><circle cx="34.0" cy="168.4" r="3.5" fill="#6e6e78"/></svg>
+    </div><h2>⬢ BTC DIVISION</h2><div class="grid"><a class="card" href="kepler.html">
+      <div class="cardtop"><svg viewBox="0 0 140 152" class="monster" role="img" aria-label="kepler is neutral">
       <defs>
         <radialGradient id="body-kepler" cx="38%" cy="30%" r="80%">
           <stop offset="0%" stop-color="#66ad64"/>
@@ -142,15 +153,15 @@
       <circle cx="70" cy="64" r="23" fill="#eceadf" stroke="#0b0b0c" stroke-width="3"/><circle cx="72" cy="66" r="10" fill="#3ce0ff"/><circle cx="72" cy="66" r="4.5" fill="#0b0b0c"/><circle cx="68" cy="61" r="2.6" fill="#f4f2e8"/><g clip-path="url(#eye-kepler)"><rect x="42" y="38" width="56" height="21" fill="#2d5a38" stroke="#0b0b0c" stroke-width="2.5" transform="rotate(-10 70 64)"/></g>
       <path d="M52 106 Q76 118 102 101" stroke="#0b0b0c" stroke-width="4.5" fill="none" stroke-linecap="round"/><path d="M78 109 L84 115 L89 107 L95 112 L99 103" stroke="#e9e7dc" stroke-width="3" fill="none" stroke-linejoin="round"/>
     </svg>
-            <div><div class="kname">KEPLER <span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></div>
-            <div class="belief">"Trends persist"</div>
-            <div class="rule">Long above the 50-day average (±1% buffer), cash below</div></div></div>
-          <div class="khead" style="font-size:13.5px">In cash, watching.</div>
-          <div class="statrow"><span>$100,000</span>
-            <span style="color:#3ddc97">+332 vs rival</span>
-            <span>FLAT</span></div>
-          <div class="open">OPEN DOSSIER →</div></a><a class="card" href="vector.html">
-          <div class="cardtop"><svg viewBox="0 0 140 152" class="monster" role="img" aria-label="vector is neutral">
+        <div><div class="kname">KEPLER <span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></div>
+        <div class="belief">"Trends persist"</div>
+        <div class="rule">Long above the 50-day average (±1% buffer), cash below</div></div></div>
+      <div class="khead" style="font-size:13.5px">In cash, watching.</div>
+      <div class="statrow"><span>$100,000</span>
+        <span style="color:#3ddc97">+$332 vs rival</span>
+        <span>FLAT</span></div>
+      <div class="open">OPEN DOSSIER →</div></a><a class="card" href="vector.html">
+      <div class="cardtop"><svg viewBox="0 0 140 152" class="monster" role="img" aria-label="vector is neutral">
       <defs>
         <radialGradient id="body-vector" cx="38%" cy="30%" r="80%">
           <stop offset="0%" stop-color="#e8923a"/>
@@ -177,15 +188,15 @@
       <circle cx="70" cy="64" r="23" fill="#eceadf" stroke="#0b0b0c" stroke-width="3"/><circle cx="72" cy="66" r="10" fill="#3ce0ff"/><circle cx="72" cy="66" r="4.5" fill="#0b0b0c"/><circle cx="68" cy="61" r="2.6" fill="#f4f2e8"/><g clip-path="url(#eye-vector)"><rect x="42" y="38" width="56" height="21" fill="#8a4f1d" stroke="#0b0b0c" stroke-width="2.5" transform="rotate(-10 70 64)"/></g>
       <path d="M52 106 Q76 118 102 101" stroke="#0b0b0c" stroke-width="4.5" fill="none" stroke-linecap="round"/><path d="M78 109 L84 115 L89 107 L95 112 L99 103" stroke="#e9e7dc" stroke-width="3" fill="none" stroke-linejoin="round"/>
     </svg>
-            <div><div class="kname">VECTOR <span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></div>
-            <div class="belief">"Winners keep winning"</div>
-            <div class="rule">Long while the last 30 days are net positive, cash when negative</div></div></div>
-          <div class="khead" style="font-size:13.5px">In cash, watching.</div>
-          <div class="statrow"><span>$100,000</span>
-            <span style="color:#3ddc97">+332 vs rival</span>
-            <span>FLAT</span></div>
-          <div class="open">OPEN DOSSIER →</div></a><a class="card" href="donnie.html">
-          <div class="cardtop"><svg viewBox="0 0 140 152" class="monster" role="img" aria-label="donnie is neutral">
+        <div><div class="kname">VECTOR <span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></div>
+        <div class="belief">"Winners keep winning"</div>
+        <div class="rule">Long while the last 30 days are net positive, cash when negative</div></div></div>
+      <div class="khead" style="font-size:13.5px">In cash, watching.</div>
+      <div class="statrow"><span>$100,000</span>
+        <span style="color:#3ddc97">+$332 vs rival</span>
+        <span>FLAT</span></div>
+      <div class="open">OPEN DOSSIER →</div></a><a class="card" href="donnie.html">
+      <div class="cardtop"><svg viewBox="0 0 140 152" class="monster" role="img" aria-label="donnie is neutral">
       <defs>
         <radialGradient id="body-donnie" cx="38%" cy="30%" r="80%">
           <stop offset="0%" stop-color="#3aaea0"/>
@@ -212,15 +223,15 @@
       <circle cx="70" cy="64" r="23" fill="#eceadf" stroke="#0b0b0c" stroke-width="3"/><circle cx="72" cy="66" r="10" fill="#3ce0ff"/><circle cx="72" cy="66" r="4.5" fill="#0b0b0c"/><circle cx="68" cy="61" r="2.6" fill="#f4f2e8"/><g clip-path="url(#eye-donnie)"><rect x="42" y="38" width="56" height="21" fill="#1d5f58" stroke="#0b0b0c" stroke-width="2.5" transform="rotate(-10 70 64)"/></g>
       <path d="M52 106 Q76 118 102 101" stroke="#0b0b0c" stroke-width="4.5" fill="none" stroke-linecap="round"/><path d="M78 109 L84 115 L89 107 L95 112 L99 103" stroke="#e9e7dc" stroke-width="3" fill="none" stroke-linejoin="round"/>
     </svg>
-            <div><div class="kname">DONNIE <span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></div>
-            <div class="belief">"New highs beget new highs"</div>
-            <div class="rule">Buy a 20-day-high close, exit on a 10-day low</div></div></div>
-          <div class="khead" style="font-size:13.5px">In cash, watching.</div>
-          <div class="statrow"><span>$100,000</span>
-            <span style="color:#3ddc97">+332 vs rival</span>
-            <span>FLAT</span></div>
-          <div class="open">OPEN DOSSIER →</div></a><a class="card" href="dip.html">
-          <div class="cardtop"><svg viewBox="0 0 140 152" class="monster" role="img" aria-label="dip is neutral">
+        <div><div class="kname">DONNIE <span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></div>
+        <div class="belief">"New highs beget new highs"</div>
+        <div class="rule">Buy a 20-day-high close, exit on a 10-day low</div></div></div>
+      <div class="khead" style="font-size:13.5px">In cash, watching.</div>
+      <div class="statrow"><span>$100,000</span>
+        <span style="color:#3ddc97">+$332 vs rival</span>
+        <span>FLAT</span></div>
+      <div class="open">OPEN DOSSIER →</div></a><a class="card" href="dip.html">
+      <div class="cardtop"><svg viewBox="0 0 140 152" class="monster" role="img" aria-label="dip is neutral">
       <defs>
         <radialGradient id="body-dip" cx="38%" cy="30%" r="80%">
           <stop offset="0%" stop-color="#9a7be0"/>
@@ -247,11 +258,224 @@
       <circle cx="70" cy="64" r="23" fill="#eceadf" stroke="#0b0b0c" stroke-width="3"/><circle cx="72" cy="66" r="10" fill="#3ce0ff"/><circle cx="72" cy="66" r="4.5" fill="#0b0b0c"/><circle cx="68" cy="61" r="2.6" fill="#f4f2e8"/><g clip-path="url(#eye-dip)"><rect x="42" y="38" width="56" height="21" fill="#4f3a8a" stroke="#0b0b0c" stroke-width="2.5" transform="rotate(-10 70 64)"/></g>
       <path d="M52 106 Q76 118 102 101" stroke="#0b0b0c" stroke-width="4.5" fill="none" stroke-linecap="round"/><path d="M78 109 L84 115 L89 107 L95 112 L99 103" stroke="#e9e7dc" stroke-width="3" fill="none" stroke-linejoin="round"/>
     </svg>
-            <div><div class="kname">DIP <span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></div>
-            <div class="belief">"Panic overshoots — the anti-trend control"</div>
-            <div class="rule">Buy panic (RSI below 30), sell relief (RSI above 60)</div></div></div>
-          <div class="khead" style="font-size:13.5px">In cash, watching.</div>
-          <div class="statrow"><span>$100,000</span>
-            <span style="color:#3ddc97">+332 vs rival</span>
-            <span>FLAT</span></div>
-          <div class="open">OPEN DOSSIER →</div></a></div><div class="panel"><div class="ph"><span class="pt">EVENTS</span><span class="ps">safety rails, launches, anything unusual</span></div><table><tr><th>TIME</th><th>KIND</th><th>DETAIL</th></tr><tr><td>2026-07-04 00:18</td><td>baseline_entry</td><td>bought 1.51432312 @ 62514.73</td></tr><tr><td>2026-07-04 00:15</td><td>swarm_launch</td><td>v2.0-swarm: KEPLER + VECTOR + DONNIE + DIP + baseline, clean slate, all clocks reset</td></tr><tr><td>2026-07-03 07:58</td><td>baseline_entry</td><td>bought 1.53950094 @ 61492.33</td></tr></table></div><footer>RULES LOCKED AT LAUNCH · HOUSTON WATCHES, HUMANS REVIEW WEEKLY · PAPER MONEY ONLY · NOT FINANCIAL ADVICE</footer></body></html>
+        <div><div class="kname">DIP <span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></div>
+        <div class="belief">"Panic overshoots — the anti-trend control"</div>
+        <div class="rule">Buy panic (RSI below 30), sell relief (RSI above 60)</div></div></div>
+      <div class="khead" style="font-size:13.5px">In cash, watching.</div>
+      <div class="statrow"><span>$100,000</span>
+        <span style="color:#3ddc97">+$332 vs rival</span>
+        <span>FLAT</span></div>
+      <div class="open">OPEN DOSSIER →</div></a></div><h2>⬢ ETH DIVISION</h2><div class="grid"><a class="card" href="kepler_eth.html">
+      <div class="cardtop"><svg viewBox="0 0 140 152" class="monster" role="img" aria-label="kepler_eth is neutral">
+      <defs>
+        <radialGradient id="body-kepler_eth" cx="38%" cy="30%" r="80%">
+          <stop offset="0%" stop-color="#66ad64"/>
+          <stop offset="100%" stop-color="#2d5a38"/>
+        </radialGradient>
+        <clipPath id="eye-kepler_eth"><circle cx="70" cy="64" r="23"/></clipPath>
+      </defs>
+      <ellipse cx="70" cy="147" rx="35" ry="4.5" fill="rgba(0,0,0,0.5)"/>
+      <path d="M54 120 L49 139" stroke="#3b3b42" stroke-width="8" stroke-linecap="round"/>
+      <path d="M86 120 L91 139" stroke="#3b3b42" stroke-width="8" stroke-linecap="round"/>
+      <rect x="36" y="136" width="24" height="10" rx="5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <rect x="80" y="136" width="24" height="10" rx="5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <path d="M28 84 Q13 92 11 106" stroke="#3b3b42" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+      <circle cx="11" cy="106" r="4.5" fill="#4c4c55"/>
+      <path d="M11 106 Q9 120 17 128" stroke="#3b3b42" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <circle cx="19" cy="131" r="7.5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <path d="M112 84 Q127 92 129 106" stroke="#3b3b42" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+      <circle cx="129" cy="106" r="4.5" fill="#4c4c55"/>
+      <path d="M129 106 Q131 120 123 128" stroke="#3b3b42" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <circle cx="121" cy="131" r="7.5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <circle cx="70" cy="78" r="46" fill="url(#body-kepler_eth)" stroke="#0b0b0c" stroke-width="3"/>
+      <path d="M44 40 Q39 24 33 20 Q44 23 52 34 Z" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/><path d="M96 40 Q101 24 107 20 Q96 23 88 34 Z" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <rect x="52" y="28" width="36" height="9" rx="3.5" fill="#2d5a38" stroke="#0b0b0c" stroke-width="2"/>
+      <circle cx="70" cy="64" r="23" fill="#eceadf" stroke="#0b0b0c" stroke-width="3"/><circle cx="72" cy="66" r="10" fill="#3ce0ff"/><circle cx="72" cy="66" r="4.5" fill="#0b0b0c"/><circle cx="68" cy="61" r="2.6" fill="#f4f2e8"/><g clip-path="url(#eye-kepler_eth)"><rect x="42" y="38" width="56" height="21" fill="#2d5a38" stroke="#0b0b0c" stroke-width="2.5" transform="rotate(-10 70 64)"/></g>
+      <path d="M52 106 Q76 118 102 101" stroke="#0b0b0c" stroke-width="4.5" fill="none" stroke-linecap="round"/><path d="M78 109 L84 115 L89 107 L95 112 L99 103" stroke="#e9e7dc" stroke-width="3" fill="none" stroke-linejoin="round"/>
+    </svg>
+        <div><div class="kname">KEPLER·ETH <span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></div>
+        <div class="belief">"Trends persist"</div>
+        <div class="rule">Long above the 50-day average (±1% buffer), cash below</div></div></div>
+      <div class="khead" style="font-size:13.5px">In cash, watching.</div>
+      <div class="statrow"><span>$100,000</span>
+        <span style="color:#3ddc97">+$332 vs rival</span>
+        <span>FLAT</span></div>
+      <div class="open">OPEN DOSSIER →</div></a><a class="card" href="vector_eth.html">
+      <div class="cardtop"><svg viewBox="0 0 140 152" class="monster" role="img" aria-label="vector_eth is neutral">
+      <defs>
+        <radialGradient id="body-vector_eth" cx="38%" cy="30%" r="80%">
+          <stop offset="0%" stop-color="#e8923a"/>
+          <stop offset="100%" stop-color="#8a4f1d"/>
+        </radialGradient>
+        <clipPath id="eye-vector_eth"><circle cx="70" cy="64" r="23"/></clipPath>
+      </defs>
+      <ellipse cx="70" cy="147" rx="35" ry="4.5" fill="rgba(0,0,0,0.5)"/>
+      <path d="M54 120 L49 139" stroke="#3b3b42" stroke-width="8" stroke-linecap="round"/>
+      <path d="M86 120 L91 139" stroke="#3b3b42" stroke-width="8" stroke-linecap="round"/>
+      <rect x="36" y="136" width="24" height="10" rx="5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <rect x="80" y="136" width="24" height="10" rx="5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <path d="M28 84 Q13 92 11 106" stroke="#3b3b42" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+      <circle cx="11" cy="106" r="4.5" fill="#4c4c55"/>
+      <path d="M11 106 Q9 120 17 128" stroke="#3b3b42" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <circle cx="19" cy="131" r="7.5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <path d="M112 84 Q127 92 129 106" stroke="#3b3b42" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+      <circle cx="129" cy="106" r="4.5" fill="#4c4c55"/>
+      <path d="M129 106 Q131 120 123 128" stroke="#3b3b42" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <circle cx="121" cy="131" r="7.5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <circle cx="70" cy="78" r="46" fill="url(#body-vector_eth)" stroke="#0b0b0c" stroke-width="3"/>
+      <line x1="70" y1="30" x2="70" y2="12" stroke="#3b3b42" stroke-width="3"/><path d="M63 14 L70 4 L77 14 Z" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <rect x="52" y="28" width="36" height="9" rx="3.5" fill="#8a4f1d" stroke="#0b0b0c" stroke-width="2"/>
+      <circle cx="70" cy="64" r="23" fill="#eceadf" stroke="#0b0b0c" stroke-width="3"/><circle cx="72" cy="66" r="10" fill="#3ce0ff"/><circle cx="72" cy="66" r="4.5" fill="#0b0b0c"/><circle cx="68" cy="61" r="2.6" fill="#f4f2e8"/><g clip-path="url(#eye-vector_eth)"><rect x="42" y="38" width="56" height="21" fill="#8a4f1d" stroke="#0b0b0c" stroke-width="2.5" transform="rotate(-10 70 64)"/></g>
+      <path d="M52 106 Q76 118 102 101" stroke="#0b0b0c" stroke-width="4.5" fill="none" stroke-linecap="round"/><path d="M78 109 L84 115 L89 107 L95 112 L99 103" stroke="#e9e7dc" stroke-width="3" fill="none" stroke-linejoin="round"/>
+    </svg>
+        <div><div class="kname">VECTOR·ETH <span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></div>
+        <div class="belief">"Winners keep winning"</div>
+        <div class="rule">Long while the last 30 days are net positive, cash when negative</div></div></div>
+      <div class="khead" style="font-size:13.5px">In cash, watching.</div>
+      <div class="statrow"><span>$100,000</span>
+        <span style="color:#3ddc97">+$332 vs rival</span>
+        <span>FLAT</span></div>
+      <div class="open">OPEN DOSSIER →</div></a><a class="card" href="donnie_eth.html">
+      <div class="cardtop"><svg viewBox="0 0 140 152" class="monster" role="img" aria-label="donnie_eth is neutral">
+      <defs>
+        <radialGradient id="body-donnie_eth" cx="38%" cy="30%" r="80%">
+          <stop offset="0%" stop-color="#3aaea0"/>
+          <stop offset="100%" stop-color="#1d5f58"/>
+        </radialGradient>
+        <clipPath id="eye-donnie_eth"><circle cx="70" cy="64" r="23"/></clipPath>
+      </defs>
+      <ellipse cx="70" cy="147" rx="35" ry="4.5" fill="rgba(0,0,0,0.5)"/>
+      <path d="M54 120 L49 139" stroke="#3b3b42" stroke-width="8" stroke-linecap="round"/>
+      <path d="M86 120 L91 139" stroke="#3b3b42" stroke-width="8" stroke-linecap="round"/>
+      <rect x="36" y="136" width="24" height="10" rx="5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <rect x="80" y="136" width="24" height="10" rx="5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <path d="M28 84 Q13 92 11 106" stroke="#3b3b42" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+      <circle cx="11" cy="106" r="4.5" fill="#4c4c55"/>
+      <path d="M11 106 Q9 120 17 128" stroke="#3b3b42" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <circle cx="19" cy="131" r="7.5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <path d="M112 84 Q127 92 129 106" stroke="#3b3b42" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+      <circle cx="129" cy="106" r="4.5" fill="#4c4c55"/>
+      <path d="M129 106 Q131 120 123 128" stroke="#3b3b42" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <circle cx="121" cy="131" r="7.5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <circle cx="70" cy="78" r="46" fill="url(#body-donnie_eth)" stroke="#0b0b0c" stroke-width="3"/>
+      <path d="M34 46 A40 40 0 0 1 106 46" fill="none" stroke="#0b0b0c" stroke-width="7"/><path d="M34 46 A40 40 0 0 1 106 46" fill="none" stroke="#3b3b42" stroke-width="4"/><path d="M52 22 L58 32 M70 18 L70 30 M88 22 L82 32" stroke="#3b3b42" stroke-width="3"/>
+      <rect x="52" y="28" width="36" height="9" rx="3.5" fill="#1d5f58" stroke="#0b0b0c" stroke-width="2"/>
+      <circle cx="70" cy="64" r="23" fill="#eceadf" stroke="#0b0b0c" stroke-width="3"/><circle cx="72" cy="66" r="10" fill="#3ce0ff"/><circle cx="72" cy="66" r="4.5" fill="#0b0b0c"/><circle cx="68" cy="61" r="2.6" fill="#f4f2e8"/><g clip-path="url(#eye-donnie_eth)"><rect x="42" y="38" width="56" height="21" fill="#1d5f58" stroke="#0b0b0c" stroke-width="2.5" transform="rotate(-10 70 64)"/></g>
+      <path d="M52 106 Q76 118 102 101" stroke="#0b0b0c" stroke-width="4.5" fill="none" stroke-linecap="round"/><path d="M78 109 L84 115 L89 107 L95 112 L99 103" stroke="#e9e7dc" stroke-width="3" fill="none" stroke-linejoin="round"/>
+    </svg>
+        <div><div class="kname">DONNIE·ETH <span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></div>
+        <div class="belief">"New highs beget new highs"</div>
+        <div class="rule">Buy a 20-day-high close, exit on a 10-day low</div></div></div>
+      <div class="khead" style="font-size:13.5px">In cash, watching.</div>
+      <div class="statrow"><span>$100,000</span>
+        <span style="color:#3ddc97">+$332 vs rival</span>
+        <span>FLAT</span></div>
+      <div class="open">OPEN DOSSIER →</div></a><a class="card" href="dip_eth.html">
+      <div class="cardtop"><svg viewBox="0 0 140 152" class="monster" role="img" aria-label="dip_eth is neutral">
+      <defs>
+        <radialGradient id="body-dip_eth" cx="38%" cy="30%" r="80%">
+          <stop offset="0%" stop-color="#9a7be0"/>
+          <stop offset="100%" stop-color="#4f3a8a"/>
+        </radialGradient>
+        <clipPath id="eye-dip_eth"><circle cx="70" cy="64" r="23"/></clipPath>
+      </defs>
+      <ellipse cx="70" cy="147" rx="35" ry="4.5" fill="rgba(0,0,0,0.5)"/>
+      <path d="M54 120 L49 139" stroke="#3b3b42" stroke-width="8" stroke-linecap="round"/>
+      <path d="M86 120 L91 139" stroke="#3b3b42" stroke-width="8" stroke-linecap="round"/>
+      <rect x="36" y="136" width="24" height="10" rx="5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <rect x="80" y="136" width="24" height="10" rx="5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <path d="M28 84 Q13 92 11 106" stroke="#3b3b42" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+      <circle cx="11" cy="106" r="4.5" fill="#4c4c55"/>
+      <path d="M11 106 Q9 120 17 128" stroke="#3b3b42" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <circle cx="19" cy="131" r="7.5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <path d="M112 84 Q127 92 129 106" stroke="#3b3b42" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+      <circle cx="129" cy="106" r="4.5" fill="#4c4c55"/>
+      <path d="M129 106 Q131 120 123 128" stroke="#3b3b42" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <circle cx="121" cy="131" r="7.5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <circle cx="70" cy="78" r="46" fill="url(#body-dip_eth)" stroke="#0b0b0c" stroke-width="3"/>
+      <path d="M40 38 Q28 40 26 52 Q34 48 46 46 Z" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/><path d="M100 38 Q112 40 114 52 Q106 48 94 46 Z" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <rect x="52" y="28" width="36" height="9" rx="3.5" fill="#4f3a8a" stroke="#0b0b0c" stroke-width="2"/>
+      <circle cx="70" cy="64" r="23" fill="#eceadf" stroke="#0b0b0c" stroke-width="3"/><circle cx="72" cy="66" r="10" fill="#3ce0ff"/><circle cx="72" cy="66" r="4.5" fill="#0b0b0c"/><circle cx="68" cy="61" r="2.6" fill="#f4f2e8"/><g clip-path="url(#eye-dip_eth)"><rect x="42" y="38" width="56" height="21" fill="#4f3a8a" stroke="#0b0b0c" stroke-width="2.5" transform="rotate(-10 70 64)"/></g>
+      <path d="M52 106 Q76 118 102 101" stroke="#0b0b0c" stroke-width="4.5" fill="none" stroke-linecap="round"/><path d="M78 109 L84 115 L89 107 L95 112 L99 103" stroke="#e9e7dc" stroke-width="3" fill="none" stroke-linejoin="round"/>
+    </svg>
+        <div><div class="kname">DIP·ETH <span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></div>
+        <div class="belief">"Panic overshoots — the anti-trend control"</div>
+        <div class="rule">Buy panic (RSI below 30), sell relief (RSI above 60)</div></div></div>
+      <div class="khead" style="font-size:13.5px">In cash, watching.</div>
+      <div class="statrow"><span>$100,000</span>
+        <span style="color:#3ddc97">+$332 vs rival</span>
+        <span>FLAT</span></div>
+      <div class="open">OPEN DOSSIER →</div></a></div><h2 style="color:#ffc857">⚠ THE DEGEN WING</h2><div class="warn">⚠ THE DEGEN WING — quarantined experiments with leverage and
+    shorting, run for education and entertainment. They are excluded from the experiment's judgement,
+    allowed to be liquidated, and their paper losses are kinder than real ones would be (daily prices
+    hide the intraday spikes that trigger real margin calls). Watch and learn; do not copy.</div><div class="grid"><a class="card hazard" href="spicy.html">
+      <div class="cardtop"><svg viewBox="0 0 140 152" class="monster" role="img" aria-label="spicy is neutral">
+      <defs>
+        <radialGradient id="body-spicy" cx="38%" cy="30%" r="80%">
+          <stop offset="0%" stop-color="#ff6a3d"/>
+          <stop offset="100%" stop-color="#8a2f14"/>
+        </radialGradient>
+        <clipPath id="eye-spicy"><circle cx="70" cy="64" r="23"/></clipPath>
+      </defs>
+      <ellipse cx="70" cy="147" rx="35" ry="4.5" fill="rgba(0,0,0,0.5)"/>
+      <path d="M54 120 L49 139" stroke="#3b3b42" stroke-width="8" stroke-linecap="round"/>
+      <path d="M86 120 L91 139" stroke="#3b3b42" stroke-width="8" stroke-linecap="round"/>
+      <rect x="36" y="136" width="24" height="10" rx="5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <rect x="80" y="136" width="24" height="10" rx="5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <path d="M28 84 Q13 92 11 106" stroke="#3b3b42" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+      <circle cx="11" cy="106" r="4.5" fill="#4c4c55"/>
+      <path d="M11 106 Q9 120 17 128" stroke="#3b3b42" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <circle cx="19" cy="131" r="7.5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <path d="M112 84 Q127 92 129 106" stroke="#3b3b42" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+      <circle cx="129" cy="106" r="4.5" fill="#4c4c55"/>
+      <path d="M129 106 Q131 120 123 128" stroke="#3b3b42" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <circle cx="121" cy="131" r="7.5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <circle cx="70" cy="78" r="46" fill="url(#body-spicy)" stroke="#0b0b0c" stroke-width="3"/>
+      <path d="M44 40 Q39 24 33 20 Q44 23 52 34 Z" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/><path d="M96 40 Q101 24 107 20 Q96 23 88 34 Z" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <rect x="52" y="28" width="36" height="9" rx="3.5" fill="#8a2f14" stroke="#0b0b0c" stroke-width="2"/>
+      <circle cx="70" cy="64" r="23" fill="#eceadf" stroke="#0b0b0c" stroke-width="3"/><circle cx="72" cy="66" r="10" fill="#3ce0ff"/><circle cx="72" cy="66" r="4.5" fill="#0b0b0c"/><circle cx="68" cy="61" r="2.6" fill="#f4f2e8"/><g clip-path="url(#eye-spicy)"><rect x="42" y="38" width="56" height="21" fill="#8a2f14" stroke="#0b0b0c" stroke-width="2.5" transform="rotate(-10 70 64)"/></g>
+      <path d="M52 106 Q76 118 102 101" stroke="#0b0b0c" stroke-width="4.5" fill="none" stroke-linecap="round"/><path d="M78 109 L84 115 L89 107 L95 112 L99 103" stroke="#e9e7dc" stroke-width="3" fill="none" stroke-linejoin="round"/>
+    </svg>
+        <div><div class="kname">SPICY <span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></div>
+        <div class="belief">"Leverage just makes a good thing better (narrator: it doesn&#x27;t)"</div>
+        <div class="rule">KEPLER&#x27;s exact signal, but with 3× borrowed money</div></div></div>
+      <div class="khead" style="font-size:13.5px">In cash, watching.</div>
+      <div class="statrow"><span>$100,000</span>
+        <span style="color:#3ddc97">+$332 vs rival</span>
+        <span>FLAT</span></div>
+      <div class="open">OPEN DOSSIER →</div></a><a class="card hazard" href="grudge.html">
+      <div class="cardtop"><svg viewBox="0 0 140 152" class="monster" role="img" aria-label="grudge is neutral">
+      <defs>
+        <radialGradient id="body-grudge" cx="38%" cy="30%" r="80%">
+          <stop offset="0%" stop-color="#7d8fb3"/>
+          <stop offset="100%" stop-color="#38415a"/>
+        </radialGradient>
+        <clipPath id="eye-grudge"><circle cx="70" cy="64" r="23"/></clipPath>
+      </defs>
+      <ellipse cx="70" cy="147" rx="35" ry="4.5" fill="rgba(0,0,0,0.5)"/>
+      <path d="M54 120 L49 139" stroke="#3b3b42" stroke-width="8" stroke-linecap="round"/>
+      <path d="M86 120 L91 139" stroke="#3b3b42" stroke-width="8" stroke-linecap="round"/>
+      <rect x="36" y="136" width="24" height="10" rx="5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <rect x="80" y="136" width="24" height="10" rx="5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <path d="M28 84 Q13 92 11 106" stroke="#3b3b42" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+      <circle cx="11" cy="106" r="4.5" fill="#4c4c55"/>
+      <path d="M11 106 Q9 120 17 128" stroke="#3b3b42" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <circle cx="19" cy="131" r="7.5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <path d="M112 84 Q127 92 129 106" stroke="#3b3b42" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+      <circle cx="129" cy="106" r="4.5" fill="#4c4c55"/>
+      <path d="M129 106 Q131 120 123 128" stroke="#3b3b42" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <circle cx="121" cy="131" r="7.5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <circle cx="70" cy="78" r="46" fill="url(#body-grudge)" stroke="#0b0b0c" stroke-width="3"/>
+      <path d="M40 38 Q28 40 26 52 Q34 48 46 46 Z" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/><path d="M100 38 Q112 40 114 52 Q106 48 94 46 Z" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <rect x="52" y="28" width="36" height="9" rx="3.5" fill="#38415a" stroke="#0b0b0c" stroke-width="2"/>
+      <circle cx="70" cy="64" r="23" fill="#eceadf" stroke="#0b0b0c" stroke-width="3"/><circle cx="72" cy="66" r="10" fill="#3ce0ff"/><circle cx="72" cy="66" r="4.5" fill="#0b0b0c"/><circle cx="68" cy="61" r="2.6" fill="#f4f2e8"/><g clip-path="url(#eye-grudge)"><rect x="42" y="38" width="56" height="21" fill="#38415a" stroke="#0b0b0c" stroke-width="2.5" transform="rotate(-10 70 64)"/></g>
+      <path d="M52 106 Q76 118 102 101" stroke="#0b0b0c" stroke-width="4.5" fill="none" stroke-linecap="round"/><path d="M78 109 L84 115 L89 107 L95 112 L99 103" stroke="#e9e7dc" stroke-width="3" fill="none" stroke-linejoin="round"/>
+    </svg>
+        <div><div class="kname">GRUDGE <span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></div>
+        <div class="belief">"Everything is going to zero eventually"</div>
+        <div class="rule">Shorts below the trend line, covers above — profits only when BTC falls</div></div></div>
+      <div class="khead" style="font-size:13.5px">Short and waiting.</div>
+      <div class="statrow"><span>$99,668</span>
+        <span style="color:#3ddc97">+$0 vs rival</span>
+        <span>SHORT</span></div>
+      <div class="open">OPEN DOSSIER →</div></a></div><div class="panel"><div class="ph"><span class="pt">EVENTS</span><span class="ps">safety rails, launches, liquidations, anything unusual</span></div><table><tr><th>TIME (BRISBANE)</th><th>KIND</th><th>DETAIL</th></tr><tr><td>2026-07-04 11:00</td><td>baseline_entry</td><td>baseline_eth: bought 53.90212864 @ 1756.29</td></tr><tr><td>2026-07-04 10:59</td><td>expansion</td><td>ETH mirror (4 agents + baseline_eth) and Degen Wing (SPICY 3x long, GRUDGE short) registered; schema extended for shorts</td></tr><tr><td>2026-07-04 10:18</td><td>baseline_entry</td><td>bought 1.51432312 @ 62514.73</td></tr><tr><td>2026-07-04 10:15</td><td>swarm_launch</td><td>v2.0-swarm: KEPLER + VECTOR + DONNIE + DIP + baseline, clean slate, all clocks reset</td></tr><tr><td>2026-07-03 17:58</td><td>baseline_entry</td><td>bought 1.53950094 @ 61492.33</td></tr></table></div><footer>RULES LOCKED AT LAUNCH · HOUSTON WATCHES, HUMANS REVIEW WEEKLY · PAPER MONEY ONLY · NOT FINANCIAL ADVICE</footer></body></html>

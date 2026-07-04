@@ -1,8 +1,8 @@
 """Swarm mission control — a small static site, one page per monster.
 
-docs/index.html          overview: HOUSTON, leaderboard, race chart, cards
-docs/<agent>.html        dossier: today's check narrated with real numbers,
-                         triggers, per-strategy chart, equity vs rival, logs
+docs/index.html       overview: HOUSTON, leaderboard, races, divisions, degen wing
+docs/<agent>.html     dossier: today's check narrated with real numbers, triggers,
+                      the agent's own market view, equity vs rival, logs
 
 No JS, no CDN — inline CSS and hand-rolled SVG only. Regenerated nightly by CI.
 """
@@ -12,6 +12,17 @@ import webbrowser
 from datetime import date, datetime, timezone
 from html import escape
 from pathlib import Path
+from zoneinfo import ZoneInfo
+
+BRISBANE = ZoneInfo("Australia/Brisbane")
+
+
+def bris_time(iso_ts: str) -> str:
+    """Supabase UTC timestamp -> 'YYYY-MM-DD HH:MM' in Brisbane time."""
+    ts = datetime.fromisoformat(iso_ts.replace("Z", "+00:00"))
+    if ts.tzinfo is None:
+        ts = ts.replace(tzinfo=timezone.utc)
+    return ts.astimezone(BRISBANE).strftime("%Y-%m-%d %H:%M")
 
 from dotenv import load_dotenv
 
@@ -20,7 +31,8 @@ from agent.config import (BREAKOUT_ENTRY, BREAKOUT_EXIT, DEADBAND, MOM_WINDOW,
                           RSI_BUY, RSI_PERIOD, RSI_SELL, SMA_WINDOW,
                           STARTING_CAPITAL)
 from agent.metrics import max_drawdown, sharpe, total_return
-from agent.strategies import AGENTS, BASELINE_KEY, MAX_WARMUP
+from agent.strategies import (AGENTS, BASELINES, DEGEN, MARKET_SYMBOLS,
+                              MAX_WARMUP)
 
 # --- palette: blacks and charcoal, neon accents ---
 BG = "#08080a"
@@ -36,6 +48,7 @@ PURPLE = "#8b7bff"
 
 RUN_TARGET_DAYS = 90
 HOUSTON = {"color": "#8a8a94", "color_dark": "#45454d"}
+ALL_MONSTERS = {**AGENTS, **DEGEN}
 
 
 # ---------- data ----------
@@ -44,12 +57,13 @@ def fetch() -> dict:
     conn = db.client()
     return {
         "equity": conn.table("equity_daily").select("*").order("date").execute().data,
-        "decisions": conn.table("decisions").select("*").order("run_date", desc=True).limit(80).execute().data,
-        "trades": conn.table("trades").select("*").order("created_at", desc=True).limit(40).execute().data,
+        "decisions": conn.table("decisions").select("*").order("run_date", desc=True).limit(200).execute().data,
+        "trades": conn.table("trades").select("*").order("created_at", desc=True).limit(60).execute().data,
         "events": conn.table("events").select("*").order("created_at", desc=True).limit(8).execute().data,
         "reviews": conn.table("daily_review").select("*").eq("rules_followed", False).execute().data,
         "state": {s["agent"]: s for s in conn.table("system_state").select("*").execute().data},
-        "closes": data.get_daily_closes(MAX_WARMUP + 120),
+        "closes": {m: data.get_daily_closes(MAX_WARMUP + 120, sym)
+                   for m, sym in MARKET_SYMBOLS.items()},
     }
 
 
@@ -225,128 +239,158 @@ def monster_svg(mood, uid, color, color_dark, accessory):
 # ---------- moods ----------
 
 def agent_mood(strat, kill, halted, stale, position, day_ret, base_day):
+    """Returns (mood, headline, detail, chip_label)."""
+    invested_text = strat.long_text
+    resting_text = strat.flat_text
+    if strat.degen and kill:
+        return ("critical", "Liquidated.",
+                "I bet with borrowed money and the market took nearly all of it. "
+                "This is the lesson I exist to teach. I stay dead.", "LIQUIDATED")
     if kill:
         return ("critical", "Emergency stop.",
                 "My account fell more than 25% below start, so I shut myself down. "
-                "A human has to review me before I trade again.")
+                "A human has to review me before I trade again.", MOOD_STYLE["critical"][2])
     if halted:
         return ("worried", "Taking a breather.",
-                "I lost more than 10% in one day — the safety rules benched me for 24 hours.")
+                "I lost more than 10% in one day — the safety rules benched me for 24 hours.",
+                MOOD_STYLE["worried"][2])
     if stale:
         return ("worried", "Am I stuck?",
-                "No run logged in over two days. Someone check the scheduler.")
+                "No run logged in over two days. Someone check the scheduler.",
+                MOOD_STYLE["worried"][2])
     if day_ret is None:
-        return ("neutral", "First day on the job.", strat.flat_text if position == "flat" else strat.long_text)
-    if position == "flat" and base_day is not None and base_day < -0.01:
+        return ("neutral", "First day on the job.",
+                resting_text if position == "flat" else invested_text, MOOD_STYLE["neutral"][2])
+    if position == "flat" and base_day is not None and base_day < -0.01 and not strat.degen:
         return ("happy", f"Dodged a {base_day:.1%} drop.",
-                "Bitcoin fell today and I'm safely in cash. " + strat.flat_text)
+                "The market fell today and I'm safely in cash. " + resting_text,
+                MOOD_STYLE["happy"][2])
     if day_ret > 0.005:
-        return ("happy", f"Up {day_ret:+.1%} today.", strat.long_text)
+        return ("happy", f"Up {day_ret:+.1%} today.", invested_text, MOOD_STYLE["happy"][2])
     if day_ret < -0.005:
         return ("sad", f"Down {day_ret:+.1%} today.",
-                "Single days are noise, and my rule hasn't triggered. " + strat.long_text)
-    return ("neutral",
-            "In cash, watching." if position == "flat" else "Holding steady.",
-            strat.flat_text if position == "flat" else strat.long_text)
+                "Single days are noise, and my rule hasn't triggered. " + invested_text,
+                MOOD_STYLE["sad"][2])
+    headline = {"flat": "In cash, watching.", "long": "Holding steady.",
+                "short": "Short and waiting."}.get(position, "Watching.")
+    return ("neutral", headline,
+            resting_text if position == "flat" else invested_text, MOOD_STYLE["neutral"][2])
 
 
 # ---------- today's check, narrated with real numbers ----------
 
-def todays_check(key, closes, position):
-    """Returns (steps: list[str], triggers: list[str]) in plain English."""
+def todays_check(strat, closes, position):
+    """Returns (steps, triggers) in plain English, with today's actual numbers."""
     price = closes[-1]
+    asset = "Bitcoin" if strat.market == "BTC" else "Ethereum"
     p = f"${price:,.0f}"
-    if key == "kepler":
+    base = strat.base
+
+    if base == "kepler":
         sma = signal.compute_sma(closes)
         buy_at, sell_at = sma * (1 + DEADBAND), sma * (1 - DEADBAND)
         pct = price / sma - 1
         steps = [
-            f"Bitcoin's latest daily close: <b>{p}</b>.",
+            f"{asset}'s latest daily close: <b>{p}</b>.",
             f"Averaged the last {SMA_WINDOW} closes → my trend line sits at <b>${sma:,.0f}</b>.",
             f"Price is <b>{pct:+.1%}</b> versus the line. My no-trade buffer is ±{DEADBAND:.0%}, "
             f"so only a close above ${buy_at:,.0f} or below ${sell_at:,.0f} moves me.",
         ]
-        trig = ([f"<b>BUY</b> the day Bitcoin closes above <b>${buy_at:,.0f}</b>. Until then: cash."]
-                if position == "flat" else
-                [f"<b>SELL</b> the day Bitcoin closes below <b>${sell_at:,.0f}</b>. Until then: hold."])
+        if strat.key == "grudge":
+            trig = ([f"<b>OPEN A SHORT</b> the day {asset} closes below <b>${sell_at:,.0f}</b>. "
+                     f"I only ever bet on the way down."] if position == "flat" else
+                    [f"<b>COVER MY SHORT</b> the day {asset} closes above <b>${buy_at:,.0f}</b>. "
+                     f"Every rally costs me money until then."])
+        else:
+            trig = ([f"<b>BUY</b> the day {asset} closes above <b>${buy_at:,.0f}</b>. Until then: cash."]
+                    if position == "flat" else
+                    [f"<b>SELL</b> the day {asset} closes below <b>${sell_at:,.0f}</b>. Until then: hold."])
+        if strat.key == "spicy":
+            trig.append("And I do it with <b>3× borrowed money</b>: every 1% move in "
+                        f"{asset} is 3% to my account — both directions. A ~30% drop against me "
+                        "means liquidation.")
         trig.append("The trend line drifts a little every day as old prices roll out of the average.")
         return steps, trig
-    if key == "vector":
+
+    if base == "vector":
         ref = closes[-(MOM_WINDOW + 1)]
         roc = price / ref - 1
         steps = [
-            f"Bitcoin's latest daily close: <b>{p}</b>.",
+            f"{asset}'s latest daily close: <b>{p}</b>.",
             f"Looked up the close {MOM_WINDOW} days ago: <b>${ref:,.0f}</b>.",
             f"Today vs then: <b>{roc:+.1%}</b>. Positive means momentum is up, negative means down.",
         ]
-        trig = ([f"<b>BUY</b> when a close beats its 30-days-ago reference (right now that means closing above <b>${ref:,.0f}</b>)."]
+        trig = ([f"<b>BUY</b> when a close beats its 30-days-ago reference (right now: above <b>${ref:,.0f}</b>)."]
                 if position == "flat" else
                 [f"<b>SELL</b> when a close drops under its 30-days-ago reference (right now <b>${ref:,.0f}</b>)."])
         trig.append("The reference rolls forward daily, so the bar to clear changes every day.")
         return steps, trig
-    if key == "donnie":
+
+    if base == "donnie":
         hi = max(closes[-(BREAKOUT_ENTRY + 1):-1])
         lo = min(closes[-(BREAKOUT_EXIT + 1):-1])
         steps = [
-            f"Bitcoin's latest daily close: <b>{p}</b>.",
+            f"{asset}'s latest daily close: <b>{p}</b>.",
             f"Highest close of the previous {BREAKOUT_ENTRY} days: <b>${hi:,.0f}</b> — my breakout level.",
             f"Lowest close of the previous {BREAKOUT_EXIT} days: <b>${lo:,.0f}</b> — my escape hatch.",
         ]
-        trig = ([f"<b>BUY</b> the day Bitcoin closes at or above <b>${hi:,.0f}</b> (a fresh {BREAKOUT_ENTRY}-day high)."]
+        trig = ([f"<b>BUY</b> the day {asset} closes at or above <b>${hi:,.0f}</b> (a fresh {BREAKOUT_ENTRY}-day high)."]
                 if position == "flat" else
-                [f"<b>SELL</b> the day Bitcoin closes at or below <b>${lo:,.0f}</b> (a fresh {BREAKOUT_EXIT}-day low)."])
+                [f"<b>SELL</b> the day {asset} closes at or below <b>${lo:,.0f}</b> (a fresh {BREAKOUT_EXIT}-day low)."])
         trig.append("Both rails move daily as the lookback windows slide.")
         return steps, trig
-    # dip
+
     rsi = signal.rsi_wilder(closes, RSI_PERIOD)
     steps = [
-        f"Bitcoin's latest daily close: <b>{p}</b>.",
+        f"{asset}'s latest daily close: <b>{p}</b>.",
         f"Computed RSI-{RSI_PERIOD}, a 0–100 gauge of recent buying vs selling pressure: <b>{rsi:.0f}</b>.",
         f"Below {RSI_BUY} = panic selling (I buy). Above {RSI_SELL} = relief rally (I sell). "
         f"In between = nothing to do.",
     ]
-    trig = ([f"<b>BUY</b> when RSI drops below <b>{RSI_BUY}</b> — that usually takes a sharp multi-day sell-off. "
-             f"It's at {rsi:.0f} now, so I'm waiting."]
+    trig = ([f"<b>BUY</b> when RSI drops below <b>{RSI_BUY}</b> — that usually takes a sharp multi-day "
+             f"sell-off. It's at {rsi:.0f} now, so I'm waiting."]
             if position == "flat" else
-            [f"<b>SELL</b> when RSI climbs above <b>{RSI_SELL}</b> — the relief rally I bought for. It's at {rsi:.0f} now."])
-    trig.append("There's no fixed trigger price for RSI — it depends on the shape of the recent moves, not one level.")
+            [f"<b>SELL</b> when RSI climbs above <b>{RSI_SELL}</b> — the relief rally I bought for. "
+             f"It's at {rsi:.0f} now."])
+    trig.append("There's no fixed trigger price for RSI — it depends on the shape of the recent "
+                "moves, not one level.")
     return steps, trig
 
 
-def strategy_chart(key, closes):
-    prices = [c for _, c in closes]
+def strategy_chart(strat, closes_dated):
+    prices = [c for _, c in closes_dated]
     n_tail = min(120, len(prices) - MAX_WARMUP)
     tail = prices[-n_tail:]
-    if key == "kepler":
+    base = strat.base
+    if base == "kepler":
         smas = [sum(prices[i - SMA_WINDOW + 1:i + 1]) / SMA_WINDOW
                 for i in range(len(prices) - n_tail, len(prices))]
         return chart("MY VIEW OF THE MARKET",
-                     "white: BTC price · amber: my trend line · shaded: the ±1% no-trade buffer",
+                     "white: price · amber: my trend line · shaded: the ±1% no-trade buffer",
                      [(tail, TEXT, "price"), (smas, AMBER, "trend line")],
                      bands=[([s * (1 + DEADBAND) for s in smas], [s * (1 - DEADBAND) for s in smas],
                              "rgba(255,200,87,0.10)")],
                      fmt=lambda v: f"{v / 1000:,.0f}k")
-    if key == "vector":
+    if base == "vector":
         rocs = [prices[i] / prices[i - MOM_WINDOW] - 1
                 for i in range(len(prices) - n_tail, len(prices))]
         return chart("MY VIEW OF THE MARKET",
                      "the 30-day running return — above zero I want in, below zero I want out",
-                     [(rocs, AGENTS["vector"].color, "30-day return"),
-                      ([0.0] * n_tail, DIM, "zero line", "4 4")],
+                     [(rocs, strat.color, "30-day return"), ([0.0] * n_tail, DIM, "zero line", "4 4")],
                      fmt=lambda v: f"{v:+.0%}")
-    if key == "donnie":
+    if base == "donnie":
         hi = [max(prices[i - BREAKOUT_ENTRY:i]) for i in range(len(prices) - n_tail, len(prices))]
         lo = [min(prices[i - BREAKOUT_EXIT:i]) for i in range(len(prices) - n_tail, len(prices))]
         return chart("MY VIEW OF THE MARKET",
-                     "white: BTC price · teal rails: buy above the top one, bail below the bottom one",
-                     [(tail, TEXT, "price"), (hi, AGENTS["donnie"].color, "20-day high"),
-                      (lo, AGENTS["donnie"].color_dark, "10-day low")],
+                     "white: price · rails: buy above the top one, bail below the bottom one",
+                     [(tail, TEXT, "price"), (hi, strat.color, "20-day high"),
+                      (lo, strat.color_dark, "10-day low")],
                      fmt=lambda v: f"{v / 1000:,.0f}k")
     rsis = [signal.rsi_wilder(prices[:i + 1], RSI_PERIOD)
             for i in range(len(prices) - n_tail, len(prices))]
     return chart("MY VIEW OF THE MARKET",
                  f"the fear gauge — I buy under {RSI_BUY} (panic), sell over {RSI_SELL} (relief)",
-                 [(rsis, AGENTS["dip"].color, "RSI-14")],
+                 [(rsis, strat.color, "RSI-14")],
                  bands=[([RSI_SELL] * n_tail, [RSI_BUY] * n_tail, "rgba(154,123,224,0.10)")],
                  fmt=lambda v: f"{v:.0f}", h=170)
 
@@ -354,6 +398,7 @@ def strategy_chart(key, closes):
 # ---------- html shell ----------
 
 def fmt_money(v): return f"${v:,.0f}"
+def fmt_delta(v): return f"{'+' if v >= 0 else '−'}${abs(v):,.0f}"
 def fmt_pct(v, signed=True): return f"{v:+.2%}" if signed else f"{v:.2%}"
 
 
@@ -370,6 +415,7 @@ CSS = f"""
   h1 {{ font-size: 16px; letter-spacing: 4px; color: {GREEN};
     text-shadow: 0 0 20px rgba(61,220,151,0.5); }}
   h1 b {{ color: {DIM}; font-weight: 400; letter-spacing: 3px; }}
+  h2 {{ font-size: 12px; letter-spacing: 3px; color: {DIM}; margin: 22px 0 10px; }}
   a {{ color: {CYAN}; text-decoration: none; }}
   .back {{ font-size: 11px; letter-spacing: 2px; color: {DIM}; }}
   .back:hover, a.card:hover {{ color: {CYAN}; border-color: {CYAN}; }}
@@ -404,6 +450,8 @@ CSS = f"""
     gap: 14px; margin-bottom: 14px; }}
   a.card {{ display: block; background: {PANEL}; border: 1px solid {BORDER}; border-radius: 10px;
     padding: 14px 16px; box-shadow: 0 8px 22px rgba(0,0,0,0.35); color: {TEXT}; }}
+  a.card.hazard {{ border-image: repeating-linear-gradient(45deg, {AMBER}, {AMBER} 8px,
+    #2a2a2e 8px, #2a2a2e 16px) 1; }}
   .cardtop {{ display: flex; gap: 12px; align-items: center; margin-bottom: 6px; }}
   .cardtop .monster {{ width: 78px; min-width: 78px; }}
   .belief {{ color: {TEXT}; font-size: 12px; margin: 4px 0 2px; }}
@@ -416,6 +464,8 @@ CSS = f"""
   ol.steps b, .trig b {{ color: {AMBER}; }}
   .trig {{ margin-top: 10px; padding: 10px 12px; border: 1px dashed {BORDER}; border-radius: 8px;
     font-size: 12.5px; line-height: 1.7; }}
+  .warn {{ border: 1px dashed {AMBER}; border-radius: 8px; padding: 10px 12px; margin-bottom: 14px;
+    font-size: 12px; color: {AMBER}; line-height: 1.6; }}
   .docs summary {{ font-size: 11px; letter-spacing: 2px; color: {AMBER}; cursor: pointer; }}
   .docs p {{ font-size: 12px; color: {TEXT}; margin: 10px 0 0; line-height: 1.7; max-width: 85ch; }}
   .docs b {{ color: {CYAN}; }} .docs i {{ color: {AMBER}; font-style: normal; }}
@@ -441,192 +491,243 @@ def log_table(title, subtitle, headers, rows, empty):
             f'<table><tr>{head}</tr>{body}</table></div>')
 
 
-# ---------- pages ----------
+# ---------- context ----------
 
 def compute_context(d):
     now = datetime.now(timezone.utc)
     eq_rows = d["equity"]
-    curves = {k: series(eq_rows, k) for k in [*AGENTS, BASELINE_KEY]}
+    all_keys = [*ALL_MONSTERS, *BASELINES.values()]
+    curves = {k: series(eq_rows, k) for k in all_keys}
     full = {k: [STARTING_CAPITAL] + v for k, v in curves.items()}
     dates = sorted({r["date"] for r in eq_rows})
     day_n = len(dates)
-    stale = dates and (now.date() - date.fromisoformat(dates[-1])).days > 2
-    b_eq = curves[BASELINE_KEY][-1] if curves[BASELINE_KEY] else STARTING_CAPITAL
-    b_day = (full[BASELINE_KEY][-1] / full[BASELINE_KEY][-2] - 1) if len(full[BASELINE_KEY]) >= 2 else None
+    stale = bool(dates) and (now.date() - date.fromisoformat(dates[-1])).days > 2
+    b_eq = {m: (curves[BASELINES[m]][-1] if curves[BASELINES[m]] else STARTING_CAPITAL)
+            for m in BASELINES}
+    b_day = {}
+    for m in BASELINES:
+        f = full[BASELINES[m]]
+        b_day[m] = (f[-1] / f[-2] - 1) if len(f) >= 2 else None
 
     stats, moods = {}, {}
-    for key, strat in AGENTS.items():
+    for key, strat in ALL_MONSTERS.items():
         st = d["state"].get(key, {})
         cur = curves[key][-1] if curves[key] else STARTING_CAPITAL
         day_ret = (full[key][-1] / full[key][-2] - 1) if len(full[key]) >= 2 else None
         kill = bool(st.get("kill_switch_tripped"))
         halted = st.get("halted_until") is not None and st["halted_until"] > now.isoformat()
-        moods[key] = agent_mood(strat, kill, halted, stale, st.get("position", "flat"), day_ret, b_day)
-        stats[key] = {"equity": cur, "ret": total_return(full[key]), "vs_base": cur - b_eq,
-                      "dd": max_drawdown(full[key]), "sharpe": sharpe(full[key]),
-                      "position": st.get("position", "flat"), "kill": kill, "halted": halted}
+        moods[key] = agent_mood(strat, kill, halted, stale, st.get("position", "flat"),
+                                day_ret, b_day[strat.market])
+        stats[key] = {"equity": cur, "ret": total_return(full[key]),
+                      "vs_base": cur - b_eq[strat.market], "dd": max_drawdown(full[key]),
+                      "sharpe": sharpe(full[key]), "position": st.get("position", "flat"),
+                      "kill": kill, "halted": halted}
     return {"curves": curves, "full": full, "day_n": day_n, "stale": stale,
             "b_eq": b_eq, "stats": stats, "moods": moods}
 
 
+# ---------- overview ----------
+
+def _monster_card(key, strat, ctx, hazard=False):
+    mood, headline, _, label = ctx["moods"][key]
+    s = ctx["stats"][key]
+    accent = MOOD_STYLE[mood][0]
+    cls = "card hazard" if hazard else "card"
+    return f"""<a class="{cls}" href="{key}.html">
+      <div class="cardtop">{monster_svg(mood, key, strat.color, strat.color_dark, strat.accessory)}
+        <div><div class="kname">{strat.name} <span class="chip" style="color:{accent};border-color:{accent}">{label}</span></div>
+        <div class="belief">"{escape(strat.belief)}"</div>
+        <div class="rule">{escape(strat.rule)}</div></div></div>
+      <div class="khead" style="font-size:13.5px">{escape(headline)}</div>
+      <div class="statrow"><span>{fmt_money(s['equity'])}</span>
+        <span style="color:{GREEN if s['vs_base'] >= 0 else RED}">{fmt_delta(s['vs_base'])} vs rival</span>
+        <span>{s['position'].upper()}</span></div>
+      <div class="open">OPEN DOSSIER →</div></a>"""
+
+
 def build_overview(d, ctx):
-    stats, moods, day_n, b_eq = ctx["stats"], ctx["moods"], ctx["day_n"], ctx["b_eq"]
+    stats, moods, day_n = ctx["stats"], ctx["moods"], ctx["day_n"]
+    core = {k: s for k, s in AGENTS.items()}
     enough = day_n >= 7
 
-    leader_key = max(stats, key=lambda k: stats[k]["equity"])
-    beating = sum(1 for s in stats.values() if s["equity"] >= b_eq)
-    flags = [f"{AGENTS[k].name} kill-switched" for k, s in stats.items() if s["kill"]]
-    flags += [f"{AGENTS[k].name} in timeout" for k, s in stats.items() if s["halted"]]
+    beating = sum(1 for k in core if stats[k]["equity"] >= ctx["b_eq"][core[k].market])
+    leader_key = max(core, key=lambda k: stats[k]["ret"])
+    flags = [f"{ALL_MONSTERS[k].name} kill-switched" for k in core if stats[k]["kill"]]
+    flags += [f"{ALL_MONSTERS[k].name} in timeout" for k in core if stats[k]["halted"]]
+    flags += [f"{ALL_MONSTERS[k].name} liquidated" for k in DEGEN if stats[k]["kill"]]
     flags += [f"{len(d['reviews'])} rule violations logged"] if d["reviews"] else []
     if ctx["stale"]:
         flags.append("data stale — check scheduler")
-    houston_mood = "critical" if any(s["kill"] for s in stats.values()) else \
-        "worried" if flags else ("neutral" if day_n < 7 else ("happy" if beating >= 2 else "sad"))
-    gap = stats[leader_key]["equity"] - b_eq
-    line = (f"Day {day_n} of {RUN_TARGET_DAYS}. {AGENTS[leader_key].name} leads at "
-            f"{fmt_money(stats[leader_key]['equity'])} ({gap:+,.0f} vs the lazy rival). "
-            f"{beating} of {len(AGENTS)} monsters are beating buy-and-hold. "
-            + ("Flags: " + "; ".join(flags) + "." if flags else "All rules obeyed, no flags."))
+    houston_mood = "critical" if any(stats[k]["kill"] for k in core) else \
+        "worried" if ctx["stale"] else ("neutral" if day_n < 7 else
+                                        ("happy" if beating >= len(core) / 2 else "sad"))
+    line = (f"Day {day_n} of {RUN_TARGET_DAYS}. {core[leader_key].name} leads on return. "
+            f"{beating} of {len(core)} core monsters are beating their buy-and-hold rival. "
+            + ("Notes: " + "; ".join(flags) + "." if flags else "All rules obeyed, no flags."))
     houston = f"""<div class="panel kp">
       {monster_svg(houston_mood, "houston", HOUSTON["color"], HOUSTON["color_dark"], "headset")}
       <div class="bubble" style="border-color:{MOOD_STYLE[houston_mood][0]}">
         <div class="kname">HOUSTON · MISSION OVERSEER <span style="color:{DIM}">— watches, compares, never trades</span></div>
         <div class="khead">{escape(line)}</div>
-        <div class="kdetail">With four racers, the leader is partly lucky. Everyone is judged at
-        day {RUN_TARGET_DAYS} against the baseline and their own pre-registered expectation —
-        not each other's hot streaks. Click a monster for its full dossier.</div>
+        <div class="kdetail">Two divisions run the same four rules on different markets — a rule
+        that only works on one asset was probably lucky. The Degen Wing below is quarantined
+        entertainment, not evidence. Judgement happens at day {RUN_TARGET_DAYS}, against each
+        agent's own baseline and pre-registered expectation. Click any monster for its dossier.</div>
       </div></div>"""
 
-    def lb_row(key):
-        if key == BASELINE_KEY:
-            name, color = "BASELINE (lazy rival)", DIM
-            s = {"equity": b_eq, "ret": total_return(ctx["full"][BASELINE_KEY]), "vs_base": 0.0,
-                 "dd": max_drawdown(ctx["full"][BASELINE_KEY]), "sharpe": sharpe(ctx["full"][BASELINE_KEY]),
-                 "position": d["state"].get(BASELINE_KEY, {}).get("position", "long")}
-            chip, link = "", name
+    def lb_row(key, strat=None):
+        if strat is None:  # baseline row
+            market = key
+            bkey = BASELINES[market]
+            f = ctx["full"][bkey]
+            s = {"equity": ctx["b_eq"][market], "ret": total_return(f), "vs_base": 0.0,
+                 "dd": max_drawdown(f), "sharpe": sharpe(f),
+                 "position": d["state"].get(bkey, {}).get("position", "long")}
+            name_html, color, chip, market_lbl = f"BASELINE ({market} buy-and-hold)", DIM, "", market
         else:
-            s, m = stats[key], moods[key][0]
-            name, color = AGENTS[key].name, AGENTS[key].color
-            chip = f'<span class="chip" style="color:{MOOD_STYLE[m][0]};border-color:{MOOD_STYLE[m][0]}">{MOOD_STYLE[m][2]}</span>'
-            link = f'<a href="{key}.html">{name}</a>'
-        vs = f'<span style="color:{GREEN if s["vs_base"] >= 0 else RED}">{s["vs_base"]:+,.0f}</span>' \
-            if key != BASELINE_KEY else "—"
+            s = stats[key]
+            _, _, _, label = moods[key]
+            m = moods[key][0]
+            name_html = f'<a href="{key}.html">{strat.name}</a>'
+            color, market_lbl = strat.color, strat.market
+            chip = f'<span class="chip" style="color:{MOOD_STYLE[m][0]};border-color:{MOOD_STYLE[m][0]}">{label}</span>'
+        vs = "—" if strat is None else \
+            f'<span style="color:{GREEN if s["vs_base"] >= 0 else RED}">{fmt_delta(s["vs_base"])}</span>'
         sharpe_cell = f"{s['sharpe']:.2f}" if enough else "—"
-        return (f'<tr><td><i class="dot" style="background:{color}"></i>{link}</td>'
-                f'<td>{fmt_money(s["equity"])}</td><td>{fmt_pct(s["ret"])}</td><td>{vs}</td>'
-                f'<td>{fmt_pct(-s["dd"], signed=False)}</td><td>{sharpe_cell}</td>'
+        return (f'<tr><td><i class="dot" style="background:{color}"></i>{name_html}</td>'
+                f'<td>{market_lbl}</td><td>{fmt_money(s["equity"])}</td><td>{fmt_pct(s["ret"])}</td>'
+                f'<td>{vs}</td><td>{fmt_pct(-s["dd"], signed=False)}</td><td>{sharpe_cell}</td>'
                 f'<td>{s["position"].upper()}</td><td>{chip}</td></tr>')
 
-    order = sorted(AGENTS, key=lambda k: -stats[k]["equity"]) + [BASELINE_KEY]
-    leaderboard = f"""<div class="panel"><div class="ph"><span class="pt">LEADERBOARD</span>
-      <span class="ps">everyone started with $100k on the same day · Sharpe appears after 7 days</span></div>
-      <table><tr><th>AGENT</th><th>EQUITY</th><th>RETURN</th><th>VS RIVAL</th><th>WORST SLIDE</th><th>SHARPE</th><th>POSITION</th><th>MOOD</th></tr>
-      {''.join(lb_row(k) for k in order)}</table></div>"""
+    order = sorted(core, key=lambda k: -stats[k]["ret"])
+    rows = "".join(lb_row(k, core[k]) for k in order) + lb_row("BTC") + lb_row("ETH")
+    leaderboard = f"""<div class="panel"><div class="ph"><span class="pt">LEADERBOARD — CORE EXPERIMENT</span>
+      <span class="ps">every agent started with $100k · 'vs rival' compares against its own market's buy-and-hold</span></div>
+      <table><tr><th>AGENT</th><th>MARKET</th><th>EQUITY</th><th>RETURN</th><th>VS RIVAL</th><th>WORST SLIDE</th><th>SHARPE</th><th>POSITION</th><th>MOOD</th></tr>
+      {rows}</table></div>"""
 
-    swarm_lines = [(ctx["curves"][k] or [STARTING_CAPITAL], AGENTS[k].color, AGENTS[k].name) for k in AGENTS]
-    swarm_lines.append((ctx["curves"][BASELINE_KEY] or [STARTING_CAPITAL], DIM, "baseline"))
-    race = chart("THE RACE", "account value, day by day — the whole experiment in one picture",
-                 swarm_lines, fmt=lambda v: f"{v / 1000:,.1f}k")
+    races = ""
+    for market in ("BTC", "ETH"):
+        div = [s for s in AGENTS.values() if s.market == market]
+        lines = [(ctx["curves"][s.key] or [STARTING_CAPITAL], s.color, s.name) for s in div]
+        lines.append((ctx["curves"][BASELINES[market]] or [STARTING_CAPITAL], DIM, "baseline"))
+        races += chart(f"THE {market} RACE", "account value, day by day",
+                       lines, fmt=lambda v: f"{v / 1000:,.1f}k", h=210)
 
-    cards = []
-    for key, strat in AGENTS.items():
-        mood, headline, _ = moods[key]
-        s = stats[key]
-        accent = MOOD_STYLE[mood][0]
-        cards.append(f"""<a class="card" href="{key}.html">
-          <div class="cardtop">{monster_svg(mood, key, strat.color, strat.color_dark, strat.accessory)}
-            <div><div class="kname">{strat.name} <span class="chip" style="color:{accent};border-color:{accent}">{MOOD_STYLE[mood][2]}</span></div>
-            <div class="belief">"{escape(strat.belief)}"</div>
-            <div class="rule">{escape(strat.rule)}</div></div></div>
-          <div class="khead" style="font-size:13.5px">{escape(headline)}</div>
-          <div class="statrow"><span>{fmt_money(s['equity'])}</span>
-            <span style="color:{GREEN if s['vs_base'] >= 0 else RED}">{s['vs_base']:+,.0f} vs rival</span>
-            <span>{s['position'].upper()}</span></div>
-          <div class="open">OPEN DOSSIER →</div></a>""")
+    btc_cards = "".join(_monster_card(k, s, ctx) for k, s in AGENTS.items() if s.market == "BTC")
+    eth_cards = "".join(_monster_card(k, s, ctx) for k, s in AGENTS.items() if s.market == "ETH")
+    degen_cards = "".join(_monster_card(k, s, ctx, hazard=True) for k, s in DEGEN.items())
 
-    event_rows = [[r["created_at"][:16].replace("T", " "), r["kind"], escape(r.get("detail") or "")]
+    degen_warn = f"""<div class="warn">⚠ THE DEGEN WING — quarantined experiments with leverage and
+    shorting, run for education and entertainment. They are excluded from the experiment's judgement,
+    allowed to be liquidated, and their paper losses are kinder than real ones would be (daily prices
+    hide the intraday spikes that trigger real margin calls). Watch and learn; do not copy.</div>"""
+
+    event_rows = [[bris_time(r["created_at"]), r["kind"], escape(r.get("detail") or "")]
                   for r in d["events"]]
 
     docs = f"""<details class="panel docs"><summary>WHAT AM I LOOKING AT? — the experiment, in plain English</summary>
-      <p><b>The setup.</b> Four robot monsters each trade a pretend $100,000 with one simple,
-      locked-in rule. Once a day at 10:05am Brisbane time they check the Bitcoin price, make one
-      decision, and sleep. Most days: nothing. They all race the <b>lazy rival</b> — a baseline that
-      bought Bitcoin on day one and never touches it. Beating it after fees is the whole game.</p>
+      <p><b>The setup.</b> Robot monsters each trade a pretend $100,000 with one simple, locked-in
+      rule. Once a day at 10:05am Brisbane time they check the market, make one decision, and sleep.
+      Most days: nothing. Each monster races a <b>lazy rival</b> — a baseline that bought on day one
+      and never touches it. Beating it after fees is the whole game.</p>
+      <p><b>Two divisions, same rules.</b> The four core rules run identically on Bitcoin and
+      Ethereum. That's deliberate: a rule that wins on both markets probably found something real;
+      a rule that only wins on one probably got lucky.</p>
       <p><b>Each monster's page</b> (click a card) walks through today's decision with the actual
-      numbers, shows the exact price that would make it buy or sell next, and tracks it against the
-      expectation we wrote down before launch.</p>
-      <p><b>The fine print.</b> Rules were locked before launch and never get tuned mid-race. Every
-      trade pays realistic fees (0.35%). Safety rails on everyone: lose &gt;10% in a day → 24-hour
-      bench; fall 25% below start → shut down until a human looks. With four racers the leader is
-      partly luck, so judgement happens at day {RUN_TARGET_DAYS}, against the baseline and the
-      pre-registered expectations — not the daily leaderboard. <b>No real money anywhere.</b></p>
+      numbers and shows the exact price that would make it act next.</p>
+      <p><b>The fine print.</b> Rules were locked before launch and never tuned mid-race. Every trade
+      pays realistic fees (0.35%). Safety rails on the core agents: lose &gt;10% in a day → 24-hour
+      bench; fall 25% below start → shut down until a human looks. With this many racers the daily
+      leader is partly luck, so judgement happens at day {RUN_TARGET_DAYS} against baselines and
+      pre-registered expectations — not the leaderboard. <b>No real money anywhere.</b></p>
     </details>"""
 
-    body = (houston + leaderboard + docs + race + f'<div class="grid">{"".join(cards)}</div>'
-            + log_table("EVENTS", "safety rails, launches, anything unusual",
-                        ["TIME", "KIND", "DETAIL"], event_rows, "no events"))
+    body = (houston + leaderboard + docs + races
+            + f'<h2>⬢ BTC DIVISION</h2><div class="grid">{btc_cards}</div>'
+            + f'<h2>⬢ ETH DIVISION</h2><div class="grid">{eth_cards}</div>'
+            + f'<h2 style="color:{AMBER}">⚠ THE DEGEN WING</h2>' + degen_warn
+            + f'<div class="grid">{degen_cards}</div>'
+            + log_table("EVENTS", "safety rails, launches, liquidations, anything unusual",
+                        ["TIME (BRISBANE)", "KIND", "DETAIL"], event_rows, "no events"))
     return page("THE SWARM · MISSION CONTROL",
                 '<h1>⬢ THE SWARM <b>// MISSION CONTROL</b></h1>', body)
 
 
+# ---------- dossier ----------
+
 def build_agent_page(d, ctx, key):
-    strat = AGENTS[key]
-    s, (mood, headline, detail) = ctx["stats"][key], ctx["moods"][key]
-    closes = [c for _, c in d["closes"]]
+    strat = ALL_MONSTERS[key]
+    s = ctx["stats"][key]
+    mood, headline, detail, label = ctx["moods"][key]
+    closes_dated = d["closes"][strat.market]
+    closes = [c for _, c in closes_dated]
     accent = MOOD_STYLE[mood][0]
 
     hero = f"""<div class="panel kp">
       {monster_svg(mood, key, strat.color, strat.color_dark, strat.accessory)}
       <div class="bubble" style="border-color:{accent}">
-        <div class="kname">{strat.name} · <span style="color:{accent}">{MOOD_STYLE[mood][2]}</span>
+        <div class="kname">{strat.name} · <span style="color:{accent}">{label}</span>
           <span style="color:{DIM}"> — "{escape(strat.belief)}"</span></div>
         <div class="khead">{escape(headline)}</div>
         <div class="kdetail">{escape(detail)}</div>
       </div></div>"""
 
-    steps, trig = todays_check(key, closes, s["position"])
+    warn = ""
+    if strat.degen:
+        warn = f"""<div class="warn">⚠ DEGEN WING EXPERIMENT — I use
+        {'3× leverage' if strat.leverage > 1 else 'short selling'}, pay funding costs every day I
+        hold a position, and can be liquidated. I'm excluded from the experiment's judgement.
+        I exist so you can watch what {'leverage' if strat.leverage > 1 else 'betting against the market'}
+        actually does to an account, with fake money instead of tuition.</div>"""
+
+    steps, trig = todays_check(strat, closes, s["position"])
     check = f"""<div class="panel"><div class="ph"><span class="pt">TODAY'S CHECK — HOW I DECIDED</span>
       <span class="ps">I do exactly this once a day at 10:05am Brisbane time, then sleep</span></div>
       <ol class="steps">{''.join(f'<li>{x}</li>' for x in steps)}</ol>
       <div class="trig"><span class="kname">WHAT WOULD MAKE ME ACT NEXT</span><br>{'<br>'.join(trig)}</div>
     </div>"""
 
-    my_chart = strategy_chart(key, d["closes"])
-    race = chart("ME VS THE LAZY RIVAL", "my account vs just buying and holding — same fees for both",
+    my_chart = strategy_chart(strat, closes_dated)
+    race = chart("ME VS THE LAZY RIVAL",
+                 f"my account vs just buying and holding {strat.market} — same fees for both",
                  [(ctx["curves"][key] or [STARTING_CAPITAL], strat.color, strat.name.lower()),
-                  (ctx["curves"][BASELINE_KEY] or [STARTING_CAPITAL], DIM, "baseline")],
+                  (ctx["curves"][BASELINES[strat.market]] or [STARTING_CAPITAL], DIM, "baseline")],
                  fmt=lambda v: f"{v / 1000:,.1f}k")
 
-    e = strat.expectation
-    enough = ctx["day_n"] >= 7
-    expect = f"""<div class="panel"><div class="ph"><span class="pt">LIVE VS THE PROMISE</span>
-      <span class="ps">the 3-year backtest we recorded before launch — my live numbers should rhyme with it, not match it</span></div>
-      <table><tr><th></th><th>LIVE ({ctx['day_n']} DAYS)</th><th>BACKTEST (3 YEARS)</th></tr>
-      <tr><td>Return</td><td>{fmt_pct(s['ret'])}</td><td>{fmt_pct(e['ret'])}</td></tr>
-      <tr><td>Worst slide</td><td>{fmt_pct(-s['dd'], signed=False)}</td><td>{fmt_pct(-e['dd'], signed=False)}</td></tr>
-      <tr><td>Sharpe</td><td>{f"{s['sharpe']:.2f}" if enough else "— (needs 7 days)"}</td><td>{e['sharpe']:.2f}</td></tr>
-      <tr><td>Trades per year</td><td>~{len([t for t in d['trades'] if t['agent'] == key])} so far</td><td>~{e['trades_yr']}</td></tr>
-      </table></div>"""
+    expect = ""
+    if strat.expectation:
+        e = strat.expectation
+        enough = ctx["day_n"] >= 7
+        my_trades = len([t for t in d["trades"] if t["agent"] == key])
+        expect = f"""<div class="panel"><div class="ph"><span class="pt">LIVE VS THE PROMISE</span>
+          <span class="ps">the 3-year backtest recorded before launch — live should rhyme with it, not match it</span></div>
+          <table><tr><th></th><th>LIVE ({ctx['day_n']} DAYS)</th><th>BACKTEST (3 YEARS)</th></tr>
+          <tr><td>Return</td><td>{fmt_pct(s['ret'])}</td><td>{fmt_pct(e['ret'])}</td></tr>
+          <tr><td>Worst slide</td><td>{fmt_pct(-s['dd'], signed=False)}</td><td>{fmt_pct(-e['dd'], signed=False)}</td></tr>
+          <tr><td>Sharpe</td><td>{f"{s['sharpe']:.2f}" if enough else "— (needs 7 days)"}</td><td>{e['sharpe']:.2f}</td></tr>
+          <tr><td>Trades</td><td>{my_trades} so far</td><td>~{e['trades_yr']}/year</td></tr>
+          </table></div>"""
 
     dec_rows = [[
-        r["run_date"], f'{float(r["price"]):,.0f}',
+        r["run_date"], f'${float(r["price"]):,.0f}',
         escape(", ".join(f"{k2} {v}" for k2, v in (r.get("indicators") or {}).items())),
         f'<span style="color:{ {"buy": GREEN, "sell": RED}.get(r["signal"], DIM) }">{r["signal"].upper()}</span>',
         r["action_taken"] + (f' · {escape(r["block_reason"])}' if r.get("block_reason") else ""),
     ] for r in d["decisions"] if r["agent"] == key][:14]
 
     trade_rows = [[
-        r["created_at"][:10],
+        bris_time(r["created_at"])[:10],
         f'<span style="color:{GREEN if r["side"] == "buy" else RED}">{r["side"].upper()}</span>',
-        f'{float(r["qty"]):.6f}', f'{float(r["price"]):,.0f}',
-        f'{float(r["fee_paid"]):,.2f}', f'{float(r["account_value_after"]):,.0f}',
+        f'{float(r["qty"]):.6f}', f'${float(r["price"]):,.0f}',
+        f'${float(r["fee_paid"]):,.2f}', f'${float(r["account_value_after"]):,.0f}',
     ] for r in d["trades"] if r["agent"] == key][:10]
 
-    body = (hero + check + my_chart + race + expect
+    body = (hero + warn + check + my_chart + race + expect
             + log_table("MY DECISION LOG", "one row per day — 'no-change' is normal and good",
                         ["DATE", "CLOSE", "WHAT I SAW", "SIGNAL", "ACTION"], dec_rows, "no decisions yet")
-            + log_table("MY TRADES", "each one costs 0.35% — I don't do it lightly",
-                        ["DATE", "SIDE", "QTY BTC", "PRICE", "COSTS", "EQUITY AFTER"], trade_rows,
+            + log_table("MY TRADES", "each one costs 0.35% of notional — I don't do it lightly",
+                        ["DATE", "SIDE", "QTY", "PRICE", "COSTS", "EQUITY AFTER"], trade_rows,
                         "none yet — my rule hasn't triggered"))
     header = (f'<h1 style="color:{strat.color};text-shadow:0 0 20px {strat.color}55">⬢ {strat.name} '
               f'<b>// {escape(strat.rule.upper())}</b></h1><a class="back" href="index.html">← THE SWARM</a>')
@@ -640,9 +741,9 @@ def main() -> None:
     out_dir = Path(__file__).resolve().parents[2] / "docs"
     out_dir.mkdir(exist_ok=True)
     (out_dir / "index.html").write_text(build_overview(d, ctx))
-    for key in AGENTS:
+    for key in ALL_MONSTERS:
         (out_dir / f"{key}.html").write_text(build_agent_page(d, ctx, key))
-    print(f"wrote {out_dir}/index.html + {len(AGENTS)} agent pages")
+    print(f"wrote {out_dir}/index.html + {len(ALL_MONSTERS)} agent pages")
     if "--open" in sys.argv:
         webbrowser.open((out_dir / "index.html").as_uri())
 

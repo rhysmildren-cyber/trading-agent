@@ -9,7 +9,7 @@ from alpaca.data.timeframe import TimeFrame
 from agent.config import SYMBOL
 
 
-def get_daily_closes(days: int) -> list[tuple[date, float]]:
+def get_daily_closes(days: int, symbol: str = SYMBOL) -> list[tuple[date, float]]:
     """Return [(utc_date, close)] for completed daily bars, oldest first.
 
     Excludes today's still-forming bar so decisions always use the last
@@ -19,11 +19,11 @@ def get_daily_closes(days: int) -> list[tuple[date, float]]:
     now = datetime.now(timezone.utc)
     start = now - timedelta(days=days + 5)  # small pad for any gaps
     req = CryptoBarsRequest(
-        symbol_or_symbols=SYMBOL,
+        symbol_or_symbols=symbol,
         timeframe=TimeFrame.Day,
         start=start,
     )
-    bars = client.get_crypto_bars(req).data[SYMBOL]
+    bars = client.get_crypto_bars(req).data[symbol]
     today = now.date()
     out = [(b.timestamp.date(), float(b.close)) for b in bars if b.timestamp.date() < today]
     return out[-days:]

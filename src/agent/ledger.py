@@ -24,19 +24,22 @@ class Portfolio:
         return self.cash + self.qty * price
 
 
-def buy(p: Portfolio, price: float, deploy_fraction: float = DEPLOY_FRACTION) -> tuple[Portfolio, dict]:
-    """Deploy deploy_fraction of current equity into BTC; keep the rest as buffer."""
+def buy(p: Portfolio, price: float, deploy_fraction: float = DEPLOY_FRACTION,
+        cost_rate: float | None = None) -> tuple[Portfolio, dict]:
+    """Deploy deploy_fraction of current equity into the asset; keep the rest as buffer."""
     budget = p.equity(price) * deploy_fraction
     if budget > p.cash:
         budget = p.cash  # never spend cash we don't have
-    qty, paid = costs.buy_with_cash(budget, price)
+    kw = {} if cost_rate is None else {"cost_rate": cost_rate}
+    qty, paid = costs.buy_with_cash(budget, price, **kw)
     new = replace(p, cash=p.cash - budget, qty=p.qty + qty)
     fill = {"side": "buy", "qty": qty, "price": price, "fee_paid": paid}
     return new, fill
 
 
-def sell_all(p: Portfolio, price: float) -> tuple[Portfolio, dict]:
-    proceeds, paid = costs.sell_qty(p.qty, price)
+def sell_all(p: Portfolio, price: float, cost_rate: float | None = None) -> tuple[Portfolio, dict]:
+    kw = {} if cost_rate is None else {"cost_rate": cost_rate}
+    proceeds, paid = costs.sell_qty(p.qty, price, **kw)
     new = replace(p, cash=p.cash + proceeds, qty=0.0)
     fill = {"side": "sell", "qty": p.qty, "price": price, "fee_paid": paid}
     return new, fill
