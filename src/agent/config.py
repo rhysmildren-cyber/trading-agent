@@ -1,12 +1,18 @@
 """All pinned parameters for v1. Changing any of these is a new strategy version."""
 
-STRATEGY_VERSION = "v1.0-sma50"
+STRATEGY_VERSION = "v2.0-swarm"
 SYMBOL = "BTC/USD"
-AGENT_NAME = "KEPLER"
 
-# Signal
-SMA_WINDOW = 50          # days
-DEADBAND = 0.01          # 1% above/below SMA required to switch state
+# Signal parameters — pre-registered textbook defaults. Changing any of these
+# after swarm launch invalidates the experiment; don't.
+SMA_WINDOW = 50          # KEPLER: days
+DEADBAND = 0.01          # KEPLER: 1% above/below SMA required to switch state
+MOM_WINDOW = 30          # VECTOR: trailing return lookback
+BREAKOUT_ENTRY = 20      # DONNIE: buy on N-day-high close
+BREAKOUT_EXIT = 10       # DONNIE: exit on N-day-low close
+RSI_PERIOD = 14          # DIP: Wilder RSI period
+RSI_BUY = 30             # DIP: buy below
+RSI_SELL = 60            # DIP: sell above
 
 # Cost model (per side, applied to notional)
 FEE_RATE = 0.0025        # 0.25% — high end of Alpaca crypto fees

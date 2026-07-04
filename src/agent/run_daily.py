@@ -1,9 +1,11 @@
-"""The daily loop. Run once per day at 00:05 UTC by GitHub Actions.
+"""The daily loop, swarm edition. Runs once per day at 00:05 UTC via GitHub Actions.
 
-Idempotent per UTC date: a second run on the same date no-ops.
+For each agent in the registry: evaluate its strategy -> risk gate -> ledger op
+-> log decision/trade/equity. One shared baseline. Idempotent per (bar date,
+agent): a second run on the same date no-ops.
 
-Flow: fetch data -> SMA signal -> risk gate -> (paper order + ledger update)
-      -> log decision/trade/equity for both systems -> daily review row.
+Only KEPLER places ceremonial Alpaca paper orders, and only with --execute
+(signal-only until PRD step-7 sign-off).
 """
 
 import sys
@@ -11,10 +13,11 @@ from datetime import datetime, timedelta, timezone
 
 from dotenv import load_dotenv
 
-from agent import broker, data, db, ledger, review, risk, signal
-from agent.config import SMA_WINDOW, STRATEGY_VERSION, SYMBOL, SYSTEM_BASELINE, SYSTEM_STRATEGY
+from agent import broker, data, db, ledger, review, risk
+from agent.config import STRATEGY_VERSION, SYMBOL
+from agent.strategies import AGENTS, BASELINE_KEY, MAX_WARMUP
 
-EXECUTE_ORDERS = "--execute" in sys.argv  # signal-only mode until step 7 sign-off
+EXECUTE_ORDERS = "--execute" in sys.argv
 
 
 def run() -> None:
@@ -22,99 +25,103 @@ def run() -> None:
     conn = db.client()
     now = datetime.now(timezone.utc)
 
-    closes = data.get_daily_closes(SMA_WINDOW + 10)
-    bar_date, price = closes[-1]
-    run_date = bar_date  # decisions are keyed by the bar they act on
+    closes_dated = data.get_daily_closes(MAX_WARMUP + 10)
+    bar_date, price = closes_dated[-1]
+    closes = [c for _, c in closes_dated]
+    run_date = bar_date
 
-    if db.decision_exists(conn, run_date):
-        print(f"decision for {run_date} already recorded — no-op")
-        return
-
-    sma = signal.compute_sma([c for _, c in closes])
-
-    # --- strategy ---
-    state = db.get_state(conn, SYSTEM_STRATEGY)
-    port = db.portfolio_from_state(state)
-    sig = signal.evaluate(price, sma, port.position)
-
-    prev_eq = db.prev_equity(conn, SYSTEM_STRATEGY) or float(state["starting_capital"])
-    halted = state["halted_until"] is not None and datetime.fromisoformat(
-        state["halted_until"].replace("Z", "+00:00")
-    ) > now
-    gate = risk.gate(
-        signal=sig.signal,
-        equity=port.equity(price),
-        prev_equity=prev_eq,
-        starting_capital=float(state["starting_capital"]),
-        kill_switch_already_tripped=bool(state["kill_switch_tripped"]),
-        halted=halted,
-    )
-
-    state_extra: dict = {}
-    if gate.trip_kill_switch:
-        state_extra["kill_switch_tripped"] = True
-        db.log_event(conn, "kill_switch", gate.block_reason or "")
-    if gate.trip_daily_halt:
-        state_extra["halted_until"] = (now + timedelta(hours=24)).isoformat()
-        db.log_event(conn, "daily_halt", gate.block_reason or "")
-
-    action = "no-change"
-    if sig.signal in ("buy", "sell") and gate.approved:
-        eq_before = port.equity(price)
-        if sig.signal == "buy":
-            port, fill = ledger.buy(port, price)
-        else:
-            port, fill = ledger.sell_all(port, price)
-        order_id = None
-        if EXECUTE_ORDERS:
-            order_id = broker.place_market_order(fill["side"], fill["qty"])
-        db.log_trade(conn, {
-            "strategy_version": STRATEGY_VERSION,
-            "symbol": SYMBOL,
-            "side": fill["side"],
-            "qty": fill["qty"],
-            "price": fill["price"],
-            "fee_paid": fill["fee_paid"],
-            "account_value_before": eq_before,
-            "account_value_after": port.equity(price),
-            "rationale": f"close {price:.2f} vs sma50 {sma:.2f} ({sig.signal}); alpaca_order={order_id}",
-        })
-        action = "executed" if EXECUTE_ORDERS else "simulated"
-    elif sig.signal in ("buy", "sell"):
-        action = "blocked"
-
-    db.log_decision(conn, {
-        "run_date": run_date.isoformat(),
-        "strategy_version": STRATEGY_VERSION,
-        "price": price,
-        "sma_50": sma,
-        "in_deadband": sig.in_deadband,
-        "signal": sig.signal,
-        "position_before": state["position"],
-        "action_taken": action,
-        "block_reason": gate.block_reason,
-    })
-
-    port, eq, dd = ledger.mark(port, price)
-    db.save_portfolio(conn, SYSTEM_STRATEGY, port, **state_extra)
-    db.log_equity(conn, run_date, SYSTEM_STRATEGY, eq, dd, port.position)
-
-    # --- baseline: buy once on first run, then just mark to market ---
-    b_state = db.get_state(conn, SYSTEM_BASELINE)
+    # --- baseline first (agents' reviews compare against it) ---
+    b_state = db.get_state(conn, BASELINE_KEY)
     b_port = db.portfolio_from_state(b_state)
-    if b_port.position == "flat" and db.prev_equity(conn, SYSTEM_BASELINE) is None:
+    if b_port.position == "flat" and db.prev_equity(conn, BASELINE_KEY) is None:
         b_port, b_fill = ledger.buy(b_port, price)
         db.log_event(conn, "baseline_entry", f"bought {b_fill['qty']:.8f} @ {price:.2f}")
     b_port, b_eq, b_dd = ledger.mark(b_port, price)
-    db.save_portfolio(conn, SYSTEM_BASELINE, b_port)
-    db.log_equity(conn, run_date, SYSTEM_BASELINE, b_eq, b_dd, b_port.position)
+    db.save_portfolio(conn, BASELINE_KEY, b_port)
+    db.log_equity(conn, run_date, BASELINE_KEY, b_eq, b_dd, b_port.position)
 
-    rules_followed = not (sig.signal in ("buy", "sell") and not gate.approved and action == "executed")
-    review.write_daily_review(conn, run_date, rules_followed,
-                              notes=gate.block_reason or "")
+    # --- each monster ---
+    summary = []
+    for strat in AGENTS.values():
+        if db.decision_exists(conn, run_date, strat.key):
+            summary.append(f"{strat.name}: already decided — no-op")
+            continue
 
-    print(f"{run_date} price={price:.2f} sma={sma:.2f} signal={sig.signal} "
-          f"action={action} strategy_eq={eq:.2f} baseline_eq={b_eq:.2f}")
+        state = db.get_state(conn, strat.key)
+        port = db.portfolio_from_state(state)
+        res = strat.evaluate(closes, port.position)
+
+        prev_eq = db.prev_equity(conn, strat.key) or float(state["starting_capital"])
+        halted = state["halted_until"] is not None and datetime.fromisoformat(
+            state["halted_until"].replace("Z", "+00:00")
+        ) > now
+        gate = risk.gate(
+            signal=res.signal,
+            equity=port.equity(price),
+            prev_equity=prev_eq,
+            starting_capital=float(state["starting_capital"]),
+            kill_switch_already_tripped=bool(state["kill_switch_tripped"]),
+            halted=halted,
+        )
+
+        state_extra: dict = {}
+        if gate.trip_kill_switch:
+            state_extra["kill_switch_tripped"] = True
+            db.log_event(conn, "kill_switch", f"{strat.key}: {gate.block_reason}")
+        if gate.trip_daily_halt:
+            state_extra["halted_until"] = (now + timedelta(hours=24)).isoformat()
+            db.log_event(conn, "daily_halt", f"{strat.key}: {gate.block_reason}")
+
+        action = "no-change"
+        if res.signal in ("buy", "sell") and gate.approved:
+            eq_before = port.equity(price)
+            if res.signal == "buy":
+                port, fill = ledger.buy(port, price)
+            else:
+                port, fill = ledger.sell_all(port, price)
+            order_id = None
+            if EXECUTE_ORDERS and strat.key == "kepler":
+                order_id = broker.place_market_order(fill["side"], fill["qty"])
+            db.log_trade(conn, {
+                "agent": strat.key,
+                "strategy_version": f"{STRATEGY_VERSION}/{strat.key}",
+                "symbol": SYMBOL,
+                "side": fill["side"],
+                "qty": fill["qty"],
+                "price": fill["price"],
+                "fee_paid": fill["fee_paid"],
+                "account_value_before": eq_before,
+                "account_value_after": port.equity(price),
+                "rationale": f"{res.indicators} -> {res.signal}; alpaca_order={order_id}",
+            })
+            action = "executed" if order_id else "simulated"
+        elif res.signal in ("buy", "sell"):
+            action = "blocked"
+
+        db.log_decision(conn, {
+            "run_date": run_date.isoformat(),
+            "agent": strat.key,
+            "strategy_version": f"{STRATEGY_VERSION}/{strat.key}",
+            "price": price,
+            "indicators": res.indicators,
+            "in_neutral_zone": res.in_neutral_zone,
+            "signal": res.signal,
+            "position_before": state["position"],
+            "action_taken": action,
+            "block_reason": gate.block_reason,
+        })
+
+        port, eq, dd = ledger.mark(port, price)
+        db.save_portfolio(conn, strat.key, port, **state_extra)
+        db.log_equity(conn, run_date, strat.key, eq, dd, port.position)
+
+        rules_followed = not (res.signal in ("buy", "sell") and not gate.approved
+                              and action in ("executed", "simulated"))
+        review.write_review(conn, run_date, strat.key, eq, b_eq, rules_followed,
+                            gate.block_reason or "")
+        summary.append(f"{strat.name}: {res.signal}/{action} eq={eq:,.0f}")
+
+    print(f"{run_date} price={price:,.2f} baseline={b_eq:,.0f} | " + " | ".join(summary))
 
 
 if __name__ == "__main__":

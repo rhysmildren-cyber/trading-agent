@@ -1,25 +1,19 @@
-"""Daily review row: judges process first, profit second."""
+"""Daily review rows: one per agent per day — process first, profit second."""
 
 from datetime import date
 
 from supabase import Client
 
 
-def write_daily_review(db: Client, day: date, rules_followed: bool, notes: str = "") -> dict | None:
-    rows = (
-        db.table("equity_daily").select("system,equity")
-        .eq("date", day.isoformat()).execute().data
-    )
-    eq = {r["system"]: float(r["equity"]) for r in rows}
-    if "strategy" not in eq or "baseline" not in eq:
-        return None
+def write_review(db: Client, day: date, agent: str, equity: float,
+                 baseline_equity: float, rules_followed: bool, notes: str = "") -> dict:
     row = {
         "date": day.isoformat(),
-        "strategy_equity": eq["strategy"],
-        "baseline_equity": eq["baseline"],
-        "delta": eq["strategy"] - eq["baseline"],
+        "agent": agent,
+        "equity": equity,
+        "delta_vs_baseline": equity - baseline_equity,
         "rules_followed": rules_followed,
         "notes": notes,
     }
-    db.table("daily_review").upsert(row, on_conflict="date").execute()
+    db.table("daily_review").upsert(row, on_conflict="date,agent").execute()
     return row

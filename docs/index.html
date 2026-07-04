@@ -1,6 +1,6 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>KEPLER · MISSION CONTROL</title>
+<title>THE SWARM · MISSION CONTROL</title>
 <style>
   * { box-sizing: border-box; margin: 0; }
   body { background: #08080a; color: #d8d8dc;
@@ -13,13 +13,6 @@
   h1 { font-size: 16px; letter-spacing: 4px; color: #3ddc97;
     text-shadow: 0 0 20px rgba(61,220,151,0.5); }
   h1 b { color: #6e6e78; font-weight: 400; letter-spacing: 3px; }
-  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-    gap: 10px; margin-bottom: 14px; }
-  .tile { background: linear-gradient(180deg, #16161a, #121214); border: 1px solid #242428;
-    border-radius: 10px; padding: 13px 15px; box-shadow: 0 8px 22px rgba(0,0,0,0.35); }
-  .tl { font-size: 10px; letter-spacing: 2px; color: #6e6e78; }
-  .tv { font-size: 24px; margin: 5px 0 3px; letter-spacing: 0.5px; }
-  .ts { font-size: 11px; color: #6e6e78; }
   .panel { background: #121214; border: 1px solid #242428; border-radius: 10px;
     padding: 13px 15px; margin-bottom: 14px; overflow-x: auto;
     box-shadow: 0 8px 22px rgba(0,0,0,0.35); }
@@ -33,31 +26,44 @@
   table { width: 100%; border-collapse: collapse; font-size: 12px; }
   th { text-align: left; color: #6e6e78; font-weight: 400; font-size: 10px; letter-spacing: 1.5px;
     border-bottom: 1px solid #242428; padding: 4px 10px 6px 0; }
-  td { padding: 5px 10px 5px 0; border-bottom: 1px solid rgba(27,42,74,0.5); }
-  footer { color: #6e6e78; font-size: 10px; letter-spacing: 1px; margin-top: 18px; text-align: center; }
+  td { padding: 5px 10px 5px 0; border-bottom: 1px solid rgba(36,36,40,0.6); white-space: nowrap; }
+  .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%;
+    margin-right: 7px; vertical-align: -1px; }
+  .chip { font-size: 9px; letter-spacing: 1.5px; border: 1px solid; border-radius: 20px;
+    padding: 1.5px 8px; vertical-align: 1px; }
   .kp { display: flex; gap: 16px; align-items: center; }
-  .kepler { width: 110px; min-width: 110px; height: auto; }
+  .kp .monster { width: 110px; min-width: 110px; }
   .bubble { border: 1px solid; border-radius: 10px; padding: 10px 14px; position: relative; flex: 1; }
   .bubble::before { content: ""; position: absolute; left: -7px; top: 42%;
     width: 12px; height: 12px; background: #121214; border-left: 1px solid;
     border-bottom: 1px solid; border-color: inherit; transform: rotate(45deg); }
   .kname { font-size: 10px; letter-spacing: 2px; color: #6e6e78; }
-  .khead { font-size: 16px; margin: 3px 0; color: #d8d8dc; }
+  .khead { font-size: 15px; margin: 4px 0; color: #d8d8dc; line-height: 1.5; }
   .kdetail { font-size: 12px; color: #6e6e78; line-height: 1.6; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+    gap: 14px; margin-bottom: 14px; }
+  .card { background: #121214; border: 1px solid #242428; border-radius: 10px;
+    padding: 14px 16px; box-shadow: 0 8px 22px rgba(0,0,0,0.35); }
+  .cardtop { display: flex; gap: 12px; align-items: center; margin-bottom: 8px; }
+  .cardtop .monster { width: 84px; min-width: 84px; }
+  .belief { color: #d8d8dc; font-size: 12px; margin: 4px 0 2px; }
+  .rule { color: #6e6e78; font-size: 11px; }
+  .statrow { display: flex; gap: 14px; margin-top: 10px; padding-top: 9px;
+    border-top: 1px solid #242428; font-size: 13px; }
   .docs summary { font-size: 11px; letter-spacing: 2px; color: #ffc857; cursor: pointer; }
   .docs p { font-size: 12px; color: #d8d8dc; margin: 10px 0 0; line-height: 1.7; max-width: 85ch; }
   .docs b { color: #3ce0ff; } .docs i { color: #ffc857; font-style: normal; }
+  footer { color: #6e6e78; font-size: 10px; letter-spacing: 1px; margin-top: 18px; text-align: center; }
 </style></head><body>
-<header><h1>⬢ KEPLER <b>// MISSION CONTROL</b></h1></header>
+<header><h1>⬢ THE SWARM <b>// MISSION CONTROL</b></h1></header>
 <div class="panel kp">
-      <svg viewBox="0 0 140 152" class="kepler" role="img" aria-label="KEPLER is neutral">
+      <svg viewBox="0 0 140 152" class="monster" role="img" aria-label="houston is neutral">
       <defs>
-        <radialGradient id="bodyg" cx="38%" cy="30%" r="80%">
-          <stop offset="0%" stop-color="#66ad64"/>
-          <stop offset="60%" stop-color="#45804a"/>
-          <stop offset="100%" stop-color="#2d5a38"/>
+        <radialGradient id="body-houston" cx="38%" cy="30%" r="80%">
+          <stop offset="0%" stop-color="#8a8a94"/>
+          <stop offset="100%" stop-color="#45454d"/>
         </radialGradient>
-        <clipPath id="eyeclip"><circle cx="70" cy="64" r="23"/></clipPath>
+        <clipPath id="eye-houston"><circle cx="70" cy="64" r="23"/></clipPath>
       </defs>
       <ellipse cx="70" cy="147" rx="35" ry="4.5" fill="rgba(0,0,0,0.5)"/>
       <path d="M54 120 L49 139" stroke="#3b3b42" stroke-width="8" stroke-linecap="round"/>
@@ -72,64 +78,201 @@
       <circle cx="129" cy="106" r="4.5" fill="#4c4c55"/>
       <path d="M129 106 Q131 120 123 128" stroke="#3b3b42" stroke-width="6" fill="none" stroke-linecap="round"/>
       <circle cx="121" cy="131" r="7.5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
-      <circle cx="70" cy="78" r="46" fill="url(#bodyg)" stroke="#0b0b0c" stroke-width="3"/>
-      <path d="M44 40 Q39 24 33 20 Q44 23 52 34 Z" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
-      <path d="M96 40 Q101 24 107 20 Q96 23 88 34 Z" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
-      <rect x="52" y="28" width="36" height="9" rx="3.5" fill="#2c5a38" stroke="#0b0b0c" stroke-width="2"/>
-      <circle cx="70" cy="64" r="23" fill="#eceadf" stroke="#0b0b0c" stroke-width="3"/><circle cx="72" cy="66" r="10" fill="#3ce0ff"/><circle cx="72" cy="66" r="4.5" fill="#0b0b0c"/><circle cx="68" cy="61" r="2.6" fill="#f4f2e8"/><g clip-path="url(#eyeclip)"><rect x="42" y="38" width="56" height="21" fill="#37804a" stroke="#0b0b0c" stroke-width="2.5" transform="rotate(-10 70 64)"/></g>
+      <circle cx="70" cy="78" r="46" fill="url(#body-houston)" stroke="#0b0b0c" stroke-width="3"/>
+      <path d="M34 52 A38 38 0 0 1 106 52" fill="none" stroke="#0b0b0c" stroke-width="6"/><rect x="26" y="50" width="10" height="16" rx="4" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/><rect x="104" y="50" width="10" height="16" rx="4" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/><path d="M32 66 Q30 84 46 92" fill="none" stroke="#3b3b42" stroke-width="3"/><circle cx="49" cy="93" r="4" fill="#3b3b42" stroke="#0b0b0c" stroke-width="1.5"/>
+      <rect x="52" y="28" width="36" height="9" rx="3.5" fill="#45454d" stroke="#0b0b0c" stroke-width="2"/>
+      <circle cx="70" cy="64" r="23" fill="#eceadf" stroke="#0b0b0c" stroke-width="3"/><circle cx="72" cy="66" r="10" fill="#3ce0ff"/><circle cx="72" cy="66" r="4.5" fill="#0b0b0c"/><circle cx="68" cy="61" r="2.6" fill="#f4f2e8"/><g clip-path="url(#eye-houston)"><rect x="42" y="38" width="56" height="21" fill="#45454d" stroke="#0b0b0c" stroke-width="2.5" transform="rotate(-10 70 64)"/></g>
       <path d="M52 106 Q76 118 102 101" stroke="#0b0b0c" stroke-width="4.5" fill="none" stroke-linecap="round"/><path d="M78 109 L84 115 L89 107 L95 112 L99 103" stroke="#e9e7dc" stroke-width="3" fill="none" stroke-linejoin="round"/>
     </svg>
       <div class="bubble" style="border-color:#3ce0ff">
-        <div class="kname">KEPLER <span style="color:#3ce0ff">· SCHEMING</span></div>
-        <div class="khead">In cash, watching.</div>
-        <div class="kdetail">Price is below the 50-day trend line, so I&#x27;m parked in dollars. I&#x27;ll buy back in when price climbs 1% above the line.</div>
+        <div class="kname">HOUSTON · MISSION OVERSEER <span style="color:#6e6e78">— watches, compares, never trades</span></div>
+        <div class="khead">Day 1 of 90. KEPLER leads at $100,000 (+332 vs the lazy rival). 4 of 4 monsters are beating buy-and-hold. All rules obeyed, no flags.</div>
+        <div class="kdetail">Reminder: with four racers, the current leader is partly lucky.
+        Everyone is judged against the baseline and their own pre-registered expectation at day 90 — not against each other's hot streaks.</div>
       </div>
     </div>
-<div class="tiles"><div class="tile"><div class="tl">SYSTEM</div><div class="tv" style="color:#3ddc97">NOMINAL</div><div class="ts">last bar 2026-07-02</div></div><div class="tile"><div class="tl">POSITION</div><div class="tv" style="color:#6e6e78">FLAT</div><div class="ts">100% cash</div></div><div class="tile"><div class="tl">STRATEGY EQUITY</div><div class="tv" style="color:#3ddc97">$100,000</div><div class="ts">+0.00%</div></div><div class="tile"><div class="tl">VS BASELINE</div><div class="tv" style="color:#3ddc97">+332</div><div class="ts">baseline $99,668</div></div><div class="tile"><div class="tl">DRAWDOWN</div><div class="tv" style="color:#3ddc97">-0.00%</div><div class="ts">baseline -0.33%</div></div><div class="tile"><div class="tl">MISSION DAY</div><div class="tv" style="color:#8b7bff">01 / 90</div><div class="ts">v1.0-sma50 · paper only</div></div></div>
-<details class="panel docs"><summary>WHAT AM I LOOKING AT? — how KEPLER works, in plain English</summary>
-      <p><b>The one rule.</b> Once a day, KEPLER checks Bitcoin's closing price against its
-      average price over the last 50 days (the "trend line"). Price more than 1% <i>above</i> the
-      line → hold Bitcoin. More than 1% <i>below</i> → sell everything and sit in cash. In between
-      (the shaded band on the chart) → do nothing, to avoid churning fees. That's the whole strategy.</p>
-      <p><b>How often it acts.</b> It wakes once a day at 10:05am Brisbane time, makes one decision,
-      and sleeps. Most days the decision is "no change" — expect roughly <b>one trade a month</b>.
-      If it ever trades daily, something is broken.</p>
-      <p><b>The race.</b> KEPLER is racing a lazy rival called <b>baseline</b>, who bought
-      Bitcoin on day one and never touches it again. The bet: by stepping aside during downtrends,
-      KEPLER finishes with more money <i>and</i> smaller crashes. If it can't beat the lazy
-      rival after ~3 months, the experiment failed — which is a perfectly good answer.</p>
-      <p><b>The money.</b> Both started with a pretend $100,000. Every simulated trade pays
-      realistic fees (0.35% per trade) so the results are honest. <b>No real money anywhere.</b></p>
-      <p><b>Safety rails.</b> Lose &gt;10% in one day → 24-hour timeout. Fall 25% below the starting
-      $100k → full stop until a human investigates. These are hard-coded; KEPLER can't argue.</p>
-      <p><b>The tiles above.</b> SYSTEM = overall health · POSITION = holding Bitcoin (LONG) or
-      cash (FLAT) · VS BASELINE = how far ahead/behind the lazy rival · DRAWDOWN = worst slide from
-      the account's best-ever value · MISSION DAY = progress through the ~90-day experiment.</p>
+<div class="panel"><div class="ph"><span class="pt">LEADERBOARD</span>
+      <span class="ps">everyone started with $100k on the same day · Sharpe appears after 7 days</span></div>
+      <table><tr><th>AGENT</th><th>EQUITY</th><th>RETURN</th><th>VS RIVAL</th><th>WORST SLIDE</th><th>SHARPE</th><th>POSITION</th><th>MOOD</th></tr>
+      <tr><td><i class="dot" style="background:#66ad64"></i>KEPLER</td><td>$100,000</td><td>+0.00%</td><td><span style="color:#3ddc97">+332</span></td><td>-0.00%</td><td>—</td><td>FLAT</td><td><span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></td></tr><tr><td><i class="dot" style="background:#e8923a"></i>VECTOR</td><td>$100,000</td><td>+0.00%</td><td><span style="color:#3ddc97">+332</span></td><td>-0.00%</td><td>—</td><td>FLAT</td><td><span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></td></tr><tr><td><i class="dot" style="background:#3aaea0"></i>DONNIE</td><td>$100,000</td><td>+0.00%</td><td><span style="color:#3ddc97">+332</span></td><td>-0.00%</td><td>—</td><td>FLAT</td><td><span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></td></tr><tr><td><i class="dot" style="background:#9a7be0"></i>DIP</td><td>$100,000</td><td>+0.00%</td><td><span style="color:#3ddc97">+332</span></td><td>-0.00%</td><td>—</td><td>FLAT</td><td><span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></td></tr><tr><td><i class="dot" style="background:#6e6e78"></i>BASELINE (lazy rival)</td><td>$99,668</td><td>-0.33%</td><td>—</td><td>-0.33%</td><td>—</td><td>LONG</td><td></td></tr></table></div>
+<details class="panel docs"><summary>WHAT AM I LOOKING AT? — the swarm, in plain English</summary>
+      <p><b>The experiment.</b> Four robot monsters each trade a pretend $100,000 using one simple,
+      locked-in rule. They check the Bitcoin price once a day at 10:05am Brisbane time, make one
+      decision, and sleep. Most days: nothing. Expect a trade or two a month each. All of them race
+      the <b>lazy rival</b> — a baseline that bought Bitcoin on day one and never touches it.</p>
+      <p><b>KEPLER</b> — Long above the 50-day average (±1% buffer), cash below. Betting that <i>trends persist</i>.</p><p><b>VECTOR</b> — Long while the last 30 days are net positive, cash when negative. Betting that <i>winners keep winning</i>.</p><p><b>DONNIE</b> — Buy a 20-day-high close, exit on a 10-day low. Betting that <i>new highs beget new highs</i>.</p><p><b>DIP</b> — Buy panic (RSI below 30), sell relief (RSI above 60). Betting that <i>panic overshoots — the anti-trend control</i>.</p>
+      <p><b>HOUSTON</b> — the grey one — never trades. It keeps score, flags broken rules, and
+      reminds us of the fine print below.</p>
+      <p><b>The fine print.</b> With four racers, whoever's on top is partly just lucky — like the
+      luckiest of four coin-flippers. So nobody gets judged on the leaderboard alone: each monster
+      passes or fails against the baseline and its own backtest expectation after 90
+      days. Rules were locked before launch and never tuned mid-race. Every trade pays realistic
+      fees (0.35%). Safety rails on everyone: lose &gt;10% in a day → 24h bench;
+      fall 25% below start → shut down until a human looks. <b>No real money anywhere.</b></p>
     </details>
-<div class="panel"><div class="ph"><span class="pt">SUCCESS CRITERIA</span>
-      <span class="ps">the three numbers that decide if KEPLER wins — must beat the rival with smaller crashes, not just higher returns</span></div>
-      <table><tr><th></th><th>STRATEGY</th><th>BASELINE</th><th>VERDICT</th></tr>
-      <tr><td>Return after costs</td><td>+0.00%</td><td>-0.33%</td>
-      <td style="color:#3ddc97">AHEAD</td></tr>
-      <tr><td>Sharpe (ann.)</td><td>—</td><td>—</td>
-      <td style="color:#6e6e78">TOO EARLY</td></tr>
-      <tr><td>Max drawdown</td><td>-0.00%</td><td>-0.33%</td>
-      <td style="color:#3ddc97">SMALLER</td></tr>
-      </table></div>
 <div class="panel">
-      <div class="ph"><span class="pt">THE RACE</span><span class="ps">account value, KEPLER vs the buy-and-hold rival · both started at $100k, both pay the same fees</span><span class="legend"><span class="lg"><i style="background:#3ddc97"></i>strategy</span> <span class="lg"><i style="background:#6e6e78"></i>baseline</span></span></div>
-      <svg viewBox="0 0 760 250" preserveAspectRatio="none"><line x1="34" y1="34.0" x2="726" y2="34.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="37.5" fill="#6e6e78" font-size="10">100.0k</text><line x1="34" y1="79.5" x2="726" y2="79.5" stroke="#242428" stroke-width="0.6"/><text x="732" y="83.0" fill="#6e6e78" font-size="10">99.9k</text><line x1="34" y1="125.0" x2="726" y2="125.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="128.5" fill="#6e6e78" font-size="10">99.8k</text><line x1="34" y1="170.5" x2="726" y2="170.5" stroke="#242428" stroke-width="0.6"/><text x="732" y="174.0" fill="#6e6e78" font-size="10">99.7k</text><line x1="34" y1="216.0" x2="726" y2="216.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="219.5" fill="#6e6e78" font-size="10">99.6k</text><circle cx="34.0" cy="44.3" r="3.5" fill="#3ddc97"/><circle cx="34.0" cy="206.3" r="3.5" fill="#6e6e78"/></svg>
+      <div class="ph"><span class="pt">THE RACE</span><span class="ps">account value, day by day — the whole point of the experiment in one picture</span><span class="legend"><span class="lg"><i style="background:#66ad64"></i>KEPLER</span> <span class="lg"><i style="background:#e8923a"></i>VECTOR</span> <span class="lg"><i style="background:#3aaea0"></i>DONNIE</span> <span class="lg"><i style="background:#9a7be0"></i>DIP</span> <span class="lg"><i style="background:#6e6e78"></i>baseline</span></span></div>
+      <svg viewBox="0 0 760 250" preserveAspectRatio="none"><line x1="34" y1="34.0" x2="726" y2="34.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="37.5" fill="#6e6e78" font-size="10">100.0k</text><line x1="34" y1="79.5" x2="726" y2="79.5" stroke="#242428" stroke-width="0.6"/><text x="732" y="83.0" fill="#6e6e78" font-size="10">99.9k</text><line x1="34" y1="125.0" x2="726" y2="125.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="128.5" fill="#6e6e78" font-size="10">99.8k</text><line x1="34" y1="170.5" x2="726" y2="170.5" stroke="#242428" stroke-width="0.6"/><text x="732" y="174.0" fill="#6e6e78" font-size="10">99.7k</text><line x1="34" y1="216.0" x2="726" y2="216.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="219.5" fill="#6e6e78" font-size="10">99.6k</text><circle cx="34.0" cy="44.3" r="3.5" fill="#66ad64"/><circle cx="34.0" cy="44.3" r="3.5" fill="#e8923a"/><circle cx="34.0" cy="44.3" r="3.5" fill="#3aaea0"/><circle cx="34.0" cy="44.3" r="3.5" fill="#9a7be0"/><circle cx="34.0" cy="206.3" r="3.5" fill="#6e6e78"/></svg>
+    </div>
+<div class="grid"><div class="card">
+          <div class="cardtop"><svg viewBox="0 0 140 152" class="monster" role="img" aria-label="kepler is neutral">
+      <defs>
+        <radialGradient id="body-kepler" cx="38%" cy="30%" r="80%">
+          <stop offset="0%" stop-color="#66ad64"/>
+          <stop offset="100%" stop-color="#2d5a38"/>
+        </radialGradient>
+        <clipPath id="eye-kepler"><circle cx="70" cy="64" r="23"/></clipPath>
+      </defs>
+      <ellipse cx="70" cy="147" rx="35" ry="4.5" fill="rgba(0,0,0,0.5)"/>
+      <path d="M54 120 L49 139" stroke="#3b3b42" stroke-width="8" stroke-linecap="round"/>
+      <path d="M86 120 L91 139" stroke="#3b3b42" stroke-width="8" stroke-linecap="round"/>
+      <rect x="36" y="136" width="24" height="10" rx="5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <rect x="80" y="136" width="24" height="10" rx="5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <path d="M28 84 Q13 92 11 106" stroke="#3b3b42" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+      <circle cx="11" cy="106" r="4.5" fill="#4c4c55"/>
+      <path d="M11 106 Q9 120 17 128" stroke="#3b3b42" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <circle cx="19" cy="131" r="7.5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <path d="M112 84 Q127 92 129 106" stroke="#3b3b42" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+      <circle cx="129" cy="106" r="4.5" fill="#4c4c55"/>
+      <path d="M129 106 Q131 120 123 128" stroke="#3b3b42" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <circle cx="121" cy="131" r="7.5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <circle cx="70" cy="78" r="46" fill="url(#body-kepler)" stroke="#0b0b0c" stroke-width="3"/>
+      <path d="M44 40 Q39 24 33 20 Q44 23 52 34 Z" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/><path d="M96 40 Q101 24 107 20 Q96 23 88 34 Z" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <rect x="52" y="28" width="36" height="9" rx="3.5" fill="#2d5a38" stroke="#0b0b0c" stroke-width="2"/>
+      <circle cx="70" cy="64" r="23" fill="#eceadf" stroke="#0b0b0c" stroke-width="3"/><circle cx="72" cy="66" r="10" fill="#3ce0ff"/><circle cx="72" cy="66" r="4.5" fill="#0b0b0c"/><circle cx="68" cy="61" r="2.6" fill="#f4f2e8"/><g clip-path="url(#eye-kepler)"><rect x="42" y="38" width="56" height="21" fill="#2d5a38" stroke="#0b0b0c" stroke-width="2.5" transform="rotate(-10 70 64)"/></g>
+      <path d="M52 106 Q76 118 102 101" stroke="#0b0b0c" stroke-width="4.5" fill="none" stroke-linecap="round"/><path d="M78 109 L84 115 L89 107 L95 112 L99 103" stroke="#e9e7dc" stroke-width="3" fill="none" stroke-linejoin="round"/>
+    </svg>
+            <div><div class="kname">KEPLER <span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></div>
+            <div class="belief">"Trends persist"</div>
+            <div class="rule">Long above the 50-day average (±1% buffer), cash below</div></div></div>
+          <div class="khead" style="font-size:14px">In cash, watching.</div>
+          <div class="kdetail">Price is below the 50-day trend line, so I&#x27;m parked in cash until it climbs back above.</div>
+          <div class="statrow">
+            <span>$100,000</span>
+            <span style="color:#3ddc97">+332 vs rival</span>
+            <span>FLAT</span>
+          </div></div><div class="card">
+          <div class="cardtop"><svg viewBox="0 0 140 152" class="monster" role="img" aria-label="vector is neutral">
+      <defs>
+        <radialGradient id="body-vector" cx="38%" cy="30%" r="80%">
+          <stop offset="0%" stop-color="#e8923a"/>
+          <stop offset="100%" stop-color="#8a4f1d"/>
+        </radialGradient>
+        <clipPath id="eye-vector"><circle cx="70" cy="64" r="23"/></clipPath>
+      </defs>
+      <ellipse cx="70" cy="147" rx="35" ry="4.5" fill="rgba(0,0,0,0.5)"/>
+      <path d="M54 120 L49 139" stroke="#3b3b42" stroke-width="8" stroke-linecap="round"/>
+      <path d="M86 120 L91 139" stroke="#3b3b42" stroke-width="8" stroke-linecap="round"/>
+      <rect x="36" y="136" width="24" height="10" rx="5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <rect x="80" y="136" width="24" height="10" rx="5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <path d="M28 84 Q13 92 11 106" stroke="#3b3b42" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+      <circle cx="11" cy="106" r="4.5" fill="#4c4c55"/>
+      <path d="M11 106 Q9 120 17 128" stroke="#3b3b42" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <circle cx="19" cy="131" r="7.5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <path d="M112 84 Q127 92 129 106" stroke="#3b3b42" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+      <circle cx="129" cy="106" r="4.5" fill="#4c4c55"/>
+      <path d="M129 106 Q131 120 123 128" stroke="#3b3b42" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <circle cx="121" cy="131" r="7.5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <circle cx="70" cy="78" r="46" fill="url(#body-vector)" stroke="#0b0b0c" stroke-width="3"/>
+      <line x1="70" y1="30" x2="70" y2="12" stroke="#3b3b42" stroke-width="3"/><path d="M63 14 L70 4 L77 14 Z" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <rect x="52" y="28" width="36" height="9" rx="3.5" fill="#8a4f1d" stroke="#0b0b0c" stroke-width="2"/>
+      <circle cx="70" cy="64" r="23" fill="#eceadf" stroke="#0b0b0c" stroke-width="3"/><circle cx="72" cy="66" r="10" fill="#3ce0ff"/><circle cx="72" cy="66" r="4.5" fill="#0b0b0c"/><circle cx="68" cy="61" r="2.6" fill="#f4f2e8"/><g clip-path="url(#eye-vector)"><rect x="42" y="38" width="56" height="21" fill="#8a4f1d" stroke="#0b0b0c" stroke-width="2.5" transform="rotate(-10 70 64)"/></g>
+      <path d="M52 106 Q76 118 102 101" stroke="#0b0b0c" stroke-width="4.5" fill="none" stroke-linecap="round"/><path d="M78 109 L84 115 L89 107 L95 112 L99 103" stroke="#e9e7dc" stroke-width="3" fill="none" stroke-linejoin="round"/>
+    </svg>
+            <div><div class="kname">VECTOR <span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></div>
+            <div class="belief">"Winners keep winning"</div>
+            <div class="rule">Long while the last 30 days are net positive, cash when negative</div></div></div>
+          <div class="khead" style="font-size:14px">In cash, watching.</div>
+          <div class="kdetail">The last 30 days are net negative, so momentum says stay in cash.</div>
+          <div class="statrow">
+            <span>$100,000</span>
+            <span style="color:#3ddc97">+332 vs rival</span>
+            <span>FLAT</span>
+          </div></div><div class="card">
+          <div class="cardtop"><svg viewBox="0 0 140 152" class="monster" role="img" aria-label="donnie is neutral">
+      <defs>
+        <radialGradient id="body-donnie" cx="38%" cy="30%" r="80%">
+          <stop offset="0%" stop-color="#3aaea0"/>
+          <stop offset="100%" stop-color="#1d5f58"/>
+        </radialGradient>
+        <clipPath id="eye-donnie"><circle cx="70" cy="64" r="23"/></clipPath>
+      </defs>
+      <ellipse cx="70" cy="147" rx="35" ry="4.5" fill="rgba(0,0,0,0.5)"/>
+      <path d="M54 120 L49 139" stroke="#3b3b42" stroke-width="8" stroke-linecap="round"/>
+      <path d="M86 120 L91 139" stroke="#3b3b42" stroke-width="8" stroke-linecap="round"/>
+      <rect x="36" y="136" width="24" height="10" rx="5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <rect x="80" y="136" width="24" height="10" rx="5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <path d="M28 84 Q13 92 11 106" stroke="#3b3b42" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+      <circle cx="11" cy="106" r="4.5" fill="#4c4c55"/>
+      <path d="M11 106 Q9 120 17 128" stroke="#3b3b42" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <circle cx="19" cy="131" r="7.5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <path d="M112 84 Q127 92 129 106" stroke="#3b3b42" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+      <circle cx="129" cy="106" r="4.5" fill="#4c4c55"/>
+      <path d="M129 106 Q131 120 123 128" stroke="#3b3b42" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <circle cx="121" cy="131" r="7.5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <circle cx="70" cy="78" r="46" fill="url(#body-donnie)" stroke="#0b0b0c" stroke-width="3"/>
+      <path d="M34 46 A40 40 0 0 1 106 46" fill="none" stroke="#0b0b0c" stroke-width="7"/><path d="M34 46 A40 40 0 0 1 106 46" fill="none" stroke="#3b3b42" stroke-width="4"/><path d="M52 22 L58 32 M70 18 L70 30 M88 22 L82 32" stroke="#3b3b42" stroke-width="3"/>
+      <rect x="52" y="28" width="36" height="9" rx="3.5" fill="#1d5f58" stroke="#0b0b0c" stroke-width="2"/>
+      <circle cx="70" cy="64" r="23" fill="#eceadf" stroke="#0b0b0c" stroke-width="3"/><circle cx="72" cy="66" r="10" fill="#3ce0ff"/><circle cx="72" cy="66" r="4.5" fill="#0b0b0c"/><circle cx="68" cy="61" r="2.6" fill="#f4f2e8"/><g clip-path="url(#eye-donnie)"><rect x="42" y="38" width="56" height="21" fill="#1d5f58" stroke="#0b0b0c" stroke-width="2.5" transform="rotate(-10 70 64)"/></g>
+      <path d="M52 106 Q76 118 102 101" stroke="#0b0b0c" stroke-width="4.5" fill="none" stroke-linecap="round"/><path d="M78 109 L84 115 L89 107 L95 112 L99 103" stroke="#e9e7dc" stroke-width="3" fill="none" stroke-linejoin="round"/>
+    </svg>
+            <div><div class="kname">DONNIE <span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></div>
+            <div class="belief">"New highs beget new highs"</div>
+            <div class="rule">Buy a 20-day-high close, exit on a 10-day low</div></div></div>
+          <div class="khead" style="font-size:14px">In cash, watching.</div>
+          <div class="kdetail">No fresh 20-day high yet. I only move on a breakout — slow is smooth.</div>
+          <div class="statrow">
+            <span>$100,000</span>
+            <span style="color:#3ddc97">+332 vs rival</span>
+            <span>FLAT</span>
+          </div></div><div class="card">
+          <div class="cardtop"><svg viewBox="0 0 140 152" class="monster" role="img" aria-label="dip is neutral">
+      <defs>
+        <radialGradient id="body-dip" cx="38%" cy="30%" r="80%">
+          <stop offset="0%" stop-color="#9a7be0"/>
+          <stop offset="100%" stop-color="#4f3a8a"/>
+        </radialGradient>
+        <clipPath id="eye-dip"><circle cx="70" cy="64" r="23"/></clipPath>
+      </defs>
+      <ellipse cx="70" cy="147" rx="35" ry="4.5" fill="rgba(0,0,0,0.5)"/>
+      <path d="M54 120 L49 139" stroke="#3b3b42" stroke-width="8" stroke-linecap="round"/>
+      <path d="M86 120 L91 139" stroke="#3b3b42" stroke-width="8" stroke-linecap="round"/>
+      <rect x="36" y="136" width="24" height="10" rx="5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <rect x="80" y="136" width="24" height="10" rx="5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <path d="M28 84 Q13 92 11 106" stroke="#3b3b42" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+      <circle cx="11" cy="106" r="4.5" fill="#4c4c55"/>
+      <path d="M11 106 Q9 120 17 128" stroke="#3b3b42" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <circle cx="19" cy="131" r="7.5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <path d="M112 84 Q127 92 129 106" stroke="#3b3b42" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+      <circle cx="129" cy="106" r="4.5" fill="#4c4c55"/>
+      <path d="M129 106 Q131 120 123 128" stroke="#3b3b42" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <circle cx="121" cy="131" r="7.5" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <circle cx="70" cy="78" r="46" fill="url(#body-dip)" stroke="#0b0b0c" stroke-width="3"/>
+      <path d="M40 38 Q28 40 26 52 Q34 48 46 46 Z" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/><path d="M100 38 Q112 40 114 52 Q106 48 94 46 Z" fill="#3b3b42" stroke="#0b0b0c" stroke-width="2"/>
+      <rect x="52" y="28" width="36" height="9" rx="3.5" fill="#4f3a8a" stroke="#0b0b0c" stroke-width="2"/>
+      <circle cx="70" cy="64" r="23" fill="#eceadf" stroke="#0b0b0c" stroke-width="3"/><circle cx="72" cy="66" r="10" fill="#3ce0ff"/><circle cx="72" cy="66" r="4.5" fill="#0b0b0c"/><circle cx="68" cy="61" r="2.6" fill="#f4f2e8"/><g clip-path="url(#eye-dip)"><rect x="42" y="38" width="56" height="21" fill="#4f3a8a" stroke="#0b0b0c" stroke-width="2.5" transform="rotate(-10 70 64)"/></g>
+      <path d="M52 106 Q76 118 102 101" stroke="#0b0b0c" stroke-width="4.5" fill="none" stroke-linecap="round"/><path d="M78 109 L84 115 L89 107 L95 112 L99 103" stroke="#e9e7dc" stroke-width="3" fill="none" stroke-linejoin="round"/>
+    </svg>
+            <div><div class="kname">DIP <span class="chip" style="color:#3ce0ff;border-color:#3ce0ff">SCHEMING</span></div>
+            <div class="belief">"Panic overshoots — the anti-trend control"</div>
+            <div class="rule">Buy panic (RSI below 30), sell relief (RSI above 60)</div></div></div>
+          <div class="khead" style="font-size:14px">In cash, watching.</div>
+          <div class="kdetail">Nobody&#x27;s panicking — RSI is calm, so there&#x27;s nothing cheap to buy.</div>
+          <div class="statrow">
+            <span>$100,000</span>
+            <span style="color:#3ddc97">+332 vs rival</span>
+            <span>FLAT</span>
+          </div></div></div>
+<div class="panel">
+      <div class="ph"><span class="pt">THE MARKET</span><span class="ps">BTC daily closes with each monster&#x27;s key levels — amber: KEPLER&#x27;s trend line · teal: DONNIE&#x27;s breakout/exit rails</span><span class="legend"><span class="lg"><i style="background:#d8d8dc"></i>price</span> <span class="lg"><i style="background:#ffc857"></i>sma-50</span> <span class="lg"><i style="background:#3aaea0"></i>20d high</span> <span class="lg"><i style="background:#1d5f58"></i>10d low</span></span></div>
+      <svg viewBox="0 0 760 250" preserveAspectRatio="none"><line x1="34" y1="34.0" x2="726" y2="34.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="37.5" fill="#6e6e78" font-size="10">84k</text><line x1="34" y1="79.5" x2="726" y2="79.5" stroke="#242428" stroke-width="0.6"/><text x="732" y="83.0" fill="#6e6e78" font-size="10">77k</text><line x1="34" y1="125.0" x2="726" y2="125.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="128.5" fill="#6e6e78" font-size="10">70k</text><line x1="34" y1="170.5" x2="726" y2="170.5" stroke="#242428" stroke-width="0.6"/><text x="732" y="174.0" fill="#6e6e78" font-size="10">64k</text><line x1="34" y1="216.0" x2="726" y2="216.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="219.5" fill="#6e6e78" font-size="10">57k</text><polyline points="34.0,121.7 39.8,140.7 45.5,146.5 51.3,155.4 57.1,138.5 62.8,128.1 68.6,126.4 74.4,124.2 80.1,121.4 85.9,119.4 91.7,108.5 97.4,94.3 103.2,100.8 109.0,119.2 114.7,128.4 120.5,124.3 126.3,135.2 132.0,142.5 137.8,121.8 143.6,124.2 149.3,119.0 155.1,136.2 160.9,152.7 166.6,153.0 172.4,155.5 178.2,150.1 183.9,139.9 189.7,140.6 195.5,148.9 201.2,148.6 207.0,146.2 212.8,134.6 218.5,135.6 224.3,114.7 230.1,120.5 235.8,115.5 241.6,107.3 247.4,106.6 253.1,122.5 258.9,97.3 264.7,99.1 270.4,94.6 276.2,92.4 282.0,79.2 287.7,88.5 293.5,101.6 299.3,87.6 305.0,84.3 310.8,71.5 316.6,71.1 322.3,76.7 328.1,75.4 333.9,68.5 339.6,77.4 345.4,84.5 351.2,88.4 356.9,84.6 362.7,71.4 368.5,68.3 374.2,69.1 380.0,60.3 385.8,53.2 391.5,49.4 397.3,59.4 403.1,58.1 408.8,54.9 414.6,44.3 420.4,47.4 426.1,56.1 431.9,64.2 437.7,52.0 443.4,65.8 449.2,72.2 455.0,77.1 460.7,80.2 466.5,81.5 472.3,76.7 478.0,76.1 483.8,90.6 489.6,82.3 495.3,80.0 501.1,78.1 506.9,87.9 512.6,98.2 518.4,103.8 524.2,104.6 529.9,101.9 535.7,103.2 541.5,118.8 547.2,150.7 553.0,168.5 558.8,170.2 564.5,189.2 570.3,190.4 576.1,173.6 581.8,175.3 587.6,184.7 593.4,186.3 599.1,171.8 604.9,172.0 610.7,165.9 616.4,157.2 622.2,153.2 628.0,157.9 633.7,165.8 639.5,176.5 645.3,172.3 651.0,167.2 656.8,174.0 662.6,169.3 668.3,178.1 674.1,189.6 679.9,198.3 685.6,196.1 691.4,196.5 697.2,199.8 702.9,195.1 708.7,206.3 714.5,196.5 720.2,186.0 726.0,179.0" fill="none" stroke="#d8d8dc" stroke-width="2.0" stroke-linejoin="round"/><polyline points="34.0,87.8 39.8,91.6 45.5,95.4 51.3,99.4 57.1,102.9 62.8,106.0 68.6,108.4 74.4,111.0 80.1,113.6 85.9,116.1 91.7,118.3 97.4,119.9 103.2,121.9 109.0,124.3 114.7,126.9 120.5,128.9 126.3,130.9 132.0,132.4 137.8,133.2 143.6,134.4 149.3,135.0 155.1,135.5 160.9,135.0 166.6,135.6 172.4,136.1 178.2,136.6 183.9,136.8 189.7,136.9 195.5,136.9 201.2,136.8 207.0,137.0 212.8,137.1 218.5,137.1 224.3,136.7 230.1,136.2 235.8,135.5 241.6,134.7 247.4,134.0 253.1,133.6 258.9,132.6 264.7,131.3 270.4,129.9 276.2,128.9 282.0,127.6 287.7,126.2 293.5,125.3 299.3,123.9 305.0,122.9 310.8,121.5 316.6,120.7 322.3,119.8 328.1,118.5 333.9,117.0 339.6,115.4 345.4,114.3 351.2,113.5 356.9,112.7 362.7,111.7 368.5,110.6 374.2,109.6 380.0,108.6 385.8,107.8 391.5,106.8 397.3,105.6 403.1,104.2 408.8,102.8 414.6,101.0 420.4,99.1 426.1,97.7 431.9,96.5 437.7,95.2 443.4,93.8 449.2,92.2 455.0,90.7 460.7,89.2 466.5,87.8 472.3,86.5 478.0,85.2 483.8,84.1 489.6,82.7 495.3,81.4 501.1,80.3 506.9,79.3 512.6,79.0 518.4,78.7 524.2,78.5 529.9,78.3 535.7,78.3 541.5,78.2 547.2,79.3 553.0,80.7 558.8,82.2 564.5,84.1 570.3,86.3 576.1,88.0 581.8,89.5 587.6,91.4 593.4,93.5 599.1,95.5 604.9,97.5 610.7,99.3 616.4,100.9 622.2,102.6 628.0,104.2 633.7,105.9 639.5,107.6 645.3,109.4 651.0,111.3 656.8,113.4 662.6,115.4 668.3,117.8 674.1,120.5 679.9,123.5 685.6,126.2 691.4,129.0 697.2,131.9 702.9,134.9 708.7,138.1 714.5,140.9 720.2,143.3 726.0,145.9" fill="none" stroke="#ffc857" stroke-width="2.0" stroke-linejoin="round"/><polyline points="34.0,109.3 39.8,109.3 45.5,109.3 51.3,109.3 57.1,109.3 62.8,109.3 68.6,109.3 74.4,109.3 80.1,109.3 85.9,109.3 91.7,109.3 97.4,108.5 103.2,94.3 109.0,94.3 114.7,94.3 120.5,94.3 126.3,94.3 132.0,94.3 137.8,94.3 143.6,94.3 149.3,94.3 155.1,94.3 160.9,94.3 166.6,94.3 172.4,94.3 178.2,94.3 183.9,94.3 189.7,94.3 195.5,94.3 201.2,94.3 207.0,94.3 212.8,94.3 218.5,100.8 224.3,119.0 230.1,114.7 235.8,114.7 241.6,114.7 247.4,107.3 253.1,106.6 258.9,106.6 264.7,97.3 270.4,97.3 276.2,94.6 282.0,92.4 287.7,79.2 293.5,79.2 299.3,79.2 305.0,79.2 310.8,79.2 316.6,71.5 322.3,71.1 328.1,71.1 333.9,71.1 339.6,68.5 345.4,68.5 351.2,68.5 356.9,68.5 362.7,68.5 368.5,68.5 374.2,68.3 380.0,68.3 385.8,60.3 391.5,53.2 397.3,49.4 403.1,49.4 408.8,49.4 414.6,49.4 420.4,44.3 426.1,44.3 431.9,44.3 437.7,44.3 443.4,44.3 449.2,44.3 455.0,44.3 460.7,44.3 466.5,44.3 472.3,44.3 478.0,44.3 483.8,44.3 489.6,44.3 495.3,44.3 501.1,44.3 506.9,44.3 512.6,44.3 518.4,44.3 524.2,44.3 529.9,44.3 535.7,47.4 541.5,52.0 547.2,52.0 553.0,52.0 558.8,65.8 564.5,72.2 570.3,76.1 576.1,76.1 581.8,76.1 587.6,76.1 593.4,76.1 599.1,78.1 604.9,78.1 610.7,78.1 616.4,78.1 622.2,87.9 628.0,98.2 633.7,101.9 639.5,101.9 645.3,101.9 651.0,103.2 656.8,118.8 662.6,150.7 668.3,153.2 674.1,153.2 679.9,153.2 685.6,153.2 691.4,153.2 697.2,153.2 702.9,153.2 708.7,153.2 714.5,153.2 720.2,153.2 726.0,153.2" fill="none" stroke="#3aaea0" stroke-width="2.0" stroke-linejoin="round"/><polyline points="34.0,168.4 39.8,168.4 45.5,156.7 51.3,156.7 57.1,156.7 62.8,156.7 68.6,156.7 74.4,155.4 80.1,155.4 85.9,155.4 91.7,155.4 97.4,155.4 103.2,155.4 109.0,155.4 114.7,138.5 120.5,128.4 126.3,128.4 132.0,135.2 137.8,142.5 143.6,142.5 149.3,142.5 155.1,142.5 160.9,142.5 166.6,152.7 172.4,153.0 178.2,155.5 183.9,155.5 189.7,155.5 195.5,155.5 201.2,155.5 207.0,155.5 212.8,155.5 218.5,155.5 224.3,155.5 230.1,155.5 235.8,150.1 241.6,148.9 247.4,148.9 253.1,148.9 258.9,148.6 264.7,146.2 270.4,135.6 276.2,135.6 282.0,122.5 287.7,122.5 293.5,122.5 299.3,122.5 305.0,122.5 310.8,122.5 316.6,101.6 322.3,101.6 328.1,101.6 333.9,101.6 339.6,101.6 345.4,101.6 351.2,101.6 356.9,88.4 362.7,88.4 368.5,88.4 374.2,88.4 380.0,88.4 385.8,88.4 391.5,88.4 397.3,88.4 403.1,88.4 408.8,88.4 414.6,84.6 420.4,71.4 426.1,69.1 431.9,69.1 437.7,64.2 443.4,64.2 449.2,65.8 455.0,72.2 460.7,77.1 466.5,80.2 472.3,81.5 478.0,81.5 483.8,81.5 489.6,90.6 495.3,90.6 501.1,90.6 506.9,90.6 512.6,90.6 518.4,98.2 524.2,103.8 529.9,104.6 535.7,104.6 541.5,104.6 547.2,118.8 553.0,150.7 558.8,168.5 564.5,170.2 570.3,189.2 576.1,190.4 581.8,190.4 587.6,190.4 593.4,190.4 599.1,190.4 604.9,190.4 610.7,190.4 616.4,190.4 622.2,190.4 628.0,190.4 633.7,186.3 639.5,186.3 645.3,186.3 651.0,186.3 656.8,176.5 662.6,176.5 668.3,176.5 674.1,178.1 679.9,189.6 685.6,198.3 691.4,198.3 697.2,198.3 702.9,199.8 708.7,199.8 714.5,206.3 720.2,206.3 726.0,206.3" fill="none" stroke="#1d5f58" stroke-width="2.0" stroke-linejoin="round"/></svg>
     </div>
 <div class="panel">
-      <div class="ph"><span class="pt">BTC/USD vs THE TREND LINE</span><span class="ps">blue above amber = hold BTC · blue below = hide in cash · shaded band = no-trade buffer (±1%)</span><span class="legend"><span class="lg"><i style="background:#3ce0ff"></i>price</span> <span class="lg"><i style="background:#ffc857"></i>sma-50</span></span></div>
-      <svg viewBox="0 0 760 250" preserveAspectRatio="none"><line x1="34" y1="34.0" x2="726" y2="34.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="37.5" fill="#6e6e78" font-size="10">84k</text><line x1="34" y1="79.5" x2="726" y2="79.5" stroke="#242428" stroke-width="0.6"/><text x="732" y="83.0" fill="#6e6e78" font-size="10">77k</text><line x1="34" y1="125.0" x2="726" y2="125.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="128.5" fill="#6e6e78" font-size="10">70k</text><line x1="34" y1="170.5" x2="726" y2="170.5" stroke="#242428" stroke-width="0.6"/><text x="732" y="174.0" fill="#6e6e78" font-size="10">64k</text><line x1="34" y1="216.0" x2="726" y2="216.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="219.5" fill="#6e6e78" font-size="10">57k</text><polygon points="34.0,79.0 39.8,82.6 45.5,86.4 51.3,90.3 57.1,94.4 62.8,97.8 68.6,101.0 74.4,103.5 80.1,106.1 85.9,108.6 91.7,111.2 97.4,113.4 103.2,115.0 109.0,117.0 114.7,119.5 120.5,122.1 126.3,124.1 132.0,126.2 137.8,127.7 143.6,128.5 149.3,129.6 155.1,130.2 160.9,130.8 166.6,130.3 172.4,130.9 178.2,131.4 183.9,131.9 189.7,132.1 195.5,132.2 201.2,132.2 207.0,132.1 212.8,132.3 218.5,132.4 224.3,132.4 230.1,132.0 235.8,131.5 241.6,130.8 247.4,129.9 253.1,129.2 258.9,128.8 264.7,127.9 270.4,126.6 276.2,125.1 282.0,124.1 287.7,122.8 293.5,121.4 299.3,120.5 305.0,119.1 310.8,118.0 316.6,116.7 322.3,115.9 328.1,115.0 333.9,113.7 339.6,112.1 345.4,110.5 351.2,109.4 356.9,108.6 362.7,107.8 368.5,106.7 374.2,105.6 380.0,104.6 385.8,103.6 391.5,102.8 397.3,101.8 403.1,100.6 408.8,99.1 414.6,97.7 420.4,95.9 426.1,94.0 431.9,92.7 437.7,91.4 443.4,90.1 449.2,88.7 455.0,87.0 460.7,85.5 466.5,84.0 472.3,82.6 478.0,81.3 483.8,80.0 489.6,78.8 495.3,77.5 501.1,76.2 506.9,75.0 512.6,74.1 518.4,73.7 524.2,73.4 529.9,73.2 535.7,73.1 541.5,73.0 547.2,72.9 553.0,74.0 558.8,75.4 564.5,76.9 570.3,78.9 576.1,81.1 581.8,82.8 587.6,84.3 593.4,86.3 599.1,88.3 604.9,90.4 610.7,92.4 616.4,94.2 622.2,95.9 628.0,97.6 633.7,99.2 639.5,100.8 645.3,102.6 651.0,104.4 656.8,106.3 662.6,108.5 668.3,110.5 674.1,112.9 679.9,115.6 685.6,118.6 691.4,121.4 697.2,124.2 702.9,127.1 708.7,130.2 714.5,133.4 720.2,136.2 726.0,138.7 726.0,147.9 720.2,145.5 714.5,142.8 708.7,139.6 702.9,136.6 697.2,133.8 691.4,131.0 685.6,128.3 679.9,125.4 674.1,122.7 668.3,120.3 662.6,118.3 656.8,116.2 651.0,114.4 645.3,112.6 639.5,110.9 633.7,109.3 628.0,107.7 622.2,106.0 616.4,104.4 610.7,102.6 604.9,100.6 599.1,98.6 593.4,96.6 587.6,94.7 581.8,93.2 576.1,91.5 570.3,89.3 564.5,87.4 558.8,85.9 553.0,84.5 547.2,83.5 541.5,83.6 535.7,83.6 529.9,83.7 524.2,83.9 518.4,84.3 512.6,84.6 506.9,85.6 501.1,86.7 495.3,88.0 489.6,89.3 483.8,90.4 478.0,91.7 472.3,93.0 466.5,94.3 460.7,95.8 455.0,97.3 449.2,98.9 443.4,100.3 437.7,101.6 431.9,102.8 426.1,104.1 420.4,106.0 414.6,107.8 408.8,109.2 403.1,110.6 397.3,111.8 391.5,112.8 385.8,113.6 380.0,114.6 374.2,115.6 368.5,116.6 362.7,117.6 356.9,118.5 351.2,119.3 345.4,120.3 339.6,121.9 333.9,123.4 328.1,124.7 322.3,125.6 316.6,126.4 310.8,127.7 305.0,128.7 299.3,130.1 293.5,131.0 287.7,132.4 282.0,133.7 276.2,134.6 270.4,136.1 264.7,137.4 258.9,138.3 253.1,138.7 247.4,139.4 241.6,140.2 235.8,140.9 230.1,141.4 224.3,141.8 218.5,141.8 212.8,141.7 207.0,141.5 201.2,141.6 195.5,141.6 189.7,141.5 183.9,141.3 178.2,140.8 172.4,140.3 166.6,139.8 160.9,140.2 155.1,139.7 149.3,139.1 143.6,138.0 137.8,137.2 132.0,135.7 126.3,133.6 120.5,131.7 114.7,129.1 109.0,126.7 103.2,124.8 97.4,123.2 91.7,121.0 85.9,118.5 80.1,116.0 74.4,113.4 68.6,111.0 62.8,107.9 57.1,104.5 51.3,100.6 45.5,96.7 39.8,93.0 34.0,89.5" fill="rgba(255,200,87,0.10)"/><polyline points="34.0,109.3 39.8,121.7 45.5,140.7 51.3,146.5 57.1,155.4 62.8,138.5 68.6,128.1 74.4,126.4 80.1,124.2 85.9,121.4 91.7,119.4 97.4,108.5 103.2,94.3 109.0,100.8 114.7,119.2 120.5,128.4 126.3,124.3 132.0,135.2 137.8,142.5 143.6,121.8 149.3,124.2 155.1,119.0 160.9,136.2 166.6,152.7 172.4,153.0 178.2,155.5 183.9,150.1 189.7,139.9 195.5,140.6 201.2,148.9 207.0,148.6 212.8,146.2 218.5,134.6 224.3,135.6 230.1,114.7 235.8,120.5 241.6,115.5 247.4,107.3 253.1,106.6 258.9,122.5 264.7,97.3 270.4,99.1 276.2,94.6 282.0,92.4 287.7,79.2 293.5,88.5 299.3,101.6 305.0,87.6 310.8,84.3 316.6,71.5 322.3,71.1 328.1,76.7 333.9,75.4 339.6,68.5 345.4,77.4 351.2,84.5 356.9,88.4 362.7,84.6 368.5,71.4 374.2,68.3 380.0,69.1 385.8,60.3 391.5,53.2 397.3,49.4 403.1,59.4 408.8,58.1 414.6,54.9 420.4,44.3 426.1,47.4 431.9,56.1 437.7,64.2 443.4,52.0 449.2,65.8 455.0,72.2 460.7,77.1 466.5,80.2 472.3,81.5 478.0,76.7 483.8,76.1 489.6,90.6 495.3,82.3 501.1,80.0 506.9,78.1 512.6,87.9 518.4,98.2 524.2,103.8 529.9,104.6 535.7,101.9 541.5,103.2 547.2,118.8 553.0,150.7 558.8,168.5 564.5,170.2 570.3,189.2 576.1,190.4 581.8,173.6 587.6,175.3 593.4,184.7 599.1,186.3 604.9,171.8 610.7,172.0 616.4,165.9 622.2,157.2 628.0,153.2 633.7,157.9 639.5,165.8 645.3,176.5 651.0,172.3 656.8,167.2 662.6,174.0 668.3,169.3 674.1,178.1 679.9,189.6 685.6,198.3 691.4,196.1 697.2,196.5 702.9,199.8 708.7,195.1 714.5,206.3 720.2,196.5 726.0,186.0" fill="none" stroke="#3ce0ff" stroke-width="2.0" stroke-linejoin="round"/><polyline points="34.0,84.2 39.8,87.8 45.5,91.6 51.3,95.4 57.1,99.4 62.8,102.9 68.6,106.0 74.4,108.4 80.1,111.0 85.9,113.6 91.7,116.1 97.4,118.3 103.2,119.9 109.0,121.9 114.7,124.3 120.5,126.9 126.3,128.9 132.0,130.9 137.8,132.4 143.6,133.2 149.3,134.4 155.1,135.0 160.9,135.5 166.6,135.0 172.4,135.6 178.2,136.1 183.9,136.6 189.7,136.8 195.5,136.9 201.2,136.9 207.0,136.8 212.8,137.0 218.5,137.1 224.3,137.1 230.1,136.7 235.8,136.2 241.6,135.5 247.4,134.7 253.1,134.0 258.9,133.6 264.7,132.6 270.4,131.3 276.2,129.9 282.0,128.9 287.7,127.6 293.5,126.2 299.3,125.3 305.0,123.9 310.8,122.9 316.6,121.5 322.3,120.7 328.1,119.8 333.9,118.5 339.6,117.0 345.4,115.4 351.2,114.3 356.9,113.5 362.7,112.7 368.5,111.7 374.2,110.6 380.0,109.6 385.8,108.6 391.5,107.8 397.3,106.8 403.1,105.6 408.8,104.2 414.6,102.8 420.4,101.0 426.1,99.1 431.9,97.7 437.7,96.5 443.4,95.2 449.2,93.8 455.0,92.2 460.7,90.7 466.5,89.2 472.3,87.8 478.0,86.5 483.8,85.2 489.6,84.1 495.3,82.7 501.1,81.4 506.9,80.3 512.6,79.3 518.4,79.0 524.2,78.7 529.9,78.5 535.7,78.3 541.5,78.3 547.2,78.2 553.0,79.3 558.8,80.7 564.5,82.2 570.3,84.1 576.1,86.3 581.8,88.0 587.6,89.5 593.4,91.4 599.1,93.5 604.9,95.5 610.7,97.5 616.4,99.3 622.2,100.9 628.0,102.6 633.7,104.2 639.5,105.9 645.3,107.6 651.0,109.4 656.8,111.3 662.6,113.4 668.3,115.4 674.1,117.8 679.9,120.5 685.6,123.5 691.4,126.2 697.2,129.0 702.9,131.9 708.7,134.9 714.5,138.1 720.2,140.9 726.0,143.3" fill="none" stroke="#ffc857" stroke-width="2.0" stroke-linejoin="round"/></svg>
+      <div class="ph"><span class="pt">DIP&#x27;S FEAR GAUGE (RSI-14)</span><span class="ps">below 30 = panic, DIP buys · above 60 = relief, DIP sells</span><span class="legend"><span class="lg"><i style="background:#8b7bff"></i>rsi</span></span></div>
+      <svg viewBox="0 0 760 160" preserveAspectRatio="none"><line x1="34" y1="34.0" x2="726" y2="34.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="37.5" fill="#6e6e78" font-size="10">72</text><line x1="34" y1="57.0" x2="726" y2="57.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="60.5" fill="#6e6e78" font-size="10">57</text><line x1="34" y1="80.0" x2="726" y2="80.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="83.5" fill="#6e6e78" font-size="10">42</text><line x1="34" y1="103.0" x2="726" y2="103.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="106.5" fill="#6e6e78" font-size="10">27</text><line x1="34" y1="126.0" x2="726" y2="126.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="129.5" fill="#6e6e78" font-size="10">12</text><polygon points="34.0,53.0 39.8,53.0 45.5,53.0 51.3,53.0 57.1,53.0 62.8,53.0 68.6,53.0 74.4,53.0 80.1,53.0 85.9,53.0 91.7,53.0 97.4,53.0 103.2,53.0 109.0,53.0 114.7,53.0 120.5,53.0 126.3,53.0 132.0,53.0 137.8,53.0 143.6,53.0 149.3,53.0 155.1,53.0 160.9,53.0 166.6,53.0 172.4,53.0 178.2,53.0 183.9,53.0 189.7,53.0 195.5,53.0 201.2,53.0 207.0,53.0 212.8,53.0 218.5,53.0 224.3,53.0 230.1,53.0 235.8,53.0 241.6,53.0 247.4,53.0 253.1,53.0 258.9,53.0 264.7,53.0 270.4,53.0 276.2,53.0 282.0,53.0 287.7,53.0 293.5,53.0 299.3,53.0 305.0,53.0 310.8,53.0 316.6,53.0 322.3,53.0 328.1,53.0 333.9,53.0 339.6,53.0 345.4,53.0 351.2,53.0 356.9,53.0 362.7,53.0 368.5,53.0 374.2,53.0 380.0,53.0 385.8,53.0 391.5,53.0 397.3,53.0 403.1,53.0 408.8,53.0 414.6,53.0 420.4,53.0 426.1,53.0 431.9,53.0 437.7,53.0 443.4,53.0 449.2,53.0 455.0,53.0 460.7,53.0 466.5,53.0 472.3,53.0 478.0,53.0 483.8,53.0 489.6,53.0 495.3,53.0 501.1,53.0 506.9,53.0 512.6,53.0 518.4,53.0 524.2,53.0 529.9,53.0 535.7,53.0 541.5,53.0 547.2,53.0 553.0,53.0 558.8,53.0 564.5,53.0 570.3,53.0 576.1,53.0 581.8,53.0 587.6,53.0 593.4,53.0 599.1,53.0 604.9,53.0 610.7,53.0 616.4,53.0 622.2,53.0 628.0,53.0 633.7,53.0 639.5,53.0 645.3,53.0 651.0,53.0 656.8,53.0 662.6,53.0 668.3,53.0 674.1,53.0 679.9,53.0 685.6,53.0 691.4,53.0 697.2,53.0 702.9,53.0 708.7,53.0 714.5,53.0 720.2,53.0 726.0,53.0 726.0,98.9 720.2,98.9 714.5,98.9 708.7,98.9 702.9,98.9 697.2,98.9 691.4,98.9 685.6,98.9 679.9,98.9 674.1,98.9 668.3,98.9 662.6,98.9 656.8,98.9 651.0,98.9 645.3,98.9 639.5,98.9 633.7,98.9 628.0,98.9 622.2,98.9 616.4,98.9 610.7,98.9 604.9,98.9 599.1,98.9 593.4,98.9 587.6,98.9 581.8,98.9 576.1,98.9 570.3,98.9 564.5,98.9 558.8,98.9 553.0,98.9 547.2,98.9 541.5,98.9 535.7,98.9 529.9,98.9 524.2,98.9 518.4,98.9 512.6,98.9 506.9,98.9 501.1,98.9 495.3,98.9 489.6,98.9 483.8,98.9 478.0,98.9 472.3,98.9 466.5,98.9 460.7,98.9 455.0,98.9 449.2,98.9 443.4,98.9 437.7,98.9 431.9,98.9 426.1,98.9 420.4,98.9 414.6,98.9 408.8,98.9 403.1,98.9 397.3,98.9 391.5,98.9 385.8,98.9 380.0,98.9 374.2,98.9 368.5,98.9 362.7,98.9 356.9,98.9 351.2,98.9 345.4,98.9 339.6,98.9 333.9,98.9 328.1,98.9 322.3,98.9 316.6,98.9 310.8,98.9 305.0,98.9 299.3,98.9 293.5,98.9 287.7,98.9 282.0,98.9 276.2,98.9 270.4,98.9 264.7,98.9 258.9,98.9 253.1,98.9 247.4,98.9 241.6,98.9 235.8,98.9 230.1,98.9 224.3,98.9 218.5,98.9 212.8,98.9 207.0,98.9 201.2,98.9 195.5,98.9 189.7,98.9 183.9,98.9 178.2,98.9 172.4,98.9 166.6,98.9 160.9,98.9 155.1,98.9 149.3,98.9 143.6,98.9 137.8,98.9 132.0,98.9 126.3,98.9 120.5,98.9 114.7,98.9 109.0,98.9 103.2,98.9 97.4,98.9 91.7,98.9 85.9,98.9 80.1,98.9 74.4,98.9 68.6,98.9 62.8,98.9 57.1,98.9 51.3,98.9 45.5,98.9 39.8,98.9 34.0,98.9" fill="rgba(154,123,224,0.10)"/><polyline points="34.0,66.8 39.8,75.2 45.5,77.6 51.3,81.2 57.1,72.4 62.8,67.4 68.6,66.6 74.4,65.5 80.1,64.0 85.9,62.9 91.7,57.2 97.4,50.5 103.2,55.0 109.0,66.5 114.7,71.5 120.5,69.1 126.3,75.1 132.0,78.8 137.8,66.5 143.6,67.9 149.3,64.9 155.1,74.7 160.9,82.5 166.6,82.6 172.4,83.8 178.2,79.9 183.9,72.8 189.7,73.3 195.5,78.3 201.2,78.0 207.0,76.1 212.8,67.1 218.5,67.9 224.3,54.2 230.1,58.7 235.8,55.7 241.6,51.0 247.4,50.6 253.1,64.0 258.9,49.9 264.7,51.3 270.4,49.0 276.2,47.9 282.0,41.5 287.7,49.7 293.5,59.9 299.3,52.4 305.0,50.8 310.8,44.7 316.6,44.6 322.3,49.5 328.1,48.8 333.9,45.1 339.6,53.3 345.4,59.4 351.2,62.5 356.9,59.9 362.7,51.4 368.5,49.5 374.2,50.4 380.0,45.1 385.8,41.2 391.5,39.2 397.3,50.0 403.1,49.1 408.8,47.1 414.6,40.8 420.4,44.4 426.1,53.9 431.9,61.8 437.7,53.1 443.4,65.2 449.2,70.1 455.0,73.7 460.7,76.0 466.5,76.9 472.3,72.4 478.0,71.8 483.8,83.2 489.6,75.2 495.3,73.0 501.1,71.3 506.9,79.4 512.6,86.6 518.4,90.1 524.2,90.7 529.9,87.4 535.7,88.3 541.5,98.3 547.2,111.4 553.0,116.2 558.8,116.6 564.5,120.8 570.3,121.1 576.1,104.0 581.8,104.6 587.6,107.7 593.4,108.3 599.1,94.2 604.9,94.3 610.7,88.6 616.4,81.0 622.2,77.7 628.0,80.7 633.7,85.6 639.5,91.5 645.3,87.4 651.0,82.6 656.8,86.8 662.6,82.3 668.3,87.7 674.1,94.0 679.9,98.2 685.6,95.9 691.4,96.1 697.2,97.9 702.9,92.2 708.7,98.5 714.5,87.7 720.2,77.7 726.0,71.7" fill="none" stroke="#8b7bff" stroke-width="2.0" stroke-linejoin="round"/></svg>
     </div>
-<div class="panel">
-      <div class="ph"><span class="pt">DRAWDOWN FROM PEAK</span><span class="ps">how far each account has slid from its best-ever value — staying shallow is the whole point of trend following</span><span class="legend"><span class="lg"><i style="background:#3ddc97"></i>strategy</span> <span class="lg"><i style="background:#ff5d73"></i>baseline</span></span></div>
-      <svg viewBox="0 0 760 180" preserveAspectRatio="none"><line x1="34" y1="34.0" x2="726" y2="34.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="37.5" fill="#6e6e78" font-size="10">0.0%</text><line x1="34" y1="62.0" x2="726" y2="62.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="65.5" fill="#6e6e78" font-size="10">-0.1%</text><line x1="34" y1="90.0" x2="726" y2="90.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="93.5" fill="#6e6e78" font-size="10">-0.2%</text><line x1="34" y1="118.0" x2="726" y2="118.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="121.5" fill="#6e6e78" font-size="10">-0.3%</text><line x1="34" y1="146.0" x2="726" y2="146.0" stroke="#242428" stroke-width="0.6"/><text x="732" y="149.5" fill="#6e6e78" font-size="10">-0.4%</text><polyline points="34.0,40.3 726.0,40.3" fill="none" stroke="#3ddc97" stroke-width="2.0" stroke-linejoin="round"/><polyline points="34.0,40.3 726.0,140.0" fill="none" stroke="#ff5d73" stroke-width="2.0" stroke-linejoin="round"/></svg>
-    </div>
-<div class="panel"><div class="ph"><span class="pt">DECISION LOG</span><span class="ps">one row per day: what it saw, what it did — &#x27;no-change&#x27; is normal and good</span></div><table><tr><th>BAR DATE</th><th>CLOSE</th><th>SMA-50</th><th>SIGNAL</th><th>BAND</th><th>ACTION</th></tr><tr><td>2026-07-02</td><td>61,492</td><td>67,732</td><td><span style="color:#6e6e78">HOLD</span></td><td></td><td>no-change</td></tr></table></div>
-<div class="panel"><div class="ph"><span class="pt">TRADES</span><span class="ps">actual buys and sells — rare by design, roughly one a month</span></div><table><tr><th>DATE</th><th>SIDE</th><th>QTY BTC</th><th>PRICE</th><th>COSTS</th><th>EQUITY AFTER</th></tr><tr><td colspan="6" style="color:#6e6e78">no trades yet — waiting for price to cross the trend line</td></tr></table></div>
-<div class="panel"><div class="ph"><span class="pt">EVENTS</span><span class="ps">notable moments: safety rails firing, milestones, anything unusual</span></div><table><tr><th>TIME</th><th>KIND</th><th>DETAIL</th></tr><tr><td>2026-07-03 07:58</td><td>baseline_entry</td><td>bought 1.53950094 @ 61492.33</td></tr></table></div>
-<footer>KEPLER IS AUTONOMOUS · RISK-GATED · COST-AWARE — THE RULE DECIDES, HUMANS REVIEW WEEKLY · PAPER MONEY ONLY · NOT FINANCIAL ADVICE</footer>
+<div class="panel"><div class="ph"><span class="pt">DECISION LOG</span><span class="ps">one row per monster per day — &#x27;no-change&#x27; is normal and good</span></div><table><tr><th>DATE</th><th>AGENT</th><th>CLOSE</th><th>WHAT IT SAW</th><th>SIGNAL</th><th>ACTION</th></tr><tr><td>2026-07-03</td><td><i class="dot" style="background:#e8923a"></i>VECTOR</td><td>62,515</td><td>roc_30 -0.0239</td><td><span style="color:#6e6e78">HOLD</span></td><td>no-change</td></tr><tr><td>2026-07-03</td><td><i class="dot" style="background:#66ad64"></i>KEPLER</td><td>62,515</td><td>sma_50 67360.28</td><td><span style="color:#6e6e78">HOLD</span></td><td>no-change</td></tr><tr><td>2026-07-03</td><td><i class="dot" style="background:#3aaea0"></i>DONNIE</td><td>62,515</td><td>low_10 58531.14, high_20 66283.27</td><td><span style="color:#6e6e78">HOLD</span></td><td>no-change</td></tr><tr><td>2026-07-03</td><td><i class="dot" style="background:#9a7be0"></i>DIP</td><td>62,515</td><td>rsi_14 47.5</td><td><span style="color:#6e6e78">HOLD</span></td><td>no-change</td></tr></table></div>
+<div class="panel"><div class="ph"><span class="pt">TRADES</span><span class="ps">rare by design — each one costs 0.35%</span></div><table><tr><th>DATE</th><th>AGENT</th><th>SIDE</th><th>QTY BTC</th><th>PRICE</th><th>COSTS</th><th>EQUITY AFTER</th></tr><tr><td colspan="7" style="color:#6e6e78">no trades yet — everyone is waiting for their rule to trigger</td></tr></table></div>
+<div class="panel"><div class="ph"><span class="pt">EVENTS</span><span class="ps">notable moments: safety rails, launches, anything unusual</span></div><table><tr><th>TIME</th><th>KIND</th><th>DETAIL</th></tr><tr><td>2026-07-04 00:18</td><td>baseline_entry</td><td>bought 1.51432312 @ 62514.73</td></tr><tr><td>2026-07-04 00:15</td><td>swarm_launch</td><td>v2.0-swarm: KEPLER + VECTOR + DONNIE + DIP + baseline, clean slate, all clocks reset</td></tr><tr><td>2026-07-03 07:58</td><td>baseline_entry</td><td>bought 1.53950094 @ 61492.33</td></tr></table></div>
+<footer>FOUR MONSTERS · ONE LAZY RIVAL · RULES LOCKED AT LAUNCH — HOUSTON WATCHES, HUMANS REVIEW WEEKLY · PAPER MONEY ONLY · NOT FINANCIAL ADVICE</footer>
 </body></html>
